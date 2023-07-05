@@ -1,0 +1,80 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &4682448048612574564
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4678782489470708016}
+  - component: {fileID: 4713277869967794228}
+  - component: {fileID: 1550376930686458053}
+  m_Layer: 0
+  m_Name: Create_SupportWheel
+  m_TagString: Untagged
+  m_Icon: {fileID: 2974397684917235467, guid: 0000000000000000d000000000000000, type: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4678782489470708016
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4682448048612574564}
+  m_LocalRotation: {x: 0, y: 0, z: 0.7071068, w: 0.7071068}
+  m_LocalPosition: {x: 0, y: 0, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 90}
+--- !u!114 &4713277869967794228
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4682448048612574564}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 032cd2d82addbe04baa5942075bc41e2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Wheel_Distance: 3
+  Num: 5
+  Spacing: 1
+  Wheel_Mass: 100
+  Wheel_Radius: 0.2
+  Collider_Material: {fileID: 13400000, guid: f618f0f7d87415f40800a9fdb95bf556, type: 2}
+  Wheel_Mesh: {fileID: 0}
+  Wheel_Materials_Num: 1
+  Wheel_Materials:
+  - {fileID: 0}
+  Wheel_Material: {fileID: 0}
+  Drive_Wheel: 1
+  Wheel_Resize: 0
+  ScaleDown_Size: 0.5
+  Return_Speed: 0.05
+  Static_Flag: 0
+  Radius_Offset: 0
+  Has_Changed: 0
+--- !u!114 &1550376930686458053
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4682448048612574564}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 36e5525feff9a3340b849a3613dd51fd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Wheel_Radius: 0
+  Left_Angle_Y: 0
+  Right_Angle_Y: 0
+  Is_Visible: 0

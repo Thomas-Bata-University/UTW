@@ -1,0 +1,106 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &134036
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 473212}
+  - component: {fileID: 11419306}
+  m_Layer: 0
+  m_Name: Event_Controller
+  m_TagString: Untagged
+  m_Icon: {fileID: -964228994112308473, guid: 0000000000000000d000000000000000, type: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &473212
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 134036}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &11419306
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 134036}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 36ea7fd9cc554704c9510b97861d0b11, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Trigger_Type: 0
+  Trigger_Time: 0
+  Trigger_Setting_Type: 0
+  Trigger_Num: 1
+  Trigger_Tanks: []
+  Operator_Type: 0
+  All_Trigger_Flag: 1
+  Necessary_Num: 1
+  Trigger_Collider_Num: 1
+  Trigger_Collider_Scripts: []
+  Useless_Event_Num: 0
+  Useless_Events: []
+  Disabled_Event_Num: 0
+  Disabled_Events: []
+  Event_Type: 0
+  Key_Name: 
+  Prefab_Object: {fileID: 0}
+  Tank_ID: 1
+  Relationship: 0
+  Attack_Multiplier: 1
+  Defence_Multiplier: 1
+  Respawn_Times: 0
+  Auto_Respawn_Interval: 10
+  Remove_After_Death: 0
+  Remove_Interval: Infinity
+  WayPoint_Pack: {fileID: 0}
+  Patrol_Type: 1
+  Follow_Target: {fileID: 0}
+  No_Attack: 0
+  Breakthrough: 0
+  Share_Target: {fileID: 0}
+  Visibility_Radius: 512
+  Approach_Distance: Infinity
+  OpenFire_Distance: 512
+  Lost_Count: 10
+  Face_Offest_Angle: 0
+  AI_State_Text: {fileID: 0}
+  Tank_Name: 
+  Event_Text: {fileID: 0}
+  Event_Message: 
+  Event_Message_Color: {r: 1, g: 1, b: 1, a: 1}
+  Event_Message_Time: 3
+  Target_Num: 1
+  Target_Tanks: []
+  New_WayPoint_Pack: {fileID: 0}
+  New_Patrol_Type: 1
+  New_Follow_Target: {fileID: 0}
+  New_No_Attack: 0
+  New_Breakthrough: 0
+  New_Share_Target: {fileID: 0}
+  New_Visibility_Radius: 512
+  New_Approach_Distance: 256
+  New_OpenFire_Distance: 512
+  New_Lost_Count: 20
+  New_Face_Offest_Angle: 0
+  Artillery_Script: {fileID: 0}
+  Artillery_Target: {fileID: 0}
+  Artillery_Num: 0
+  Trigger_Itself_Flag: 1
+  Wait_For_All_Triggers: 1
+  Trigger_Script: {fileID: 0}

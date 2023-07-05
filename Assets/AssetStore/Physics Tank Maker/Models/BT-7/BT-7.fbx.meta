@@ -1,0 +1,277 @@
+fileFormatVersion: 2
+guid: 2706d3a437b3cdc4ba66520f0b657661
+ModelImporter:
+  serializedVersion: 23
+  fileIDToRecycleName:
+    100000: //RootNode
+    100002: BT-7_Barrel
+    100004: BT-7_Barrel_Collider
+    100006: BT-7_Body
+    100008: BT-7_Body_Collider
+    100010: BT-7_Cannon
+    100012: BT-7_IdlerWheel
+    100014: BT-7_RoadWheel_1st
+    100016: BT-7_RoadWheel_1st_Arm_L
+    100018: BT-7_RoadWheel_1st_Arm_R
+    100020: BT-7_RoadWheel_1st_ArmJoint_L
+    100022: BT-7_RoadWheel_1st_ArmJoint_R
+    100024: BT-7_RoadWheel_1st_SpringPiston_L
+    100026: BT-7_RoadWheel_1st_SpringPiston_R
+    100028: BT-7_RoadWheel_2nd
+    100030: BT-7_RoadWheel_2nd_Arm_L
+    100032: BT-7_RoadWheel_2nd_Arm_R
+    100034: BT-7_RoadWheel_3rd_Arm_L
+    100036: BT-7_RoadWheel_3rd_Arm_R
+    100038: BT-7_RoadWheel_4th_Arm_L
+    100040: BT-7_RoadWheel_4th_Arm_R
+    100042: BT-7_Sprocket
+    100044: BT-7_TrackPiece_A
+    100046: BT-7_TrackPiece_B
+    100048: BT-7_TrackPiece_Shadow
+    100050: BT-7_Turret
+    100052: BT-7_Turret_Collider_A
+    100054: BT-7_Turret_Collider_B
+    100056: Image (Front)
+    100058: Image (Front).001
+    100060: Image (Side)
+    100062: Image (Side).001
+    100064: Image (Top)
+    100066: Image (Top).001
+    100068: BT-7_TrackPiece_C
+    100070: BT-7_Guide_Wheels
+    100072: BT-7_ScrollTrack_L
+    100074: BT-7_ScrollTrack_R
+    100076: BT-7_Body_Collider_Lower
+    100078: BT-7_Body_Collider_Upper
+    400000: //RootNode
+    400002: BT-7_Barrel
+    400004: BT-7_Barrel_Collider
+    400006: BT-7_Body
+    400008: BT-7_Body_Collider
+    400010: BT-7_Cannon
+    400012: BT-7_IdlerWheel
+    400014: BT-7_RoadWheel_1st
+    400016: BT-7_RoadWheel_1st_Arm_L
+    400018: BT-7_RoadWheel_1st_Arm_R
+    400020: BT-7_RoadWheel_1st_ArmJoint_L
+    400022: BT-7_RoadWheel_1st_ArmJoint_R
+    400024: BT-7_RoadWheel_1st_SpringPiston_L
+    400026: BT-7_RoadWheel_1st_SpringPiston_R
+    400028: BT-7_RoadWheel_2nd
+    400030: BT-7_RoadWheel_2nd_Arm_L
+    400032: BT-7_RoadWheel_2nd_Arm_R
+    400034: BT-7_RoadWheel_3rd_Arm_L
+    400036: BT-7_RoadWheel_3rd_Arm_R
+    400038: BT-7_RoadWheel_4th_Arm_L
+    400040: BT-7_RoadWheel_4th_Arm_R
+    400042: BT-7_Sprocket
+    400044: BT-7_TrackPiece_A
+    400046: BT-7_TrackPiece_B
+    400048: BT-7_TrackPiece_Shadow
+    400050: BT-7_Turret
+    400052: BT-7_Turret_Collider_A
+    400054: BT-7_Turret_Collider_B
+    400056: Image (Front)
+    400058: Image (Front).001
+    400060: Image (Side)
+    400062: Image (Side).001
+    400064: Image (Top)
+    400066: Image (Top).001
+    400068: BT-7_TrackPiece_C
+    400070: BT-7_Guide_Wheels
+    400072: BT-7_ScrollTrack_L
+    400074: BT-7_ScrollTrack_R
+    400076: BT-7_Body_Collider_Lower
+    400078: BT-7_Body_Collider_Upper
+    2100000: BT-7
+    2100002: BT-7_ScrollTrack
+    2300000: BT-7_Barrel
+    2300002: BT-7_Barrel_Collider
+    2300004: BT-7_Body
+    2300006: BT-7_Body_Collider
+    2300008: BT-7_Cannon
+    2300010: BT-7_IdlerWheel
+    2300012: BT-7_RoadWheel_1st
+    2300014: BT-7_RoadWheel_1st_Arm_L
+    2300016: BT-7_RoadWheel_1st_Arm_R
+    2300018: BT-7_RoadWheel_1st_ArmJoint_L
+    2300020: BT-7_RoadWheel_1st_ArmJoint_R
+    2300022: BT-7_RoadWheel_1st_SpringPiston_L
+    2300024: BT-7_RoadWheel_1st_SpringPiston_R
+    2300026: BT-7_RoadWheel_2nd
+    2300028: BT-7_RoadWheel_2nd_Arm_L
+    2300030: BT-7_RoadWheel_2nd_Arm_R
+    2300032: BT-7_RoadWheel_3rd_Arm_L
+    2300034: BT-7_RoadWheel_3rd_Arm_R
+    2300036: BT-7_RoadWheel_4th_Arm_L
+    2300038: BT-7_RoadWheel_4th_Arm_R
+    2300040: BT-7_Sprocket
+    2300042: BT-7_TrackPiece_A
+    2300044: BT-7_TrackPiece_B
+    2300046: BT-7_TrackPiece_Shadow
+    2300048: BT-7_Turret
+    2300050: BT-7_Turret_Collider_A
+    2300052: BT-7_Turret_Collider_B
+    2300054: BT-7_TrackPiece_C
+    2300056: BT-7_Guide_Wheels
+    2300058: BT-7_ScrollTrack_L
+    2300060: BT-7_ScrollTrack_R
+    2300062: BT-7_Body_Collider_Lower
+    2300064: BT-7_Body_Collider_Upper
+    3300000: BT-7_Barrel
+    3300002: BT-7_Barrel_Collider
+    3300004: BT-7_Body
+    3300006: BT-7_Body_Collider
+    3300008: BT-7_Cannon
+    3300010: BT-7_IdlerWheel
+    3300012: BT-7_RoadWheel_1st
+    3300014: BT-7_RoadWheel_1st_Arm_L
+    3300016: BT-7_RoadWheel_1st_Arm_R
+    3300018: BT-7_RoadWheel_1st_ArmJoint_L
+    3300020: BT-7_RoadWheel_1st_ArmJoint_R
+    3300022: BT-7_RoadWheel_1st_SpringPiston_L
+    3300024: BT-7_RoadWheel_1st_SpringPiston_R
+    3300026: BT-7_RoadWheel_2nd
+    3300028: BT-7_RoadWheel_2nd_Arm_L
+    3300030: BT-7_RoadWheel_2nd_Arm_R
+    3300032: BT-7_RoadWheel_3rd_Arm_L
+    3300034: BT-7_RoadWheel_3rd_Arm_R
+    3300036: BT-7_RoadWheel_4th_Arm_L
+    3300038: BT-7_RoadWheel_4th_Arm_R
+    3300040: BT-7_Sprocket
+    3300042: BT-7_TrackPiece_A
+    3300044: BT-7_TrackPiece_B
+    3300046: BT-7_TrackPiece_Shadow
+    3300048: BT-7_Turret
+    3300050: BT-7_Turret_Collider_A
+    3300052: BT-7_Turret_Collider_B
+    3300054: BT-7_TrackPiece_C
+    3300056: BT-7_Guide_Wheels
+    3300058: BT-7_ScrollTrack_L
+    3300060: BT-7_ScrollTrack_R
+    3300062: BT-7_Body_Collider_Lower
+    3300064: BT-7_Body_Collider_Upper
+    4300000: BT-7_RoadWheel_2nd_Arm_L
+    4300002: BT-7_RoadWheel_2nd
+    4300004: BT-7_RoadWheel_4th_Arm_L
+    4300006: BT-7_Sprocket
+    4300008: BT-7_RoadWheel_1st_SpringPiston_L
+    4300010: BT-7_RoadWheel_1st_ArmJoint_L
+    4300012: BT-7_RoadWheel_1st_Arm_L
+    4300014: BT-7_RoadWheel_1st
+    4300016: BT-7_Body
+    4300018: BT-7_IdlerWheel
+    4300020: BT-7_TrackPiece_A
+    4300022: BT-7_TrackPiece_B
+    4300024: BT-7_Turret
+    4300026: BT-7_RoadWheel_3rd_Arm_L
+    4300028: BT-7_RoadWheel_1st_Arm_R
+    4300030: BT-7_RoadWheel_1st_ArmJoint_R
+    4300032: BT-7_RoadWheel_1st_SpringPiston_R
+    4300034: BT-7_RoadWheel_2nd_Arm_R
+    4300036: BT-7_RoadWheel_3rd_Arm_R
+    4300038: BT-7_RoadWheel_4th_Arm_R
+    4300040: BT-7_Cannon
+    4300042: BT-7_Barrel
+    4300044: BT-7_Body_Collider
+    4300046: BT-7_TrackPiece_Shadow
+    4300048: BT-7_Turret_Collider_A
+    4300050: BT-7_Turret_Collider_B
+    4300052: BT-7_Barrel_Collider
+    4300054: BT-7_TrackPiece_C
+    4300056: BT-7_Guide_Wheels
+    4300058: BT-7_ScrollTrack_L
+    4300060: BT-7_ScrollTrack_R
+    4300062: BT-7_Body_Collider_Lower
+    4300064: BT-7_Body_Collider_Upper
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: BT-7
+    second: {fileID: 2100000, guid: 38a7336ae9c881e4d8c5fe22067d2584, type: 2}
+  materials:
+    importMaterials: 0
+    materialName: 0
+    materialSearch: 1
+    materialLocation: 1
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    resampleCurves: 1
+    optimizeGameObjects: 0
+    motionNodeName: 
+    rigImportErrors: 
+    rigImportWarnings: 
+    animationImportErrors: 
+    animationImportWarnings: 
+    animationRetargetingWarnings: 
+    animationDoRetargetingWarnings: 0
+    importAnimatedCustomProperties: 0
+    importConstraints: 0
+    animationCompression: 1
+    animationRotationError: 0.5
+    animationPositionError: 0.5
+    animationScaleError: 0.5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    extraUserProperties: []
+    clipAnimations: []
+    isReadable: 1
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 100
+    meshCompression: 0
+    addColliders: 0
+    useSRGBMaterialColor: 1
+    importVisibility: 1
+    importBlendShapes: 1
+    importCameras: 1
+    importLights: 1
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    optimizeMeshForGPU: 1
+    keepQuads: 0
+    weldVertices: 1
+    preserveHierarchy: 0
+    indexFormat: 0
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVPackMargin: 4
+    useFileScale: 1
+    previousCalculatedGlobalScale: 1
+    hasPreviousCalculatedGlobalScale: 0
+  tangentSpace:
+    normalSmoothAngle: 60
+    normalImportMode: 0
+    tangentImportMode: 3
+    normalCalculationMode: 4
+    legacyComputeAllNormalsFromSmoothingGroupsWhenMeshHasBlendShapes: 0
+    blendShapeNormalImportMode: 1
+    normalSmoothingSource: 0
+  importAnimation: 1
+  copyAvatar: 0
+  humanDescription:
+    serializedVersion: 2
+    human: []
+    skeleton: []
+    armTwist: 0.5
+    foreArmTwist: 0.5
+    upperLegTwist: 0.5
+    legTwist: 0.5
+    armStretch: 0.05
+    legStretch: 0.05
+    feetSpacing: 0
+    rootMotionBoneName: 
+    hasTranslationDoF: 0
+    hasExtraRoot: 0
+    skeletonHasParents: 1
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  animationType: 0
+  humanoidOversampling: 1
+  additionalBone: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

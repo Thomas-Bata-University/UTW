@@ -1,0 +1,71 @@
+﻿'How to Start' (Ver.3.2)
+
+Please feel free to contact me if you have any questions.
+shopmaster@chobi-glass.com
+http://chobi-glass.com/Unity/index.html
+
+Online Manual
+https://drive.google.com/open?id=1pMZahYOnSIDgtflZeKCJcGP9wAYXcG5NJd5y_cWhkq8
+
+
+*** How to Start ***
+(1) Create a new project, and import this package from Asset Store.
+	Create a new project using Unity 2018.4 or later.
+	And import this package from Asset Store.
+	Window >> Asset Store >> "My Assets".
+
+(2) Setup the "Build Settings".
+	We need to setup the "Build Settings" to play the demo scenes.
+		1. Open the "Build Settings" window.
+			File >> Build Settings...
+
+		2. Find the demo scenes in the "Demo_Scenes" folder.
+
+		3. Drag and drop all the scenes into the "Scenes In Build".
+  
+(3) Setup the "Project Settings".
+	We need to setup the "Project Settings" to use all the features in this project, such as the use of a gamepad.
+		1. Find a Zip file named "ProjectSettings" in the "Read Me[Ver.3.x]" folder.
+
+		2. Open the directory of the ZIP file.
+			You can open the directory of the file by right-clicking on it,
+			and choosing "Show in Explorer"(Win) or "Show in Finder"(Mac).
+
+		3. Unzip the ZIP file, and copy the following files in it.
+			* "DynamicsManager"
+			* "InputManager"
+			* "TagManager"
+  
+		4. Find the "ProjectSettings" folder to overwrite the default settings.
+			You can open the directory of the folder by right-clicking on the "Assets",
+			and choosing "Show in Explorer"(Win) or "Show in Finder"(Mac).
+			And open the "ProjectSettings" folder.
+
+		5. Paste the three files into the "ProjectSettings" folder, and overwrite the old ones.
+
+		6. Make sure the settings has been updated.
+			Edit >> Project Settings >>
+			* >> "Input"
+				Make sure several inputs has been added in the "Input".
+
+			* >> "Physics"
+				Make sure the "Layer Collision Matrix" is updated in the  "Physics".
+  
+			* >> "Tags and Layers"
+				Make sure several layers has been added in the "Tags and Layers".
+
+(4) Change the "Color Space" to "Linear".
+	The demo scenes were created in Linear Color Space, so their light settings are too bright in Gamma Color Space.
+	Please change the color space in the "Player Settings".
+	Edit >> Project Settings >> Player
+	Change the "Color Space" value to "Linear" in the "Other Settings".
+  
+(5) Play the demo scenes.
+	You can find the demo scenes in the "Demo_Scenes" folder.
+	I recommend you to first play the demo scene "01_Operation_Tutorial".
+
+
+*** About to the Sky Boxes ***
+The Sky Boxes in the demo videos and games are included in "Standard Assets for Unity 4.6".
+However the package has been deprecated from the Asset Store.
+If you have downloaded it before, you can import it from the "My Assets" in the "Asset Store" window.

@@ -1,0 +1,69 @@
+﻿'How to Update' (Ver.3.2)
+
+Please feel free to contact me if you have any questions.
+shopmaster@chobi-glass.com
+http://chobi-glass.com/Unity/index.html
+
+Online Manual
+https://drive.google.com/open?id=1pMZahYOnSIDgtflZeKCJcGP9wAYXcG5NJd5y_cWhkq8
+
+(Warning!)
+Please backup your project before importing the new version.
+Most of the scripts, prefabs and scenes will be overwritten.
+
+
+*** Outline ***
+The main changes from the previous versions are as follows.
+-Aiming system
+	The aiming system has been changed from locking-on style to free-aiming style.
+
+-Lead Marker
+	New marker has been added to support lead-shooting.
+
+-Tank controllability
+	The controllability of the tank has been improved.
+	Also you can choose whether to allow or disallow pivot-turn for each tank.
+
+-Key Bindings
+	The key bindings have been centralized into a single script "General_Settings_CS".
+
+-Abolition of legacy input type
+	The legacy input type has been removed.
+
+
+*** How to update the Tank prefab (3.1 >> 3.2) ***
+1. Select the prefab, and enter the Prefab Mode.
+
+2. Select the top object of the tank, and remove the "Input_Type_Settings_CS (Script)" in the Inspector window.
+
+3. Select the MainBody of the tank, and set "Acceleration Curve" in the "Drive_Control_CS (Script)" as you will.
+
+4. Add "UI_Lead_Marker_Control_CS" script into the MainBody.
+	You can find the "UI_Lead_Marker_Control_CS" script in "C#_Script" folder.
+	Drag and drop it into the MainBody of the tank in the Hierarchy window.
+
+5. Set the sprites in the "UI_Lead_Marker_Control_CS (Script)".
+	You can find the two sprites "Sprite_Lead_Marker (Right)" and "Sprite_Lead_Marker (Wrong)" in "Textures" folder.
+	Drag and drop them into the "Right Sprite" and "Wrong Sprite" in the "UI_Lead_Marker_Control_CS (Script)".
+
+6. Save the prefab.
+	And test it in the runtime.
+
+
+*** How to update the old battle scene (3.1 >> 3.2)  ***
+1. Make sure that the "Game_Controller" in the scene has "UI_Position_Marker_Control_CS (Script)".
+	If it does not exist, add the script into the "Game_Controller".
+	You can find the "UI_Position_Marker_Control_CS" script in "C#_Script" folder.
+	Drag and drop it into the "Game_Controller" in the scene.
+	And set the "Marker Prefab" in the script.
+	You can find "Position_Marker" prefab in "Scene_Components" folder under the "Prefabs" folder.
+	Drag and drop it into the "Marker Prefab" in the script.
+	The position markers will be displayed in the battle scenes.
+
+2. Make sure that the "Canvas_Markers" in the scene has "Lead_Marker" as a child.
+	If it does not exist, add the prefab into the canvas.
+	You can find the "Lead_Marker" prefab in "Scene_Components" folder under the "Prefabs" folder.
+	Drag and drop it into the "Canvas_Markers".
+	The lead marker will be displayed while locking on the target in the runtime.
+
+
