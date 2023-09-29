@@ -98,7 +98,7 @@ namespace ChobiAssets.PTM
 
         void Initialize()
         {
-            thisTransform = transform;
+            thisTransform = transform.parent;
             thisRigidbody = GetComponent<Rigidbody>();
             defaultTorque = Torque;
 

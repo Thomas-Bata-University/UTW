@@ -3,16 +3,16 @@ using UnityEngine.SceneManagement;
 
 public class MenuController : MonoBehaviour
 {
-    public string _ConnectScene;
-    public string _GarageScene;
+    public string lobbyScene;
+    public string garageScene;
 
     public void HostGameDialog()
     {
-        SceneManager.LoadScene(_ConnectScene);
+        SceneManager.LoadScene(lobbyScene);
     }
     public void GarageDialog()
     {
-        SceneManager.LoadScene(_GarageScene);
+        SceneManager.LoadScene(garageScene);
     }
 
     public void ExitGame()

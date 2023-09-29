@@ -1,7 +1,7 @@
 using Unity.Netcode;
 using UnityEngine;
 
-public class RegisterHashes : NetworkBehaviour
+public class RegisterHashes : MonoBehaviour
 {
     private GameObject assetDb;
     public Database dbComponent;
@@ -17,7 +17,7 @@ public class RegisterHashes : NetworkBehaviour
 
             foreach(var hull in dbComponent.hulls)
             {
-                NetworkPrefab np = new NetworkPrefab();
+                var np = new NetworkPrefab();
                 np.Prefab = hull;
                 nManager.NetworkConfig.Prefabs.Add(np);
                 Debug.Log("Loaded prefab: " + hull.name);
@@ -25,7 +25,7 @@ public class RegisterHashes : NetworkBehaviour
 
             foreach (var turret in dbComponent.turrets)
             {
-                NetworkPrefab np = new NetworkPrefab();
+                var np = new NetworkPrefab();
                 np.Prefab = turret;
                 nManager.NetworkConfig.Prefabs.Add(np);
                 Debug.Log("Loaded prefab: " + turret.name);
