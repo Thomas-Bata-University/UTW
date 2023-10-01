@@ -35,7 +35,7 @@ public class Database : MonoBehaviour
             var assets = loadedBundle.LoadAllAssets<GameObject>();
             foreach (var asset in assets)
             {
-                if (asset.name.EndsWith("Hull")) hulls.Add(asset);
+                if (asset.name.EndsWith("MainBody")) hulls.Add(asset);
                 if (asset.name.EndsWith("Turret")) turrets.Add(asset);
             }
         }
