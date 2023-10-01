@@ -6,7 +6,7 @@ public class HullDropdown : MonoBehaviour
     private GameObject assetDb;
     private Database dbComponent;
     private Dropdown dropdown;
-    public void GetAssetDb()
+    public void Start()
     {
         {
             dropdown = transform.GetComponent<Dropdown>();

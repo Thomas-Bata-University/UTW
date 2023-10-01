@@ -18,7 +18,7 @@ public class GaragePreview : MonoBehaviour
 
     GameObject instantiatedHull;
     GameObject instantiatedTurret;
-    public void GetAssetDb()
+    public void Start()
     {
         {
             assetDb = GameObject.Find("AssetDatabase");

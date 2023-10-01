@@ -1,4 +1,5 @@
 using Unity.Netcode;
+using Unity.Netcode.Transports.UTP;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
@@ -15,9 +16,11 @@ public class Menu : MonoBehaviour
     private void Start()
     {
         NetworkManager.Singleton.ConnectionApprovalCallback += ApprovalCheck;
+        /*
         lobbyPanel.SetActive(false);
         hostPanel.SetActive(false);
         clientPanel.SetActive(false);
+        */
     }
 
     private void ApprovalCheck(NetworkManager.ConnectionApprovalRequest request, NetworkManager.ConnectionApprovalResponse response)
@@ -36,9 +39,18 @@ public class Menu : MonoBehaviour
     public void Host()
     {
         NetworkManager.Singleton.StartHost();
+        /*
         menuPanel.SetActive(false);
         lobbyPanel.SetActive(true);
         hostPanel.SetActive(true);
+        */
+        
+        SceneManager.LoadScene("ShardScene");
+    }
+    
+    public void ExitGame()
+    {
+        Application.Quit();
     }
 
     public void Join()
@@ -53,13 +65,17 @@ public class Menu : MonoBehaviour
             NetworkManager.Singleton.GetComponent<UnityTransport>().SetConnectionData("127.0.0.1");
         }
         */
-
+        
         NetworkManager.Singleton.NetworkConfig.ConnectionData = System.Text.Encoding.ASCII.GetBytes("kombajn");
 
         NetworkManager.Singleton.StartClient();
+        /*
         menuPanel.SetActive(false);
         lobbyPanel.SetActive(true);
         clientPanel.SetActive(true);
+        */
+        
+        SceneManager.LoadScene("ShardScene");
     }
     public void MainMenu()
     {
@@ -75,7 +91,7 @@ public class Menu : MonoBehaviour
     [ClientRpc]
     void LobbyPanelClientRpc()
     {
-        lobbyPanel.SetActive(false);
+        //lobbyPanel.SetActive(false);
 
         GameObject[] players = GameObject.FindGameObjectsWithTag("Tank");
         Debug.Log("Found: " + players.Length);

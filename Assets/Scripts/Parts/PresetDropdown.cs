@@ -1,55 +1,50 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System.IO;
+using System.Linq;
 using System.Xml.Serialization;
 using UnityEngine.UI;
 
 public class PresetDropdown : MonoBehaviour
 {
-    public List<Preset> presets;
-    public Preset selectedPreset;
-    Dropdown presetDropdown;
+    public List<Preset> Presets;
+    public Preset SelectedPreset;
+    private Dropdown _presetDropdown;
 
     public Database assetDb;
 
-    void Start()
+    private void Start()
     {
         assetDb = GameObject.Find("AssetDatabase").GetComponent<Database>();
 
-        List<Preset> p = new List<Preset>();
-        presetDropdown = GameObject.Find("PresetDropdown").GetComponent<Dropdown>();
-        presetDropdown.options.Clear();
+        _presetDropdown = GameObject.Find("PresetDropdown").GetComponent<Dropdown>();
+        _presetDropdown.options.Clear();
 
-        string[] files = Directory.GetFiles(Application.streamingAssetsPath + "/Presets/", "*.xml");
+        var files = Directory.GetFiles(Application.streamingAssetsPath + "/Presets/", "*.xml");
 
-        foreach (string file in files)
+        var presets = files.Select(Deserialize).ToList();
+        Presets = presets;
+        foreach (var preset in Presets)
         {
-            Preset deserialized = Deserialize(file);
-            if (p == null) p[0] = deserialized;
-            else p.Add(deserialized);
-        }
-        presets = p;
-        foreach (Preset preset in presets)
-        {
-            presetDropdown.options.Add(new Dropdown.OptionData() { text = preset.presetName });
+            _presetDropdown.options.Add(new Dropdown.OptionData() { text = preset.presetName });
         }
 
-        if (presets != null) selectedPreset = presets[0];
+        if (Presets != null) SelectedPreset = Presets[0];
 
-        assetDb.SelectedPreset = selectedPreset;
+        assetDb.SelectedPreset = SelectedPreset;
     }
-    public void onPresetSelected()
+    public void OnPresetSelected()
     {
-        selectedPreset = presets.Find(x => x.presetName == presetDropdown.options[presetDropdown.value].text);
+        SelectedPreset = Presets.Find(x => x.presetName == _presetDropdown.options[_presetDropdown.value].text);
 
-        assetDb.SelectedPreset = selectedPreset;
+        assetDb.SelectedPreset = SelectedPreset;
     }
 
-    Preset Deserialize(string path)
+    private static Preset Deserialize(string path)
     {
-        XmlSerializer serializer = new XmlSerializer(typeof(Preset));
-        StreamReader reader = new StreamReader(path);
-        Preset deserialized = (Preset)serializer.Deserialize(reader.BaseStream);
+        var serializer = new XmlSerializer(typeof(Preset));
+        var reader = new StreamReader(path);
+        var deserialized = (Preset)serializer.Deserialize(reader.BaseStream);
         reader.Close();
         return deserialized;
     }
