@@ -1,12 +1,15 @@
 ManifestFileVersion: 0
-CRC: 2700283922
+CRC: 1616159566
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: 3423cc670c07f4c805509e9c2d29f2dc
+    Hash: e8be6efc2a0c44ac5dfb032efb26273d
   TypeTreeHash:
     serializedVersion: 2
-    Hash: 48bff8bb121b17f56ed842bb9cf5c93b
+    Hash: 91beab70ed0af85ef7efbe8827d61f36
+  IncrementalBuildHash:
+    serializedVersion: 2
+    Hash: e8be6efc2a0c44ac5dfb032efb26273d
 HashAppended: 0
 ClassTypes:
 - Class: 1
@@ -100,8 +103,6 @@ ClassTypes:
 - Class: 114
   Script: {fileID: 11500000, guid: 78b1ab9c072bdb4429479249f9a99190, type: 3}
 - Class: 114
-  Script: {fileID: 11500000, guid: d07bc1cd2cd16004b84860fddab4cc0a, type: 3}
-- Class: 114
   Script: {fileID: 11500000, guid: 33d529722d730504e8756f43f8747a93, type: 3}
 - Class: 114
   Script: {fileID: 11500000, guid: ab5068dd271bf0e4fabeb840d3f45537, type: 3}
@@ -143,6 +144,5 @@ SerializeReferenceClassIdentifiers:
 - AssemblyName: Assembly-CSharp
   ClassName: ChobiAssets.PTM.TurretDamageControlProp
 Assets:
-- Assets/Prefabs/PTS Assembly/LuchsMainBody.prefab
 - Assets/Prefabs/PTS Assembly/LuchsHull.prefab
 Dependencies: []
