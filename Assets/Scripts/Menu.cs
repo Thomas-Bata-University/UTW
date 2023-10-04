@@ -1,5 +1,5 @@
+using System;
 using Unity.Netcode;
-using Unity.Netcode.Transports.UTP;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
@@ -12,15 +12,31 @@ public class Menu : MonoBehaviour
     public GameObject hostPanel;
     public InputField ip;
 
-
     private void Start()
     {
+        ParseArguments(Environment.GetCommandLineArgs());
+
         NetworkManager.Singleton.ConnectionApprovalCallback += ApprovalCheck;
         /*
         lobbyPanel.SetActive(false);
         hostPanel.SetActive(false);
         clientPanel.SetActive(false);
         */
+    }
+
+    private void ParseArguments(string[] args)
+    {
+        if (args.Length == 0)
+            return;
+
+        foreach (var arg in args)
+        {
+            if (arg.Contains("-server"))
+            {
+                NetworkManager.Singleton.StartServer();
+                SceneManager.LoadScene("ServerScene");
+            }
+        }
     }
 
     private void ApprovalCheck(NetworkManager.ConnectionApprovalRequest request, NetworkManager.ConnectionApprovalResponse response)
