@@ -74,11 +74,10 @@ public class GaragePreview : MonoBehaviour
             tonk.turret = turretDropdown.options[turretDropdown.value].text;
             if (selectedTurret == null) Debug.Log("No turret selected!");
 
-            XmlSerializer serializer = new XmlSerializer(typeof(Preset));
+            string json = JsonUtility.ToJson(tonk);
             if (!Directory.Exists(Application.streamingAssetsPath + "/Presets/")) Directory.CreateDirectory(Application.streamingAssetsPath + "/Presets/");
-            StreamWriter writer = new StreamWriter(Application.streamingAssetsPath + "/Presets/" + tonk.presetName + ".xml");
-            serializer.Serialize(writer.BaseStream, tonk);
-            writer.Close();
+            string filePath = Path.Combine(Application.streamingAssetsPath, "Presets", tonk.presetName + ".json");
+            File.WriteAllText(filePath, json);
         }
         SceneManager.LoadScene(_MainMenuScene);
     }
