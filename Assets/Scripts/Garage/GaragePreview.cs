@@ -7,6 +7,8 @@ using UnityEngine.SceneManagement;
 
 public class GaragePreview : MonoBehaviour
 {
+    int x = 0;
+    int y = 0;
     public string _MainMenuScene;
     private GameObject assetDb;
     public Database dbComponent;
@@ -85,6 +87,7 @@ public class GaragePreview : MonoBehaviour
 
     public void MainMenuDialog()
     {
+        
         SceneManager.LoadScene(_MainMenuScene);
     }
 
