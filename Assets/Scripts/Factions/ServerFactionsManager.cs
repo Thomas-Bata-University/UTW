@@ -11,8 +11,8 @@ namespace Factions
     internal class DatabaseMock
     {
         public List<GameObject> hulls = new();
-        public List<GameObject> turrets= new();
-        public UnityEvent isDbInitialized= new();
+        public List<GameObject> turrets = new();
+        public UnityEvent isDbInitialized = new();
     }
 
     public class ServerFactionsManager : FactionsManager
@@ -22,7 +22,9 @@ namespace Factions
         //TODO Database assembly???!
         private DatabaseMock _database;
 
-        public readonly Dictionary<Guid, Faction> Factions = new();
+        private readonly Dictionary<Guid, Faction> _factions = new();
+
+        public int CountOfFactions => _factions.Count;
 
         // Load assets from files, create "DB"
         public override void Initialize()
@@ -31,13 +33,15 @@ namespace Factions
             LoadFactionAssets();
         }
 
+        public Faction GetFactionById(Guid guid) => _factions[guid];
+
         private void LoadFactionAssets()
         {
             foreach (var hull in _database.hulls)
             {
                 //var hullFaction = Factions[hull.FactionId];
                 // TODO how to know hulls or other assets faction?
-                var hullFaction = Factions[Guid.NewGuid()];
+                var hullFaction = _factions[Guid.NewGuid()];
                 hullFaction.Hulls.Add(hull);
             }
 
@@ -45,7 +49,7 @@ namespace Factions
             {
                 //var turretFaction = Factions[turret.FactionId];
                 // TODO how to know turret or other assets faction?
-                var turretFaction = Factions[Guid.NewGuid()];
+                var turretFaction = _factions[Guid.NewGuid()];
                 turretFaction.Turrets.Add(turret);
             }
         }
@@ -69,7 +73,7 @@ namespace Factions
 
             foreach (var list in lists)
             {
-                Factions[Guid.NewGuid()] = new Faction
+                _factions[Guid.NewGuid()] = new Faction
                 {
                     Id = Guid.Parse(list.First()),
                     Name = list.Last()

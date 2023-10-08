@@ -8,11 +8,9 @@ public class FactionsManagerTests
     public void FactionsManagerTestsSimplePasses()
     {
         var manager = new ServerFactionsManager();
-        
-        manager.Initialize();
-        
-        Assert.AreEqual(manager.Factions.Count,3);
-    }
 
- 
+        manager.Initialize();
+
+        Assert.AreEqual(manager.CountOfFactions, 3);
+    }
 }

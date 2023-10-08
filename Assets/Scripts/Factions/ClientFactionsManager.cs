@@ -1,25 +1,36 @@
-
+using System;
+using System.Collections.Generic;
+using JetBrains.Annotations;
 using Unity.Netcode;
+using UnityEngine;
 
 namespace Factions
 {
     public class ClientFactionsManager : FactionsManager
     {
+        public Guid FactionId { get; set; }
+        public ServerFactionsManager ServerFactionsManager { get; set; }
+
+        [CanBeNull] private Faction _faction;
+
+        public List<GameObject> AvailableHulls => _faction?.Hulls ?? new List<GameObject>();
+        public List<GameObject> AvailableTurrets => _faction?.Turrets ?? new List<GameObject>();
+
         public override void Initialize()
         {
             OnClientInitializedServerRpc();
         }
 
-        // Retreive assets from server
+        // Retrieve assets from server
         [ServerRpc]
         private void OnClientInitializedServerRpc()
         {
-            RetreiveAssetsFromServer();
+            RetrieveAssetsFromServer();
         }
 
-        private void RetreiveAssetsFromServer()
+        private void RetrieveAssetsFromServer()
         {
-            throw new System.NotImplementedException();
+            _faction = ServerFactionsManager.GetFactionById(FactionId);
         }
     }
 }
