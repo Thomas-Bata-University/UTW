@@ -4,6 +4,7 @@ using UnityEngine;
 
 namespace Factions
 {
+    [Serializable]
     public record Faction
     {
         public Guid Id { get; set; }

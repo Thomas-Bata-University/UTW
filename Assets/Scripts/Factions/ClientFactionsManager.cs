@@ -35,13 +35,14 @@ namespace Factions
 
         public void OnSaveAsset(GameObject asset, AssetType type)
         {
-            OnClientAddAssetToServerRpc(asset, type);
+            OnClientAddAssetToServer(asset, type);
         }
 
 
         // Save assets to server?
-        [ServerRpc]
-        private void OnClientAddAssetToServerRpc(GameObject asset, AssetType type)
+        //[ServerRpc]
+        //TODO Error - Don't know how to deserialize UnityEngine.GameObject. RPC parameter types must either implement INetworkSerializeByMemcpy..
+        private void OnClientAddAssetToServer(GameObject asset, AssetType type)
         {
             ServerFactionsManager.OnSaveAsset(asset, type);
         }

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Unity.Plastic.Newtonsoft.Json;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -17,7 +18,7 @@ namespace Factions
 
     public class ServerFactionsManager : FactionsManager, IFactionManagerAssetHandler
     {
-        private const string DataPath = "Assets/Resources/Factions/Factions.csv";
+        private const string DataPath = "Assets/Resources/Factions/Factions.json";
 
         //TODO Database assembly???!
         private DatabaseMock _database;
@@ -30,7 +31,7 @@ namespace Factions
         public override void Initialize()
         {
             LoadFactionsFromCsv();
-            LoadFactionAssets();
+            //LoadFactionAssets();
         }
 
         public Faction GetFactionById(Guid guid) => _factions[guid];
@@ -58,33 +59,19 @@ namespace Factions
         {
             var reader = new StreamReader(DataPath);
 
-            var dataset = reader.ReadToEnd();
-            var lines = dataset.Split('\n');
-            var lists = new List<List<string>>();
-            var columns = 0;
-            foreach (var t in lines)
-            {
-                var data = t.Split(',');
-                var list = new List<string>(data); // turn this into a list
-                lists.Add(list); // add this list into a big list
-                columns = Mathf.Max(columns,
-                    list.Count); // this way we can tell what's the max number of columns in data
-            }
+            var jsonString = reader.ReadToEnd();
+            var data = JsonConvert.DeserializeObject<FactionsData>(jsonString);
 
-            foreach (var list in lists)
+            foreach (var faction in data.Factions)
             {
-                _factions[Guid.NewGuid()] = new Faction
-                {
-                    Id = Guid.Parse(list.First()),
-                    Name = list.Last()
-                };
+                _factions[faction.Id] = faction;
             }
         }
 
         //TODO store type on object?, wrapper around GameObject?
         public void OnSaveAsset(GameObject asset, AssetType type)
         {
-           //TODO save asset file on server?  _database.SaveAsset(asset, type);
+            //TODO save asset file on server?  _database.SaveAsset(asset, type);
         }
     }
 }
