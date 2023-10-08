@@ -3,13 +3,14 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.Events;
 
 namespace Factions
 {
     public class ServerFactionsManager : FactionsManager
     {
         private const string DataPath = "Assets/Resources/Factions/Factions.csv";
-       
+
         //TODO Database assembly???!
         private dynamic _database;
 
@@ -19,12 +20,26 @@ namespace Factions
         public override void Initialize()
         {
             LoadFactionsFromCsv();
-           // LoadFactionAssets();
+            LoadFactionAssets();
         }
 
         private void LoadFactionAssets()
         {
-            throw new NotImplementedException();
+            foreach (var hull in _database.hulls)
+            {
+                //var hullFaction = Factions[hull.FactionId];
+                // TODO how to know hulls or other assets faction?
+                var hullFaction = Factions[Guid.NewGuid()];
+                hullFaction.Hulls.Add(hull);
+            }
+
+            foreach (var turret in _database.turrents)
+            {
+                //var turretFaction = Factions[turret.FactionId];
+                // TODO how to know turret or other assets faction?
+                var turretFaction = Factions[Guid.NewGuid()];
+                turretFaction.Turrets.Add(turret);
+            }
         }
 
         private void LoadFactionsFromCsv()
