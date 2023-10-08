@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace Factions
 {
-    public class ClientFactionsManager : FactionsManager
+    public class ClientFactionsManager : FactionsManager, IFactionManagerAssetHandler
     {
         public Guid FactionId { get; set; }
         public ServerFactionsManager ServerFactionsManager { get; set; }
@@ -31,6 +31,19 @@ namespace Factions
         private void RetrieveAssetsFromServer()
         {
             _faction = ServerFactionsManager.GetFactionById(FactionId);
+        }
+
+        public void OnSaveAsset(GameObject asset, AssetType type)
+        {
+            OnClientAddAssetToServerRpc(asset, type);
+        }
+
+
+        // Save assets to server?
+        [ServerRpc]
+        private void OnClientAddAssetToServerRpc(GameObject asset, AssetType type)
+        {
+            ServerFactionsManager.OnSaveAsset(asset, type);
         }
     }
 }

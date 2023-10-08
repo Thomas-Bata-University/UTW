@@ -15,7 +15,7 @@ namespace Factions
         public UnityEvent isDbInitialized = new();
     }
 
-    public class ServerFactionsManager : FactionsManager
+    public class ServerFactionsManager : FactionsManager, IFactionManagerAssetHandler
     {
         private const string DataPath = "Assets/Resources/Factions/Factions.csv";
 
@@ -79,6 +79,12 @@ namespace Factions
                     Name = list.Last()
                 };
             }
+        }
+
+        //TODO store type on object?, wrapper around GameObject?
+        public void OnSaveAsset(GameObject asset, AssetType type)
+        {
+           //TODO save asset file on server?  _database.SaveAsset(asset, type);
         }
     }
 }
