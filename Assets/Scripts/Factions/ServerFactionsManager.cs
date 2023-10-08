@@ -7,12 +7,20 @@ using UnityEngine.Events;
 
 namespace Factions
 {
+    //TODO Database assembly???!
+    internal class DatabaseMock
+    {
+        public List<GameObject> hulls = new();
+        public List<GameObject> turrets= new();
+        public UnityEvent isDbInitialized= new();
+    }
+
     public class ServerFactionsManager : FactionsManager
     {
         private const string DataPath = "Assets/Resources/Factions/Factions.csv";
 
         //TODO Database assembly???!
-        private dynamic _database;
+        private DatabaseMock _database;
 
         public readonly Dictionary<Guid, Faction> Factions = new();
 
@@ -33,7 +41,7 @@ namespace Factions
                 hullFaction.Hulls.Add(hull);
             }
 
-            foreach (var turret in _database.turrents)
+            foreach (var turret in _database.turrets)
             {
                 //var turretFaction = Factions[turret.FactionId];
                 // TODO how to know turret or other assets faction?
