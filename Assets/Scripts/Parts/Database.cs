@@ -1,99 +1,103 @@
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
-using Den.Tools;
-using UnityEditor;
+using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Events;
 
-public class Database : MonoBehaviour
+namespace Parts
 {
-    public List<GameObject> hulls;
-    public List<GameObject> turrets;
-    public UnityEvent isDbInitialized;
-    
-    public Preset SelectedPreset = null;
-    
-    private Dictionary<string, string> _moduleHashes;
-    
-    private const string MainBodySuffix = "MainBody";
-    private const string TurretSuffix = "Turret";
-
-    private void Start()
+    public class Database : MonoBehaviour
     {
-        Initialize();
-    }
-
-    private void Initialize()
-    {
-        hulls = new List<GameObject>();
-        turrets = new List<GameObject>();
-        _moduleHashes = new Dictionary<string, string>();
-
-        var files = Directory.GetFiles(Application.streamingAssetsPath, "*.");
+        public List<GameObject> hulls;
+        public List<GameObject> turrets;
+        public UnityEvent isDbInitialized;
         
-        foreach (var file in files)
+        public Preset SelectedPreset;
+    
+        private Dictionary<string, string> _moduleHashes;
+    
+        private const string MainBodySuffix = "MainBody";
+        private const string TurretSuffix = "Turret";
+        
+        
+        
+        private async void Start()
         {
-            var loadedBundle = AssetBundle.LoadFromFile(Path.Combine(Application.streamingAssetsPath, file));
+            await Initialize();
+        }
 
-            if (loadedBundle == null)
+        private async Task Initialize()
+        {
+            hulls = new List<GameObject>();
+            turrets = new List<GameObject>();
+            _moduleHashes = new Dictionary<string, string>();
+
+            var files = Directory.GetFiles(Application.streamingAssetsPath, "*.");
+        
+            foreach (var file in files)
             {
-                Debug.Log($"Failed to load AssetBundle from file: '{file}'");
-                continue;
-            }
+                var fileName = Path.GetFileName(file);
+                var fileContent = await File.ReadAllBytesAsync(file);
+                var hash = GenerateHash(fileContent);
 
-            var assets = loadedBundle.LoadAllAssets<GameObject>();
-            loadedBundle.Unload(false);
+                var loadedBundle = AssetBundle.LoadFromFile(Path.Combine(Application.streamingAssetsPath, file));
+
+                if (loadedBundle == null)
+                {
+                    Debug.Log($"Failed to load AssetBundle from file: '{file}'");
+                    continue;
+                }
+
+                var assets = loadedBundle.LoadAllAssets<GameObject>();
             
-            if (assets == null)
-                continue;
+                loadedBundle.Unload(false);
+            
+                if (assets == null) 
+                    continue;
 
-            foreach (var asset in assets)
+                foreach (var asset in assets)
+                {
+                    // To ensure we're not overwriting any existing key.
+                    _moduleHashes.TryAdd(fileName, hash);
+
+                    if (asset.name.EndsWith(MainBodySuffix)) 
+                        hulls.Add(asset);
+                    else if (asset.name.EndsWith(TurretSuffix)) 
+                        turrets.Add(asset);
+                }
+            }
+
+            if (isDbInitialized != null && isDbInitialized.GetPersistentEventCount() > 0)
+                isDbInitialized.Invoke();
+        }
+
+        private string GenerateHash(byte[] fileContent)
+        {
+            using (var sha256 = SHA256.Create())
             {
-                var hash = GenerateHash(asset);
+                var hashBytes = sha256.ComputeHash(fileContent);
+                var hash = new StringBuilder(hashBytes.Length * 2);
 
-                if (asset.name.EndsWith(MainBodySuffix))
-                {
-                    hulls.Add(asset);
-                    _moduleHashes[asset.name] = hash;
-                }
-                else if (asset.name.EndsWith(TurretSuffix))
-                {
-                    turrets.Add(asset);
-                    _moduleHashes[asset.name] = hash;
-                }
+                foreach (var b in hashBytes) 
+                    hash.Append(b.ToString("X2"));
+
+                return hash.ToString();
             }
         }
 
-        isDbInitialized.Invoke();
-    }
-
-    private string GenerateHash(GameObject asset)
-    {
-        var assetName = asset.name;
-        
-        using (var sha256 = SHA256.Create())
+        // Prototype
+        private bool ApprovalCheck(IEnumerable<string> requiredHashesFromServer)
         {
-            var hashBytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(assetName));
-            var hash = new StringBuilder(hashBytes.Length * 2);
-
-            foreach (var b in hashBytes)
-                hash.AppendFormat("{0:X2}", b);
-
-            return hash.ToString();
+            // Check if all required hashes are present in the client's DB.
+            return requiredHashesFromServer
+                .All(requiredHash => _moduleHashes.ContainsValue(requiredHash));
         }
-    }
 
-    // Prototype
-    private bool ApprovalCheck(IEnumerable<string> requiredHashesFromServer)
-    {
-        // Check if all required hashes are present in the client's DB.
-        return requiredHashesFromServer
-            .All(requiredHash => _moduleHashes.ContainsValue(requiredHash));
+        public string GetModuleDataForServer() 
+            => JsonUtility.ToJson(_moduleHashes);
     }
-
-    public string GetModuleDataForServer() 
-        => JsonUtility.ToJson(_moduleHashes);
 }
