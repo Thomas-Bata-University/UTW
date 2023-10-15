@@ -2,19 +2,19 @@ using System;
 using System.Collections.Generic;
 using JetBrains.Annotations;
 using Unity.Netcode;
+using UnityEditor.Presets;
 using UnityEngine;
 
 namespace Factions
 {
-    public class ClientFactionsManager : FactionsManager, IFactionManagerAssetHandler
+    public class ClientFactionsManager : FactionsManager, IFactionManager
     {
         public Guid FactionId { get; set; }
         public ServerFactionsManager ServerFactionsManager { get; set; }
 
         [CanBeNull] private Faction _faction;
 
-        public List<GameObject> AvailableHulls => _faction?.Hulls ?? new List<GameObject>();
-        public List<GameObject> AvailableTurrets => _faction?.Turrets ?? new List<GameObject>();
+        public List<Preset> AvailablePresets => _faction?.Presets ?? new List<Preset>();
 
         public override void Initialize()
         {
@@ -33,18 +33,10 @@ namespace Factions
             _faction = ServerFactionsManager.GetFactionById(FactionId);
         }
 
-        public void OnSaveAsset(GameObject asset, AssetType type)
-        {
-            OnClientAddAssetToServer(asset, type);
-        }
+        public Faction GetFactionById(Guid guid)
+            => ServerFactionsManager.GetFactionById(guid);
 
-
-        // Save assets to server?
-        //[ServerRpc]
-        //TODO Error - Don't know how to deserialize UnityEngine.GameObject. RPC parameter types must either implement INetworkSerializeByMemcpy..
-        private void OnClientAddAssetToServer(GameObject asset, AssetType type)
-        {
-            ServerFactionsManager.OnSaveAsset(asset, type);
-        }
+        public Faction GetFactionByName(string factionName)
+            => ServerFactionsManager.GetFactionByName(factionName);
     }
 }

@@ -2,58 +2,31 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Xml.Serialization;
 using Unity.Plastic.Newtonsoft.Json;
+using UnityEditor.Presets;
 using UnityEngine;
-using UnityEngine.Events;
 
 namespace Factions
 {
-    //TODO Database assembly???!
-    internal class DatabaseMock
-    {
-        public List<GameObject> hulls = new();
-        public List<GameObject> turrets = new();
-        public UnityEvent isDbInitialized = new();
-    }
-
-    public class ServerFactionsManager : FactionsManager, IFactionManagerAssetHandler
+    public class ServerFactionsManager : FactionsManager, IFactionManager
     {
         private const string DataPath = "Assets/Resources/Factions/Factions.json";
-
-        //TODO Database assembly???!
-        private DatabaseMock _database;
 
         private readonly Dictionary<Guid, Faction> _factions = new();
 
         public int CountOfFactions => _factions.Count;
 
-        // Load assets from files, create "DB"
         public override void Initialize()
         {
             LoadFactionsFromCsv();
-            //LoadFactionAssets();
+            LoadFactionPresets();
         }
 
         public Faction GetFactionById(Guid guid) => _factions[guid];
 
-        private void LoadFactionAssets()
-        {
-            foreach (var hull in _database.hulls)
-            {
-                //var hullFaction = Factions[hull.FactionId];
-                // TODO how to know hulls or other assets faction?
-                var hullFaction = _factions[Guid.NewGuid()];
-                hullFaction.Hulls.Add(hull);
-            }
-
-            foreach (var turret in _database.turrets)
-            {
-                //var turretFaction = Factions[turret.FactionId];
-                // TODO how to know turret or other assets faction?
-                var turretFaction = _factions[Guid.NewGuid()];
-                turretFaction.Turrets.Add(turret);
-            }
-        }
+        public Faction GetFactionByName(string factionName) =>
+            _factions.FirstOrDefault(part => part.Value.Name.Equals(factionName)).Value;
 
         private void LoadFactionsFromCsv()
         {
@@ -68,10 +41,26 @@ namespace Factions
             }
         }
 
-        //TODO store type on object?, wrapper around GameObject?
-        public void OnSaveAsset(GameObject asset, AssetType type)
+        private void LoadFactionPresets()
         {
-            //TODO save asset file on server?  _database.SaveAsset(asset, type);
+            var files = Directory.GetFiles(Application.streamingAssetsPath + "/Presets/", "*.xml");
+
+            var presets = files.Select(Deserialize).ToList();
+
+            foreach (var faction in _factions.Values)
+            {
+                faction.Presets.AddRange(
+                    presets.Where(preset => faction.PresetNames.Contains(preset.name)));
+            }
+        }
+
+        private static Preset Deserialize(string path)
+        {
+            var serializer = new XmlSerializer(typeof(Preset));
+            var reader = new StreamReader(path);
+            var deserialized = (Preset)serializer.Deserialize(reader.BaseStream);
+            reader.Close();
+            return deserialized;
         }
     }
 }
