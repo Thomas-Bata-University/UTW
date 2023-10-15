@@ -1462,15 +1462,23 @@ MonoBehaviour:
   hulls: []
   turrets: []
 <<<<<<< HEAD
+<<<<<<< HEAD
   isDbInitialized:
     m_PersistentCalls:
       m_Calls: []
+=======
+  presetList: []
+>>>>>>> 2f2b2f3 (Server client connection check)
   SelectedPreset:
     presetName: 
     hull: 
     turret: 
+<<<<<<< HEAD
 =======
 >>>>>>> 114f795 (Basic save and load asset from SERVER, comunication between instances)
+=======
+    faction: 
+>>>>>>> 2f2b2f3 (Server client connection check)
 --- !u!1 &2135624266
 GameObject:
   m_ObjectHideFlags: 0
@@ -2321,7 +2329,31 @@ GameObject:
   clientPanel: {fileID: 0}
   hostPanel: {fileID: 0}
   ip: {fileID: 0}
+<<<<<<< HEAD
 >>>>>>> 114f795 (Basic save and load asset from SERVER, comunication between instances)
+=======
+  presetManager: {fileID: 1867264241}
+--- !u!114 &2141718744
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2141718738}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  GlobalObjectIdHash: 4265106116
+  AlwaysReplicateAsRoot: 0
+  SynchronizeTransform: 0
+  ActiveSceneSynchronization: 0
+  SceneMigrationSynchronization: 1
+  SpawnWithObservers: 1
+  DontDestroyWithOwner: 0
+  AutoObjectParentSync: 1
+>>>>>>> 2f2b2f3 (Server client connection check)
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

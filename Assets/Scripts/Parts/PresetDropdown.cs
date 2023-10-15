@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using Unity.Netcode;
 using UnityEngine;
 <<<<<<< HEAD
 using System.IO;
@@ -9,34 +8,36 @@ using System.Linq;
 using UnityEngine.UI;
 
 public class PresetDropdown : MonoBehaviour {
-    public List<Preset> Presets;
-    public Preset SelectedPreset;
-    private Dropdown _presetDropdown;
 
-    public Database assetDb;
-    private PresetManager presetManager;
+    [Header("UI")]
+    public Dropdown _presetDropdown;
+
+    private List<Preset> Presets;
+    private Preset SelectedPreset;
+    private Database assetDatabase;
 
     private void Start() {
-        assetDb = FindObjectOfType<Database>();
-        presetManager = FindObjectOfType<PresetManager>();
-        presetManager.LoadPresetServerRpc(NetworkManager.Singleton.LocalClientId);
+        assetDatabase = FindObjectOfType<Database>();
 
-        _presetDropdown = GameObject.Find("PresetDropdown").GetComponent<Dropdown>();
         _presetDropdown.options.Clear();
 
-        Presets = assetDb.presetList;
+        Presets = assetDatabase.presetList;
         foreach (var preset in Presets) {
-            _presetDropdown.options.Add(new Dropdown.OptionData() { text = preset.PresetName });
+            _presetDropdown.options.Add(new Dropdown.OptionData() { text = preset.presetName });
         }
 
-        if (Presets != null) SelectedPreset = Presets[0];
+        if (Presets.Count == 0) {
+            Debug.Log("No preset found.");
+            return;
+        }
 
-        assetDb.SelectedPreset = SelectedPreset;
+        SelectedPreset = Presets[0]; //Default
+        assetDatabase.SelectedPreset = SelectedPreset;
     }
     public void OnPresetSelected() {
-        SelectedPreset = Presets.Find(x => x.PresetName == _presetDropdown.options[_presetDropdown.value].text);
+        SelectedPreset = Presets.Find(x => x.presetName == _presetDropdown.options[_presetDropdown.value].text);
 
-        assetDb.SelectedPreset = SelectedPreset;
+        assetDatabase.SelectedPreset = SelectedPreset;
     }
 
 }

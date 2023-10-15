@@ -34,7 +34,7 @@ public class PresetManager : NetworkBehaviour {
     public void SavePresetServerRpc(Preset tankPreset, ulong playerId) {
         string json = JsonUtility.ToJson(tankPreset);
         if (!Directory.Exists(Application.streamingAssetsPath + "/Presets/")) Directory.CreateDirectory(Application.streamingAssetsPath + "/Presets/");
-        string filePath = Path.Combine(Application.streamingAssetsPath, "Presets", tankPreset.PresetName + ".json");
+        string filePath = Path.Combine(Application.streamingAssetsPath, "Presets", tankPreset.presetName + ".json");
         File.WriteAllText(filePath, json);
 
         Debug.Log($"{tankPreset} successfully saved on SERVER by player ID: {playerId}");

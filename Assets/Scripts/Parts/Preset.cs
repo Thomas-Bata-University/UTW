@@ -4,17 +4,10 @@ using Unity.Netcode;
 [Serializable]
 public class Preset : INetworkSerializable {
 
-    private string presetName;
-    public string PresetName { get { return presetName; } set { presetName = value; } }
-
-    private string hull;
-    public string Hull { get { return hull; } set { hull = value; } }
-
-    private string turret;
-    public string Turret { get { return turret; } set { turret = value; } }
-
-    private string faction;
-    public string Faction { get { return faction; } set { faction = value; } }
+    public string presetName;
+    public string hull;
+    public string turret;
+    public string faction;
 
     public Preset() {
         //Do not delete, used for NETWORKING

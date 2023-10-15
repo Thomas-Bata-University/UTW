@@ -40,8 +40,9 @@ public class HullAssembly : NetworkBehaviour {
         Database dbComponent = (Database)_assetDb.GetComponent(typeof(Database));
 
         SelectedPreset = dbComponent.SelectedPreset;
-        Debug.Log("Client has selected preset: " + SelectedPreset.PresetName);
+        Debug.Log("Client has selected preset: " + SelectedPreset.presetName);
 
+<<<<<<< HEAD
 <<<<<<< HEAD
         AssemblyServerRpc(SelectedPreset.hull, SelectedPreset.turret);
     }
@@ -52,6 +53,9 @@ public class HullAssembly : NetworkBehaviour {
     {
 =======
         AssemblyServerRpc(NetworkManager.Singleton.LocalClientId, SelectedPreset.Hull, SelectedPreset.Turret);
+=======
+        AssemblyServerRpc(NetworkManager.Singleton.LocalClientId, SelectedPreset.hull, SelectedPreset.turret);
+>>>>>>> 2f2b2f3 (Server client connection check)
     }
 
 

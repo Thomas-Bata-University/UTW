@@ -207,7 +207,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1484640204}
         m_TargetAssemblyTypeName: MenuController, Assembly-CSharp
-        m_MethodName: ExitGame
+        m_MethodName: Disconnect
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -862,8 +862,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 90bb9559e92810046b3f35ba97f57610, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  lobbyScene: LobbyScene
-  garageScene: GarageScene
 --- !u!114 &1484640205
 MonoBehaviour:
   m_ObjectHideFlags: 0

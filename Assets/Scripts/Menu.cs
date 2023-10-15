@@ -8,6 +8,7 @@ using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 public class Menu : MonoBehaviour
 {
     //public GameObject menuPanel;
@@ -24,16 +25,26 @@ public class Menu : MonoBehaviour
         //NetworkManager.Singleton.ConnectionApprovalCallback += ApprovalCheck;
 =======
 public class Menu : MonoBehaviour {
+=======
+public class Menu : NetworkBehaviour {
+>>>>>>> 2f2b2f3 (Server client connection check)
     public GameObject menuPanel;
     public GameObject lobbyPanel;
     public GameObject clientPanel;
     public GameObject hostPanel;
     public InputField ip;
 
+    [SerializeField]
+    private PresetManager presetManager;
 
     private void Start() {
         NetworkManager.Singleton.ConnectionApprovalCallback += ApprovalCheck;
+<<<<<<< HEAD
 >>>>>>> 114f795 (Basic save and load asset from SERVER, comunication between instances)
+=======
+        NetworkManager.Singleton.OnClientConnectedCallback += ClientConnected;
+        NetworkManager.Singleton.OnClientDisconnectCallback += ClientDisonnected;
+>>>>>>> 2f2b2f3 (Server client connection check)
         /*
         lobbyPanel.SetActive(false);
         hostPanel.SetActive(false);
@@ -80,6 +91,16 @@ public class Menu : MonoBehaviour {
         SceneManager.LoadScene("ShardScene");
 =======
 
+    private void ClientConnected(ulong playerId) {
+        Debug.Log($"Playerd connected to the server with ID: {playerId}");
+        if (IsServer) return;
+        presetManager.LoadPresetServerRpc(playerId);
+    }
+
+    private void ClientDisonnected(ulong playerId) {
+        Debug.Log($"Playerd disconnected from the server with ID: {playerId}");
+    }
+
     public void Host() {
         NetworkManager.Singleton.StartHost();
         /*
@@ -87,7 +108,6 @@ public class Menu : MonoBehaviour {
         lobbyPanel.SetActive(true);
         hostPanel.SetActive(true);
         */
-
         SceneManager.LoadScene(GameSceneUtils.SHARD_SCENE);
 >>>>>>> 114f795 (Basic save and load asset from SERVER, comunication between instances)
     }
@@ -122,6 +142,7 @@ public class Menu : MonoBehaviour {
         clientPanel.SetActive(true);
         */
 <<<<<<< HEAD
+<<<<<<< HEAD
         
         
         _tugboat.StartConnection(false);
@@ -133,6 +154,8 @@ public class Menu : MonoBehaviour {
        // SceneManager.LoadScene("MainMenuScene");
 =======
 
+=======
+>>>>>>> 2f2b2f3 (Server client connection check)
         SceneManager.LoadScene(GameSceneUtils.SHARD_SCENE);
     }
     public void MainMenu() {
@@ -171,5 +194,9 @@ public class Menu : MonoBehaviour {
             HullAssembly ha = (HullAssembly)player.GetComponent(typeof(HullAssembly));
         } else Debug.Log("Failed to run AssemblyServerRPC!");
     }
+<<<<<<< HEAD
     */
+=======
+
+>>>>>>> 2f2b2f3 (Server client connection check)
 }
