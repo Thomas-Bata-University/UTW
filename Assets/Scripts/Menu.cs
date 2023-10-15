@@ -1,3 +1,4 @@
+using Factions;
 using Unity.Netcode;
 using Unity.Netcode.Transports.UTP;
 using UnityEngine;
@@ -23,9 +24,10 @@ public class Menu : MonoBehaviour
         */
     }
 
-    private void ApprovalCheck(NetworkManager.ConnectionApprovalRequest request, NetworkManager.ConnectionApprovalResponse response)
+    private void ApprovalCheck(NetworkManager.ConnectionApprovalRequest request,
+        NetworkManager.ConnectionApprovalResponse response)
     {
-        response.Approved= false;
+        response.Approved = false;
         var password = System.Text.Encoding.ASCII.GetString(request.Payload);
         if (password == "kombajn") response.Approved = true;
 
@@ -44,10 +46,10 @@ public class Menu : MonoBehaviour
         lobbyPanel.SetActive(true);
         hostPanel.SetActive(true);
         */
-        
+
         SceneManager.LoadScene("ShardScene");
     }
-    
+
     public void ExitGame()
     {
         Application.Quit();
@@ -65,18 +67,22 @@ public class Menu : MonoBehaviour
             NetworkManager.Singleton.GetComponent<UnityTransport>().SetConnectionData("127.0.0.1");
         }
         */
-        
+
         NetworkManager.Singleton.NetworkConfig.ConnectionData = System.Text.Encoding.ASCII.GetBytes("kombajn");
 
         NetworkManager.Singleton.StartClient();
+
+        FactionsManager.Instance.Initialize();
+
         /*
         menuPanel.SetActive(false);
         lobbyPanel.SetActive(true);
         clientPanel.SetActive(true);
         */
-        
+
         SceneManager.LoadScene("ShardScene");
     }
+
     public void MainMenu()
     {
         SceneManager.LoadScene("MainMenuScene");
@@ -86,7 +92,7 @@ public class Menu : MonoBehaviour
     {
         LobbyPanelClientRpc();
     }
- 
+
 
     [ClientRpc]
     void LobbyPanelClientRpc()
@@ -96,10 +102,11 @@ public class Menu : MonoBehaviour
         GameObject[] players = GameObject.FindGameObjectsWithTag("Tank");
         Debug.Log("Found: " + players.Length);
         GameObject player = null;
-        for(int i = 0; i < players.Length; i++)
+        for (int i = 0; i < players.Length; i++)
         {
             if (players[i].GetComponent<NetworkObject>().IsLocalPlayer) player = players[i];
         }
+
         if (player != null)
         {
             HullAssembly ha = (HullAssembly)player.GetComponent(typeof(HullAssembly));

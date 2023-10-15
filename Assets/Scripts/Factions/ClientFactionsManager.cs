@@ -7,7 +7,8 @@ using UnityEngine;
 
 namespace Factions
 {
-    public class ClientFactionsManager : FactionsManager, IFactionManager
+    public class ClientFactionsManager :
+        IFactionManager
     {
         public Guid FactionId { get; set; }
         public ServerFactionsManager ServerFactionsManager { get; set; }
@@ -16,7 +17,7 @@ namespace Factions
 
         public List<Preset> AvailablePresets => _faction?.Presets ?? new List<Preset>();
 
-        public override void Initialize()
+        public void Initialize()
         {
             OnClientInitializedServerRpc();
         }

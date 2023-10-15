@@ -4,9 +4,9 @@ namespace Factions
 {
     public class FactionsManagerFactory : NetworkBehaviour
     {
-        public FactionsManager Create()
+        public IFactionManager Create()
             => IsServer
-                ? gameObject.AddComponent<ServerFactionsManager>()
-                : gameObject.AddComponent<ClientFactionsManager>();
+                ? new ServerFactionsManager()
+                : new ClientFactionsManager();
     }
 }

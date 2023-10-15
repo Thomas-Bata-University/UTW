@@ -9,7 +9,7 @@ using UnityEngine;
 
 namespace Factions
 {
-    public class ServerFactionsManager : FactionsManager, IFactionManager
+    public class ServerFactionsManager : IFactionManager
     {
         private const string DataPath = "Assets/Resources/Factions/Factions.json";
 
@@ -17,7 +17,7 @@ namespace Factions
 
         public int CountOfFactions => _factions.Count;
 
-        public override void Initialize()
+        public void Initialize()
         {
             LoadFactionsFromCsv();
             LoadFactionPresets();
