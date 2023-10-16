@@ -1,4 +1,4 @@
-using Unity.Netcode;
+using FishNet.Object;
 using UnityEngine;
 
 public class SetCamera : NetworkBehaviour
@@ -7,7 +7,7 @@ public class SetCamera : NetworkBehaviour
 
     private void Start()
     {
-        if (!NetworkManager.Singleton.IsClient) return;
+        //if (!NetworkManager.Singleton.IsClient) return;
         if (transform.parent.gameObject.GetComponent<NetworkObject>().IsOwner)
         {
             cameraPivot.SetActive(true);

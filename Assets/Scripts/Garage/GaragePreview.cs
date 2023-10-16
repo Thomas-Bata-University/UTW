@@ -1,7 +1,7 @@
 using UnityEngine;
-using System.Xml.Serialization;
 using System.IO;
-using Unity.Netcode.Components;
+using ChobiAssets.PTM;
+using FishNet.Component.Transforming;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 
@@ -51,12 +51,15 @@ public class GaragePreview : MonoBehaviour
         }
 
         instantiatedHull = Instantiate(selectedHull, new Vector3(0, 0, 0), Quaternion.Euler(0, 120, 0));
-
-        Transform mainbody = instantiatedHull.transform.Find("MainBody");
-
+        
         Transform turretGO = instantiatedHull.transform.Find("TurretMount");
         Vector3 turretMount = turretGO.position;
-        instantiatedTurret = Instantiate(selectedTurret, turretMount, Quaternion.Euler(0, 120, 0), mainbody);
+        instantiatedTurret = Instantiate(selectedTurret, turretMount, Quaternion.Euler(0, 120, 0));
+        instantiatedTurret.transform.SetParent(instantiatedHull.transform);
+        instantiatedTurret.transform.GetComponentInChildren<Cannon_Fire_CS>().enabled = false;
+        instantiatedTurret.transform.GetComponentInChildren<Cannon_Vertical_CS>().enabled = false;
+        instantiatedTurret.transform.GetComponentInChildren<Turret_Horizontal_CS>().enabled = false;
+        
     }
 
     public void SavePreset()

@@ -1,11 +1,11 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
+using FishNet.Connection;
+using FishNet.Object;
 using UnityEngine;
-using Unity.Netcode;
 using Random = UnityEngine.Random;
 
-public class RoundSystem : MonoBehaviour
+public class RoundSystem : NetworkBehaviour
 {
     public Transform[] spawnPoints;
     public GameObject playerPrefab;
@@ -15,12 +15,12 @@ public class RoundSystem : MonoBehaviour
     
 
     private List<Transform> remainingSpawnPoints;
-    private List<ulong> loadingClients = new List<ulong>();
+    //private List<ulong> loadingClients = new List<ulong>();
 /*
     public override void OnNetworkSpawn()
     {
         
-        if(IsServer)
+        //if(IsServer)
         {
             foreach(NetworkClient networkClient in NetworkManager.Singleton.ConnectedClientsList)
             {
@@ -35,27 +35,42 @@ public class RoundSystem : MonoBehaviour
         
     }
     */
-    private void Start()
+
+    public override void OnStartClient()
     {
-        ClientIsReadyServerRpc();
+        base.OnStartClient();
+        Debug.Log("Called OnStartClient");
+        SpawnPlayer();
     }
 
-[ServerRpc(RequireOwnership = false)]
-    void ClientIsReadyServerRpc(ServerRpcParams serverRpcParams = default)
+    /*
+    [ServerRpc(RequireOwnership = false)]
+        void ClientIsReadyServerRpc(ServerRpcParams serverRpcParams = default)
+        {
+            //if (!loadingClients.Contains(serverRpcParams.Receive.SenderClientId)) { return; }
+
+            SpawnPlayer(serverRpcParams.Receive.SenderClientId);
+            //loadingClients.Remove(serverRpcParams.Receive.SenderClientId);
+        }
+    */
+    /*
+    [ServerRpc(RequireOwnership = false)]
+    private void ClientIsReadyServerRpc()
     {
-        //if (!loadingClients.Contains(serverRpcParams.Receive.SenderClientId)) { return; }
-
-        SpawnPlayer(serverRpcParams.Receive.SenderClientId);
-        //loadingClients.Remove(serverRpcParams.Receive.SenderClientId);
+        Debug.Log("Called ClientIsReadyServerRpc");
+        SpawnPlayer(LocalConnection);
     }
-
-    void SpawnPlayer(ulong clientId)
+*/
+    [ServerRpc(RequireOwnership = false)]
+    private void SpawnPlayer(NetworkConnection netCon = null)
     {
         var spawnPointIndex = Random.Range(0, spawnPoints.Length);
         var spawnPoint = spawnPoints[spawnPointIndex];
-        //remainingSpawnPoints.RemoveAt(spawnPointIndex);
+        remainingSpawnPoints.RemoveAt(spawnPointIndex);
         var playerInstance = Instantiate(playerPrefab, spawnPoint.position, spawnPoint.rotation);
-        playerInstance.GetComponent<NetworkObject>().SpawnAsPlayerObject(clientId,  true);
+        //playerInstance.GetComponent<NetworkObject>().SpawnAsPlayerObject(clientId,  true);
+        Spawn(playerInstance, netCon);
+        Debug.Log("Player has been spawned");
 
         playersAlive++;
     }
@@ -71,7 +86,7 @@ public class RoundSystem : MonoBehaviour
             StartCoroutine("WaitBeforeEndRound");
         }
     }
-    [ClientRpc]
+    [ObserversRpc]
     void GameEndsClientRpc()
     {
         OnGameEnd.SetActive(true);

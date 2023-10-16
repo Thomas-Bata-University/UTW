@@ -1,4 +1,4 @@
-﻿using Unity.Netcode;
+﻿using FishNet.Object;
 using UnityEngine;
 
 namespace ChobiAssets.PTM
@@ -138,7 +138,7 @@ namespace ChobiAssets.PTM
                     if (Ricochet_Object)
                     {
                         GameObject bulletObject = Instantiate(Ricochet_Object, This_Transform.position, Quaternion.identity, hitObject.transform);
-                        bulletObject.GetComponent<NetworkObject>().Spawn();
+                        //bulletObject.GetComponent<NetworkObject>().Spawn();
                     }
                 }
 
