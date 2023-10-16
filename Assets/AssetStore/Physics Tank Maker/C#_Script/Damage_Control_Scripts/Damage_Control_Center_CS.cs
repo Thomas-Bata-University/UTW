@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
-using Unity.Netcode;
+using FishNet.Object;
 using UnityEngine.AI;
 
 namespace ChobiAssets.PTM
@@ -122,7 +122,7 @@ namespace ChobiAssets.PTM
             if (MainBody_HP <= 0) return true;
             else return false;
         }
-        [ClientRpc]
+        [ObserversRpc]
         void MainBody_DamagedClientRpc(float damage)
         {
             if (damage < MainBody_Damage_Threshold)
