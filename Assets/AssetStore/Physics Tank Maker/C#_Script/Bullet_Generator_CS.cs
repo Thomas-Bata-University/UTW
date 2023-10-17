@@ -1,4 +1,4 @@
-﻿using Unity.Netcode;
+﻿using FishNet.Object;
 using UnityEngine;
 
 namespace ChobiAssets.PTM
@@ -81,11 +81,11 @@ namespace ChobiAssets.PTM
             { // Single barrel, or the same direction.
 
                 // Generate the bullet and shoot it.
-                FireServerRpc(OwnerClientId);
+                //FireServerRpc(OwnerClientId);
             }
         }
 
-        [ClientRpc]
+        [ObserversRpc]
         public void MuzzleFlashClientRpc()
         {
             Instantiate(MuzzleFire_Object, thisTransform.position, thisTransform.rotation, thisTransform);
@@ -113,8 +113,8 @@ namespace ChobiAssets.PTM
                         break;
                     }
                     bulletObject = Instantiate(AP_Bullet_Prefab, thisTransform.position + (thisTransform.forward * Offset), thisTransform.rotation);
-                    bulletObject.GetComponent<NetworkObject>().Spawn();
-                    if (bulletObject.GetComponent<NetworkObject>().IsNetworkVisibleTo(callerID)) Debug.Log("This object is visible to client: " + callerID);
+                   // bulletObject.GetComponent<NetworkObject>().Spawn();
+                   // if (bulletObject.GetComponent<NetworkObject>().IsNetworkVisibleTo(callerID)) Debug.Log("This object is visible to client: " + callerID);
 
                     attackPoint = Attack_Point;
                     break;
@@ -126,7 +126,7 @@ namespace ChobiAssets.PTM
                         break;
                     }
                     bulletObject = Instantiate(HE_Bullet_Prefab, thisTransform.position + (thisTransform.forward * Offset), thisTransform.rotation);
-                    bulletObject.GetComponent<NetworkObject>().Spawn();
+                   // bulletObject.GetComponent<NetworkObject>().Spawn();
                     attackPoint = Attack_Point_HE;
                     break;
 

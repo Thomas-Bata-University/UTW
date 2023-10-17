@@ -1,5 +1,6 @@
 using Parts;
 using Unity.Netcode;
+using FishNet.Managing;
 using UnityEngine;
 
 public class RegisterHashes : MonoBehaviour
@@ -15,7 +16,7 @@ public class RegisterHashes : MonoBehaviour
 
             assetDb = GameObject.Find("AssetDatabase");
             dbComponent = (Database)assetDb.GetComponent(typeof(Database));
-
+/*
             foreach(var hull in dbComponent.hulls)
             {
                 var np = new NetworkPrefab();
@@ -31,6 +32,7 @@ public class RegisterHashes : MonoBehaviour
                 nManager.NetworkConfig.Prefabs.Add(np);
                 Debug.Log("Loaded prefab: " + turret.name);
             }
+            */
         }
     }
 }

@@ -1,28 +1,38 @@
-using Unity.Netcode;
-using Unity.Netcode.Transports.UTP;
+using FishNet.Transporting.Tugboat;
 using UnityEngine;
-using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 
 public class Menu : MonoBehaviour
 {
-    public GameObject menuPanel;
-    public GameObject lobbyPanel;
-    public GameObject clientPanel;
-    public GameObject hostPanel;
-    public InputField ip;
-
-
+    //public GameObject menuPanel;
+    //public GameObject lobbyPanel;
+    //public GameObject clientPanel;
+    //public GameObject hostPanel;
+    //public InputField ip;
+    
+    [SerializeField] private GameObject networkManager;
+    private Tugboat _tugboat;
+    
     private void Start()
     {
-        NetworkManager.Singleton.ConnectionApprovalCallback += ApprovalCheck;
+        //NetworkManager.Singleton.ConnectionApprovalCallback += ApprovalCheck;
         /*
         lobbyPanel.SetActive(false);
         hostPanel.SetActive(false);
         clientPanel.SetActive(false);
         */
+
+        if (networkManager.TryGetComponent(out Tugboat t))
+        {
+            _tugboat = t;
+        }
+        else
+        {
+            Debug.LogError("Couldn't find Tugboat component!");
+        }
     }
 
+    /*
     private void ApprovalCheck(NetworkManager.ConnectionApprovalRequest request, NetworkManager.ConnectionApprovalResponse response)
     {
         response.Approved= false;
@@ -35,16 +45,14 @@ public class Menu : MonoBehaviour
         response.Rotation = Quaternion.identity;
         response.Reason = "Wrong password";
     }
-
+*/
+    
     public void Host()
     {
-        NetworkManager.Singleton.StartHost();
-        /*
-        menuPanel.SetActive(false);
-        lobbyPanel.SetActive(true);
-        hostPanel.SetActive(true);
-        */
-        
+        _tugboat.StartConnection(true);
+        _tugboat.StartConnection(false);
+
+        //NetworkManager.Singleton.StartHost();
         SceneManager.LoadScene("ShardScene");
     }
     
@@ -66,20 +74,23 @@ public class Menu : MonoBehaviour
         }
         */
         
-        NetworkManager.Singleton.NetworkConfig.ConnectionData = System.Text.Encoding.ASCII.GetBytes("kombajn");
+        //NetworkManager.Singleton.NetworkConfig.ConnectionData = System.Text.Encoding.ASCII.GetBytes("kombajn");
 
-        NetworkManager.Singleton.StartClient();
+        //NetworkManager.Singleton.StartClient();
         /*
         menuPanel.SetActive(false);
         lobbyPanel.SetActive(true);
         clientPanel.SetActive(true);
         */
         
+        
+        _tugboat.StartConnection(false);
         SceneManager.LoadScene("ShardScene");
     }
+/*
     public void MainMenu()
     {
-        SceneManager.LoadScene("MainMenuScene");
+       // SceneManager.LoadScene("MainMenuScene");
     }
 
     public void StartGame()
@@ -88,7 +99,7 @@ public class Menu : MonoBehaviour
     }
  
 
-    [ClientRpc]
+    [ObserversRpc]
     void LobbyPanelClientRpc()
     {
         //lobbyPanel.SetActive(false);
@@ -98,7 +109,7 @@ public class Menu : MonoBehaviour
         GameObject player = null;
         for(int i = 0; i < players.Length; i++)
         {
-            if (players[i].GetComponent<NetworkObject>().IsLocalPlayer) player = players[i];
+            //if (players[i].GetComponent<NetworkObject>().IsLocalPlayer) player = players[i];
         }
         if (player != null)
         {
@@ -106,4 +117,5 @@ public class Menu : MonoBehaviour
         }
         else Debug.Log("Failed to run AssemblyServerRPC!");
     }
+    */
 }
