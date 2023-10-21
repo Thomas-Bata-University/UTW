@@ -9,7 +9,7 @@ public class FactionsManagerTests
     {
         var manager = new ServerFactionsManager();
 
-        manager.Initialize();
+        //manager.Initialize();
 
         Assert.AreEqual(manager.CountOfFactions, 3);
     }

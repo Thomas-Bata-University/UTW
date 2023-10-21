@@ -1,13 +1,13 @@
 using System;
 using System.Collections.Generic;
+using FishNet.Object;
 using JetBrains.Annotations;
-using Unity.Netcode;
 using UnityEditor.Presets;
 using UnityEngine;
 
 namespace Factions
 {
-    public class ClientFactionsManager :
+    public class ClientFactionsManager :  NetworkBehaviour,
         IFactionManager
     {
         public Guid FactionId { get; set; }

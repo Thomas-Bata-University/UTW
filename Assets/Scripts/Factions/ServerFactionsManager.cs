@@ -3,13 +3,14 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Xml.Serialization;
+using FishNet.Object;
 using Unity.Plastic.Newtonsoft.Json;
 using UnityEditor.Presets;
 using UnityEngine;
 
 namespace Factions
 {
-    public class ServerFactionsManager : IFactionManager
+    public class ServerFactionsManager : NetworkBehaviour, IFactionManager
     {
         private const string DataPath = "Assets/Resources/Factions/Factions.json";
 
