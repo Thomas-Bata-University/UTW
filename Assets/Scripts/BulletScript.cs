@@ -1,5 +1,5 @@
 using ChobiAssets.PTM;
-using Unity.Netcode;
+using FishNet.Object;
 using UnityEngine;
 
 public class BulletScript : NetworkBehaviour

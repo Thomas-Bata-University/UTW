@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.IO;
 using System.Linq;
-using System.Xml.Serialization;
 using UnityEngine.UI;
 
 public class PresetDropdown : MonoBehaviour
@@ -20,7 +19,7 @@ public class PresetDropdown : MonoBehaviour
         _presetDropdown = GameObject.Find("PresetDropdown").GetComponent<Dropdown>();
         _presetDropdown.options.Clear();
 
-        var files = Directory.GetFiles(Application.streamingAssetsPath + "/Presets/", "*.xml");
+        var files = Directory.GetFiles(Application.streamingAssetsPath + "/Presets/", "*.json");
 
         var presets = files.Select(Deserialize).ToList();
         Presets = presets;
@@ -42,10 +41,16 @@ public class PresetDropdown : MonoBehaviour
 
     private static Preset Deserialize(string path)
     {
-        var serializer = new XmlSerializer(typeof(Preset));
-        var reader = new StreamReader(path);
-        var deserialized = (Preset)serializer.Deserialize(reader.BaseStream);
-        reader.Close();
-        return deserialized;
+        if (File.Exists(path))
+        {
+            string json = File.ReadAllText(path);
+            Preset deserialized = JsonUtility.FromJson<Preset>(json);
+            return deserialized;
+        }
+        else
+        {
+            Debug.LogError("File not found: " + path);
+            return null;
+        }
     }
 }

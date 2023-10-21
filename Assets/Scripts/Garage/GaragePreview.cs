@@ -1,7 +1,7 @@
 using UnityEngine;
-using System.Xml.Serialization;
 using System.IO;
-using Unity.Netcode.Components;
+using ChobiAssets.PTM;
+using FishNet.Component.Transforming;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 
@@ -51,12 +51,15 @@ public class GaragePreview : MonoBehaviour
         }
 
         instantiatedHull = Instantiate(selectedHull, new Vector3(0, 0, 0), Quaternion.Euler(0, 120, 0));
-
-        Transform mainbody = instantiatedHull.transform.Find("MainBody");
-
+        
         Transform turretGO = instantiatedHull.transform.Find("TurretMount");
         Vector3 turretMount = turretGO.position;
-        instantiatedTurret = Instantiate(selectedTurret, turretMount, Quaternion.Euler(0, 120, 0), mainbody);
+        instantiatedTurret = Instantiate(selectedTurret, turretMount, Quaternion.Euler(0, 120, 0));
+        instantiatedTurret.transform.SetParent(instantiatedHull.transform);
+        instantiatedTurret.transform.GetComponentInChildren<Cannon_Fire_CS>().enabled = false;
+        instantiatedTurret.transform.GetComponentInChildren<Cannon_Vertical_CS>().enabled = false;
+        instantiatedTurret.transform.GetComponentInChildren<Turret_Horizontal_CS>().enabled = false;
+        
     }
 
     public void SavePreset()
@@ -74,11 +77,10 @@ public class GaragePreview : MonoBehaviour
             tonk.turret = turretDropdown.options[turretDropdown.value].text;
             if (selectedTurret == null) Debug.Log("No turret selected!");
 
-            XmlSerializer serializer = new XmlSerializer(typeof(Preset));
+            string json = JsonUtility.ToJson(tonk);
             if (!Directory.Exists(Application.streamingAssetsPath + "/Presets/")) Directory.CreateDirectory(Application.streamingAssetsPath + "/Presets/");
-            StreamWriter writer = new StreamWriter(Application.streamingAssetsPath + "/Presets/" + tonk.presetName + ".xml");
-            serializer.Serialize(writer.BaseStream, tonk);
-            writer.Close();
+            string filePath = Path.Combine(Application.streamingAssetsPath, "Presets", tonk.presetName + ".json");
+            File.WriteAllText(filePath, json);
         }
         SceneManager.LoadScene(_MainMenuScene);
     }

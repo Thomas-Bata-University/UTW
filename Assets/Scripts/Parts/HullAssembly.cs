@@ -1,6 +1,8 @@
 using UnityEngine;
 using ChobiAssets.PTM;
-using Unity.Netcode;
+using FishNet;
+using FishNet.Connection;
+using FishNet.Object;
 
 public class HullAssembly : NetworkBehaviour
 {
@@ -25,7 +27,7 @@ public class HullAssembly : NetworkBehaviour
         AssemblyServerRpc(NetworkManager.Singleton.LocalClientId, selectedPreset.hull, selectedPreset.turret);
     }
 */
-    public override void OnNetworkSpawn()
+    private void Start()
     {
         _assetDb = GameObject.Find("AssetDatabase");
         Database dbComponent = (Database)_assetDb.GetComponent(typeof(Database));
@@ -33,12 +35,12 @@ public class HullAssembly : NetworkBehaviour
         SelectedPreset = dbComponent.SelectedPreset;
         Debug.Log("Client has selected preset: " + SelectedPreset.presetName);
 
-        AssemblyServerRpc(NetworkManager.Singleton.LocalClientId, SelectedPreset.hull, SelectedPreset.turret);
+        AssemblyServerRpc(SelectedPreset.hull, SelectedPreset.turret);
     }
 
-    
-    [ServerRpc]
-    private void AssemblyServerRpc(ulong netID, string hull, string turret)
+
+    [ServerRpc(RequireOwnership = false)]
+    private void AssemblyServerRpc(string hull, string turret, NetworkConnection netCon = null)
     {
         Database dbComponent = (Database)_assetDb.GetComponent(typeof(Database));
 
@@ -46,7 +48,8 @@ public class HullAssembly : NetworkBehaviour
         turretPrefab = dbComponent.turrets.Find(x => x.name == turret);
 
         GameObject hullInst = Instantiate(hullPrefab, transform.position, Quaternion.identity);
-        hullInst.GetComponent<NetworkObject>().SpawnWithOwnership(netID,  true);
+        //hullInst.GetComponent<NetworkObject>().SpawnWithOwnership(netID,  true);
+        Spawn(hullInst, netCon);
         hullInst.transform.SetParent(transform);
 
         Transform turretGO = hullInst.transform.Find("TurretMount");
@@ -54,14 +57,19 @@ public class HullAssembly : NetworkBehaviour
         Transform mainbody = hullInst.transform.Find("MainBody");
 
         GameObject turretInst = Instantiate(turretPrefab, turretMount, Quaternion.identity, mainbody);
-        turretInst.GetComponent<NetworkObject>().SpawnWithOwnership(netID,  true);
+        //turretInst.GetComponent<NetworkObject>().Spawn(netID,  true);
+        Spawn(turretInst, netCon);
         turretInst.transform.SetParent(hullInst.transform);
-
+/*
         AssemblyClientRPC(hullInst.GetComponent<NetworkObject>().NetworkObjectId,
             turretInst.GetComponent<NetworkObject>().NetworkObjectId, hullInst.name);
+            */
+
     }
 
-    [ClientRpc]
+
+    /*
+    [ObserversRpc]
     private void AssemblyClientRPC(ulong hullID, ulong turretID, string parentObjectName)
     {
 
@@ -76,5 +84,5 @@ public class HullAssembly : NetworkBehaviour
 
         _hullInst.transform.GetComponentInChildren<Aiming_Control_CS>().OnSpawnRPC();
     }
+    */
 }
- 
