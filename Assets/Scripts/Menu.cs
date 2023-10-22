@@ -10,10 +10,10 @@ public class Menu : MonoBehaviour
     //public GameObject clientPanel;
     //public GameObject hostPanel;
     //public InputField ip;
-    
+
     [SerializeField] private GameObject networkManager;
     private Tugboat _tugboat;
-    
+
     private void Start()
     {
         //NetworkManager.Singleton.ConnectionApprovalCallback += ApprovalCheck;
@@ -48,7 +48,7 @@ public class Menu : MonoBehaviour
         response.Reason = "Wrong password";
     }
 */
-    
+
     public void Host()
     {
         _tugboat.StartConnection(true);
@@ -80,13 +80,13 @@ public class Menu : MonoBehaviour
 
         //NetworkManager.Singleton.StartClient();
 
-        FactionsManager.Instance.Initialize();
         /*
         menuPanel.SetActive(false);
         lobbyPanel.SetActive(true);
         clientPanel.SetActive(true);
         */
-_tugboat.StartConnection(false);
+        _tugboat.StartConnection(false);
+        FactionsManager.Instance.Initialize();
         SceneManager.LoadScene("ShardScene");
     }
 /*
