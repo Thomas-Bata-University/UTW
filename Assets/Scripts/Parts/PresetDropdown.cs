@@ -1,10 +1,5 @@
 using System.Collections.Generic;
 using UnityEngine;
-<<<<<<< HEAD
-using System.IO;
-using System.Linq;
-=======
->>>>>>> 114f795 (Basic save and load asset from SERVER, comunication between instances)
 using UnityEngine.UI;
 
 public class PresetDropdown : MonoBehaviour {

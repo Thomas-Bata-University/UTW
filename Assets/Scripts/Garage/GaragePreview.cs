@@ -1,18 +1,10 @@
-<<<<<<< HEAD
-using UnityEngine;
-using System.IO;
 using ChobiAssets.PTM;
 using FishNet.Component.Transforming;
-using UnityEngine.UI;
-=======
-using Unity.Netcode;
-using Unity.Netcode.Components;
+using FishNet.Object;
 using UnityEngine;
->>>>>>> 114f795 (Basic save and load asset from SERVER, comunication between instances)
-using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
-public class GaragePreview : MonoBehaviour {
+public class GaragePreview : NetworkBehaviour {
 
     [Header("UI")]
     public Dropdown hullDropdown;
@@ -50,7 +42,7 @@ public class GaragePreview : MonoBehaviour {
         }
 
         instantiatedHull = Instantiate(selectedHull, new Vector3(0, 0, 0), Quaternion.Euler(0, 120, 0));
-        
+
         Transform turretGO = instantiatedHull.transform.Find("TurretMount");
         Vector3 turretMount = turretGO.position;
         instantiatedTurret = Instantiate(selectedTurret, turretMount, Quaternion.Euler(0, 120, 0));
@@ -58,16 +50,12 @@ public class GaragePreview : MonoBehaviour {
         instantiatedTurret.transform.GetComponentInChildren<Cannon_Fire_CS>().enabled = false;
         instantiatedTurret.transform.GetComponentInChildren<Cannon_Vertical_CS>().enabled = false;
         instantiatedTurret.transform.GetComponentInChildren<Turret_Horizontal_CS>().enabled = false;
-        
+
     }
     public void Preview() {
         GameObject selectedHull = assetDatabase.hulls.Find(x => x.name == hullDropdown.options[hullDropdown.value].text);
         GameObject selectedTurret = assetDatabase.turrets.Find(x => x.name == turretDropdown.options[turretDropdown.value].text);
         Preview(selectedHull, selectedTurret);
-    }
-
-    public void MainMenuDialog() {
-        SceneManager.LoadScene(GameSceneUtils.MAIN_MENU_SCENE);
     }
 
     private void CleanInstances() {
@@ -95,7 +83,7 @@ public class GaragePreview : MonoBehaviour {
         }
 
         Debug.Log("Preset name: " + presetName);
-        presetManager.SavePresetServerRpc(CreatePreset(presetName), NetworkManager.Singleton.LocalClientId);
+        presetManager.SavePreset(base.Owner, CreatePreset(presetName));
     }
 
 }
