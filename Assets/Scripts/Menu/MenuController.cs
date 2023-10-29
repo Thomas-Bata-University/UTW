@@ -1,22 +1,21 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class MenuController : MonoBehaviour
-{
-    public string lobbyScene;
-    public string garageScene;
+public class MenuController : MonoBehaviour {
 
-    public void HostGameDialog()
-    {
-        SceneManager.LoadScene(lobbyScene);
+    public void HostGameDialog() {
+        SceneManager.LoadScene(GameSceneUtils.LOBBY_SCENE);
     }
-    public void GarageDialog()
-    {
-        SceneManager.LoadScene(garageScene);
+    public void GarageDialog() {
+        SceneManager.LoadScene(GameSceneUtils.GARAGE_SCENE);
     }
 
-    public void ExitGame()
-    {
+    public void ExitGame() {
         Application.Quit();
     }
+
+    public void Disconnect() {
+        SceneManager.LoadScene(GameSceneUtils.MAIN_MENU_SCENE);
+    }
+
 }
