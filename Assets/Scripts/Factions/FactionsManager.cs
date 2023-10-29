@@ -1,42 +1,80 @@
-
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Xml.Serialization;
+using FishNet.Object;
+using Parts;
 using UnityEngine;
-using UnityEngine.Events;
 
 namespace Factions
 {
-    public class FactionsManager : MonoBehaviour
+    public class FactionsManager : NetworkBehaviour
     {
-        private IFactionManager Manager;
-
-        public UnityEvent isManagerInitialized;
+        public static FactionsManager Instance { get; private set; }
 
 
-        private static FactionsManager instance = null;
+        private const string DataPath = "Assets/Resources/Factions/Factions.json";
 
-        private FactionsManager()
+        private readonly Dictionary<Guid, Faction> _factions = new();
+
+        public int CountOfFactions => _factions.Count;
+
+        private void Awake()
         {
+            Instance = this;
+            Initialize();
         }
 
-        public static FactionsManager Instance
+        private void Update()
         {
-            get
-            {
-                if (instance == null)
-                {
-                    instance = new FactionsManager();
-                }
-
-                return instance;
-            }
-        }
-
-        private void Start()
-        {
-            var factory = gameObject.AddComponent<FactionsManagerFactory>();
-            Manager = factory.Create();
+            if (!IsServer) return;
         }
 
         public void Initialize()
-            => Manager.Initialize();
+        {
+            LoadFactionsFromCsv();
+            LoadFactionPresets();
+        }
+
+        public Faction GetFactionById(Guid guid) => _factions[guid];
+
+        public Faction GetFactionByName(string factionName) =>
+            _factions.FirstOrDefault(part => part.Value.Name.Equals(factionName)).Value;
+
+        private void LoadFactionsFromCsv()
+        {
+            var reader = new StreamReader(DataPath);
+
+            var jsonString = reader.ReadToEnd();
+            var data = new FactionsData() /*  TODO JsonConvert.DeserializeObject<FactionsData>(jsonString)*/;
+
+            foreach (var faction in data.Factions)
+            {
+                _factions[faction.Id] = faction;
+            }
+        }
+
+        private void LoadFactionPresets()
+        {
+            var files = Directory.GetFiles(Application.streamingAssetsPath + "/Presets/", "*.xml");
+
+            var presets = files.Select(Deserialize).ToList();
+
+            foreach (var faction in _factions.Values)
+            {
+                faction.Presets.AddRange(
+                    presets.Where(preset => faction.PresetNames.Contains(preset.presetName)));
+            }
+        }
+
+        private static Preset Deserialize(string path)
+        {
+            var serializer = new XmlSerializer(typeof(Preset));
+            var reader = new StreamReader(path);
+            var deserialized = (Preset)serializer.Deserialize(reader.BaseStream);
+            reader.Close();
+            return deserialized;
+        }
     }
 }

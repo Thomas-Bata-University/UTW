@@ -56,7 +56,6 @@ public class Menu : MonoBehaviour
 
 //NetworkManager.Singleton.StartHost();
 
-        FactionsManager.Instance.Initialize();
         SceneManager.LoadScene("ShardScene");
     }
 
@@ -88,7 +87,6 @@ public class Menu : MonoBehaviour
         clientPanel.SetActive(true);
         */
         _tugboat.StartConnection(false);
-        FactionsManager.Instance.Initialize();
         SceneManager.LoadScene("ShardScene");
     }
 /*
