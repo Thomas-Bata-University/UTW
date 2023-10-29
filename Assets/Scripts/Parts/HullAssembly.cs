@@ -3,6 +3,7 @@ using ChobiAssets.PTM;
 using FishNet;
 using FishNet.Connection;
 using FishNet.Object;
+using Parts;
 
 public class HullAssembly : NetworkBehaviour
 {

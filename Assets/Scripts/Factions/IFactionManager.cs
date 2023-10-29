@@ -1,7 +1,5 @@
 using System;
 using JetBrains.Annotations;
-using UnityEditorInternal;
-using UnityEngine;
 
 namespace Factions
 {

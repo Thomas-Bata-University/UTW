@@ -2,6 +2,7 @@ using UnityEngine;
 using System.IO;
 using ChobiAssets.PTM;
 using FishNet.Component.Transforming;
+using Parts;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 

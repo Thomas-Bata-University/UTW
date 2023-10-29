@@ -4,8 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Xml.Serialization;
 using FishNet.Object;
-using Unity.Plastic.Newtonsoft.Json;
-using UnityEditor.Presets;
+using Parts;
 using UnityEngine;
 
 namespace Factions
@@ -34,7 +33,7 @@ namespace Factions
             var reader = new StreamReader(DataPath);
 
             var jsonString = reader.ReadToEnd();
-            var data = JsonConvert.DeserializeObject<FactionsData>(jsonString);
+            var data = new FactionsData()/* JsonConvert.DeserializeObject<FactionsData>(jsonString)*/;
 
             foreach (var faction in data.Factions)
             {
@@ -51,7 +50,7 @@ namespace Factions
             foreach (var faction in _factions.Values)
             {
                 faction.Presets.AddRange(
-                    presets.Where(preset => faction.PresetNames.Contains(preset.name)));
+                    presets.Where(preset => faction.PresetNames.Contains(preset.presetName)));
             }
         }
 

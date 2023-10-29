@@ -55,6 +55,8 @@ public class Menu : MonoBehaviour
         _tugboat.StartConnection(false);
 
 //NetworkManager.Singleton.StartHost();
+
+        FactionsManager.Instance.Initialize();
         SceneManager.LoadScene("ShardScene");
     }
 

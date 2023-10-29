@@ -1,9 +1,13 @@
 using System;
 
-[Serializable]
-public class Preset
+namespace Parts
 {
-    public string presetName;
-    public string hull;
-    public string turret;
+    [Serializable]
+    public class Preset
+    {
+        public string presetName;
+        public string hull;
+        public string turret;
+    }
 }
+
