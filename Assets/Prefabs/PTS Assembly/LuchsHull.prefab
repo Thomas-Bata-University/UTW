@@ -7636,6 +7636,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 33d529722d730504e8756f43f8747a93, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _componentIndexCache: 255
+  _addedNetworkObject: {fileID: 0}
+  _networkObjectCache: {fileID: 0}
   OpenFire_Angle: 180
   turretHorizontalScripts: []
   cannonVerticalScripts: []
@@ -7694,6 +7697,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ab5068dd271bf0e4fabeb840d3f45537, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _componentIndexCache: 255
+  _addedNetworkObject: {fileID: 0}
+  _networkObjectCache: {fileID: 0}
   MainBody_HP: 2000
   Left_Track_HP: 1000
   Right_Track_HP: 1000
@@ -7932,6 +7938,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 64f6a14d4e59b3a44a5c8b05921960c7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _componentIndexCache: 255
+  _addedNetworkObject: {fileID: 0}
+  _networkObjectCache: {fileID: 0}
   cameraPivot: {fileID: 3280463467648129660}
 --- !u!64 &6189801963301867511
 MeshCollider:
