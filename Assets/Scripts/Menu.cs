@@ -9,6 +9,7 @@ public class Menu : MonoBehaviour {
     [SerializeField] private GameObject networkManager;
     [SerializeField] private GameObject presetManager;
     [SerializeField] private GameObject gameManager;
+    [SerializeField] private GameObject factionManager;
     private Tugboat _tugboat;
 
     private void Start() {
@@ -32,12 +33,16 @@ public class Menu : MonoBehaviour {
         if (args.ConnectionState == LocalConnectionState.Started) {
             var presetManagerInstance = Instantiate(presetManager);
             var gameManagerInstance = Instantiate(gameManager);
+            var factionManagerInstance = Instantiate(factionManager);
             presetManagerInstance.GetComponent<NetworkObject>().SetIsGlobal(true);
             presetManagerInstance.GetComponent<NetworkObject>().SetIsNetworked(true);
             gameManagerInstance.GetComponent<NetworkObject>().SetIsGlobal(true);
             gameManagerInstance.GetComponent<NetworkObject>().SetIsNetworked(true);
+            factionManagerInstance.GetComponent<NetworkObject>().SetIsGlobal(true);
+            factionManagerInstance.GetComponent<NetworkObject>().SetIsNetworked(true);
             InstanceFinder.ServerManager.Spawn(presetManagerInstance);
             InstanceFinder.ServerManager.Spawn(gameManagerInstance);
+            InstanceFinder.ServerManager.Spawn(factionManagerInstance);
         }
     }
 
