@@ -7,111 +7,68 @@ using JetBrains.Annotations;
 using Managers;
 using UnityEngine;
 
-namespace DefaultNamespace
+public sealed class Player : NetworkBehaviour
 {
-    public sealed class Player : NetworkBehaviour
+    public static Player Instance { get; private set; }
+
+    [SyncVar] public string username;
+
+    [SyncVar] public Guid FactionId;
+
+    [SyncVar] public bool isReady;
+
+    [SyncVar] [CanBeNull] private Faction _faction;
+
+
+    public override void OnStartServer()
     {
-        public static Player Instance { get; private set; }
+        base.OnStartServer();
 
-        [SyncVar] public string username;
+        GameManager.Instance.players.Add(this);
+    }
 
-        [SyncVar] public Guid FactionId;
+    public override void OnStopServer()
+    {
+        base.OnStopServer();
 
-        [SyncVar] public bool isReady;
+        GameManager.Instance.players.Remove(this);
+    }
 
-        [SyncVar] public Pawn controlledPawn;
+    public override void OnStartClient()
+    {
+        base.OnStartClient();
 
-        [SyncVar] [CanBeNull] private Faction _faction;
+        if (!IsOwner) return;
 
+        Instance = this;
 
-        public override void OnStartServer()
-        {
-            base.OnStartServer();
-
-            GameManager.Instance.players.Add(this);
-        }
-
-        public override void OnStopServer()
-        {
-            base.OnStopServer();
-
-            GameManager.Instance.players.Remove(this);
-        }
-
-        public override void OnStartClient()
-        {
-            base.OnStartClient();
-
-            if (!IsOwner) return;
-
-            Instance = this;
-
-            /*UIManager.Instance.Initialize();
+        /*UIManager.Instance.Initialize();
 
             UIManager.Instance.Show<LobbyView>();*/
-        }
+    }
 
-        private void Update()
+    private void Update()
+    {
+        if (!IsOwner) return;
+
+        if (Input.GetKeyDown(KeyCode.R))
         {
-            if (!IsOwner) return;
-
-            if (Input.GetKeyDown(KeyCode.R))
-            {
-                ServerSetIsReady(!isReady);
-            }
-        }
-
-        public void StartGame()
-        {
-            GameObject
-                pawnPrefab =
-                    new GameObject(); //TODO?  Addressables.LoadAssetAsync<GameObject>("Pawn").WaitForCompletion();
-
-            GameObject pawnInstance = Instantiate(pawnPrefab);
-
-            Spawn(pawnInstance, Owner);
-
-            controlledPawn = pawnInstance.GetComponent<Pawn>();
-
-            controlledPawn.controllingPlayer = this;
-
-            TargetPawnSpawned(Owner);
-        }
-
-        [ServerRpc(RequireOwnership = false)]
-        public void ServerSpawnPawn()
-        {
-            StartGame();
+            ServerSetIsReady(!isReady);        
             RetrieveAssetsFromServer();
         }
-
-        public void StopGame()
-        {
-            if (controlledPawn != null && controlledPawn.IsSpawned) controlledPawn.Despawn();
-        }
-
-        [ServerRpc(RequireOwnership = false)]
-        public void ServerSetIsReady(bool value)
-        {
-            isReady = value;
-        }
-
-        [TargetRpc]
-        private void TargetPawnSpawned(NetworkConnection networkConnection)
-        {
-            //TODO ? UIManager.Instance.Show<MainView>();
-        }
-
-        [TargetRpc]
-        public void TargetPawnKilled(NetworkConnection networkConnection)
-        {
-            //TODO ?   UIManager.Instance.Show<RespawnView>();
-        }
+    }
 
 
-        private void RetrieveAssetsFromServer()
-        {
-            _faction = FactionsManager.Instance.GetFactionById(FactionId);
-        }
+
+    [ServerRpc(RequireOwnership = false)]
+    public void ServerSetIsReady(bool value)
+    {
+        isReady = value;
+    }
+    
+
+    private void RetrieveAssetsFromServer()
+    {
+        _faction = FactionsManager.Instance.GetFactionById(FactionId);
     }
 }
