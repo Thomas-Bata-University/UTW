@@ -41,7 +41,7 @@ public class CameraPan : MonoBehaviour
             lastposition = Input.mousePosition;
         }
         transform.position = new Vector3(transform.position.x, transform.position.y + Input.mouseScrollDelta.y*100, transform.position.z);
-        if (Input.GetMouseButton(1))
+        if (Input.GetKeyDown(KeyCode.R))
             transform.position = ResetCamera;
 
     }
