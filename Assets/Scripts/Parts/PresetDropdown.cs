@@ -1,3 +1,4 @@
+using FishNet;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -12,6 +13,7 @@ public class PresetDropdown : MonoBehaviour {
     private Database assetDatabase;
 
     private void Start() {
+        if (InstanceFinder.IsServer) return;
         assetDatabase = FindObjectOfType<Database>();
 
         _presetDropdown.options.Clear();
