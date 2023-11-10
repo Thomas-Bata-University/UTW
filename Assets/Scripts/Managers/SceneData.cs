@@ -1,9 +1,12 @@
+using FishNet.Connection;
+
 public class SceneData {
 
     public int handle;
     public string sceneName;
     public string lobbyName;
     public int playerCount;
+    public NetworkConnection lobbyOwner; //TODO-YIRO add lobbyOwner
 
     public SceneData() {
 

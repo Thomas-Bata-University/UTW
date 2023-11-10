@@ -4,6 +4,7 @@ using FishNet.Managing.Scened;
 using FishNet.Object;
 using FishNet.Transporting;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class SceneManager : NetworkBehaviour {
@@ -40,7 +41,7 @@ public class SceneManager : NetworkBehaviour {
     [ServerRpc(RequireOwnership = false)]
     public void RefreshLobby(NetworkConnection conn) {
         sceneDataList.Clear();
-        foreach (var pair in InstanceFinder.SceneManager.SceneConnections) {
+        foreach (var pair in InstanceFinder.SceneManager.SceneConnections) {//TODO-YIRO change to CRUD and use SyncList
             if (pair.Key.name == GameSceneUtils.LOBBY_SCENE) {
                 SceneData data = new SceneData(pair.Key.handle, pair.Key.name, null, pair.Value.Count); //TODO-YIRO add LOBBY NAME
                 sceneDataList.Add(data);
@@ -51,7 +52,14 @@ public class SceneManager : NetworkBehaviour {
 
     [TargetRpc]
     public void RefreshLobbyResponse(NetworkConnection conn, List<SceneData> sceneDataList) {
-        FindObjectOfType<ShardController>().CreateLobbyButtons(sceneDataList);
+        FindObjectOfType<ShardController>().CreateLobbyButtons(sceneDataList); //TODO-YIRO use Find by tag
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    public void StartGame(NetworkConnection conn) { //TODO-YIRO remove lobby from sceneDataList
+        LoadScene(InstanceFinder.SceneManager.SceneConnections.First(pair => pair.Value.Contains(conn)).Value.ToArray(),
+            new SceneLookupData(GameSceneUtils.GAME_SCENE),
+            false);
     }
     #endregion
 

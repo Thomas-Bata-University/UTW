@@ -40,7 +40,7 @@ namespace ChobiAssets.PTM
         { // This function is called only once at the first time. It is not called after the this object moves to other scenes by using 'DontDestroyOnLoad()'.
             
             // Store the birthplace scene name.
-            birthplaceSceneName = SceneManager.GetActiveScene().name;
+            //birthplaceSceneName = SceneManager.GetActiveScene().name;
 
             // Get the battle scene name.
             switch (Scene_Type)
@@ -114,13 +114,13 @@ namespace ChobiAssets.PTM
 
         void OnEnable()
         {
-            SceneManager.sceneLoaded += OnSceneLoaded;
+            //SceneManager.sceneLoaded += OnSceneLoaded;
         }
 
 
         void OnDisable()
         {
-            SceneManager.sceneLoaded -= OnSceneLoaded;
+            //SceneManager.sceneLoaded -= OnSceneLoaded;
         }
 
 
