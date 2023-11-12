@@ -24,7 +24,7 @@ public class MapSpawn : MonoBehaviour
             if(place != null)
             {
                 spwn_inst = Instantiate(spawnPoint,place.transform.position, Quaternion.identity);
-                spwn_inst.name = place.name;
+                spwn_inst.name = i.ToString();
                 i++;
             }
             else
