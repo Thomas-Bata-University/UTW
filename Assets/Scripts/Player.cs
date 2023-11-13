@@ -7,18 +7,17 @@ using JetBrains.Annotations;
 using Managers;
 using UnityEngine;
 
+
 public sealed class Player : NetworkBehaviour
 {
     public static Player Instance { get; private set; }
 
-    [SyncVar] public string username;
+    public PlayerData Data { get; set; }
 
-    [SyncVar] public Guid FactionId;
-
-    [SyncVar] public bool isReady;
-
-    [SyncVar] [CanBeNull] private Faction _faction;
-
+    private void OnConnectedToServer()
+    {
+        throw new NotImplementedException();
+    }
 
     public override void OnStartServer()
     {
@@ -53,22 +52,18 @@ public sealed class Player : NetworkBehaviour
 
         if (Input.GetKeyDown(KeyCode.R))
         {
-            ServerSetIsReady(!isReady);        
             RetrieveAssetsFromServer();
+            RetrievePlayerDataFromServer();
         }
     }
 
-
-
-    [ServerRpc(RequireOwnership = false)]
-    public void ServerSetIsReady(bool value)
-    {
-        isReady = value;
-    }
-    
-
     private void RetrieveAssetsFromServer()
     {
-        _faction = FactionsManager.Instance.GetFactionById(FactionId);
+        Data.Faction = FactionsManager.Instance.GetFactionById(Data.FactionId);
+    }
+
+    private void RetrievePlayerDataFromServer()
+    {
+      // TODO Data = GameManager.Instance.GetPlayerDataByName(PlayerName);
     }
 }
