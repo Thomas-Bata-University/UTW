@@ -23,7 +23,7 @@ public class PresetManager : NetworkBehaviour {
     }
 
     /// <summary>
-    /// Load preset for client
+    /// Load preset for client.
     /// </summary>
     /// <param name="networkConnection"></param>
     [ServerRpc(RequireOwnership = false)]
@@ -52,11 +52,11 @@ public class PresetManager : NetworkBehaviour {
         File.WriteAllText(filePath, json);
 
         Debug.Log($"{tankPreset} successfully saved on SERVER by player ID: {networkConnection.ClientId}");
-        SavePresetResponce(networkConnection);
+        SavePresetResponse(networkConnection);
     }
 
     [TargetRpc]
-    public void SavePresetResponce(NetworkConnection networkConnection = default) {
+    public void SavePresetResponse(NetworkConnection networkConnection = default) {
         Debug.Log($"Preset successfully saved on SERVER.");
     }
 
