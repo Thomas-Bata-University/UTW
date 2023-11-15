@@ -14,18 +14,23 @@ public sealed class Player : NetworkBehaviour
 
     public PlayerData Data { get; set; }
 
+    //TODO Pick from input, then spawn player! on spawn player data will be either
+    //TODO created or retrieved from GameManager
+    //TODO see [OnStartServer]
+    public string PlayerName { get; set; }
+
     public override void OnStartServer()
     {
         base.OnStartServer();
 
-        GameManager.Instance.players.Add(this);
+        Data = GameManager.Instance.CreateOrSelectPlayer(this);
     }
 
     public override void OnStopServer()
     {
         base.OnStopServer();
 
-        GameManager.Instance.players.Remove(this);
+        GameManager.Instance.RemovePlayer(this);
     }
 
     public override void OnStartClient()
@@ -35,10 +40,6 @@ public sealed class Player : NetworkBehaviour
         if (!IsOwner) return;
 
         Instance = this;
-
-        /*UIManager.Instance.Initialize();
-
-            UIManager.Instance.Show<LobbyView>();*/
     }
 
     private void Update()
@@ -48,17 +49,11 @@ public sealed class Player : NetworkBehaviour
         if (Input.GetKeyDown(KeyCode.R))
         {
             RetrieveAssetsFromServer();
-            RetrievePlayerDataFromServer();
         }
     }
 
     private void RetrieveAssetsFromServer()
     {
         Data.Faction = FactionsManager.Instance.GetFactionById(Data.FactionId);
-    }
-
-    private void RetrievePlayerDataFromServer()
-    {
-      // TODO Data = GameManager.Instance.GetPlayerDataByName(PlayerName);
     }
 }

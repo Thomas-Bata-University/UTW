@@ -5,6 +5,7 @@ using System.Linq;
 using System.Xml.Serialization;
 using FishNet.Object;
 using UnityEngine;
+using Utils;
 
 namespace Factions
 {
@@ -32,7 +33,7 @@ namespace Factions
 
         public void Initialize()
         {
-            LoadFactionsFromCsv();
+            LoadFactionsFromJson();
             LoadFactionPresets();
         }
 
@@ -41,7 +42,7 @@ namespace Factions
         public Faction GetFactionByName(string factionName) =>
             _factions.FirstOrDefault(part => part.Value.Name.Equals(factionName)).Value;
 
-        private void LoadFactionsFromCsv()
+        private void LoadFactionsFromJson()
         {
             var reader = new StreamReader(DataPath);
 
@@ -58,7 +59,7 @@ namespace Factions
         {
             var files = Directory.GetFiles(Application.streamingAssetsPath + "/Presets/", "*.xml");
 
-            var presets = files.Select(Deserialize).ToList();
+            var presets = files.Select(SerializationUtils.DeserializeXml<Preset>).ToList();
 
             foreach (var faction in _factions.Values)
             {
@@ -67,15 +68,6 @@ namespace Factions
                 faction.Presets.AddRange(
                     presets.Where(preset => faction.PresetNames.Contains(preset.presetName)));
             }
-        }
-
-        private static Preset Deserialize(string path)
-        {
-            var serializer = new XmlSerializer(typeof(Preset));
-            var reader = new StreamReader(path);
-            var deserialized = (Preset)serializer.Deserialize(reader.BaseStream);
-            reader.Close();
-            return deserialized;
         }
     }
 }
