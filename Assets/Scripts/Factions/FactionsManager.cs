@@ -15,7 +15,7 @@ namespace Factions
 
         private const string DataPath = "Assets/Resources/Factions/Factions.json";
 
-        private readonly Dictionary<Guid, Faction> _factions = new();
+        private readonly Dictionary<int, Faction> _factions = new();
 
         public int CountOfFactions => _factions.Count;
 
@@ -36,7 +36,7 @@ namespace Factions
             LoadFactionPresets();
         }
 
-        public Faction GetFactionById(Guid guid) => _factions[guid];
+        public Faction GetFactionById(int guid) => _factions[guid];
 
         public Faction GetFactionByName(string factionName) =>
             _factions.FirstOrDefault(part => part.Value.Name.Equals(factionName)).Value;
@@ -46,7 +46,7 @@ namespace Factions
             var reader = new StreamReader(DataPath);
 
             var jsonString = reader.ReadToEnd();
-            var data = new FactionsData() /*  TODO JsonConvert.DeserializeObject<FactionsData>(jsonString)*/;
+            var data = JsonUtility.FromJson<FactionsData>(jsonString);
 
             foreach (var faction in data.Factions)
             {
@@ -62,6 +62,8 @@ namespace Factions
 
             foreach (var faction in _factions.Values)
             {
+                //Genius serialization utility in Unity...just dont ask
+                faction.Presets ??= new List<Preset>();
                 faction.Presets.AddRange(
                     presets.Where(preset => faction.PresetNames.Contains(preset.presetName)));
             }

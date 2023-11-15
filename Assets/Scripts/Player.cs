@@ -14,11 +14,6 @@ public sealed class Player : NetworkBehaviour
 
     public PlayerData Data { get; set; }
 
-    private void OnConnectedToServer()
-    {
-        throw new NotImplementedException();
-    }
-
     public override void OnStartServer()
     {
         base.OnStartServer();

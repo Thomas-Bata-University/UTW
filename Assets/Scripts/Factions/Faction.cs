@@ -5,13 +5,18 @@ using System.Xml.Serialization;
 namespace Factions
 {
     [Serializable]
-    public record Faction
+    public class Faction
     {
-        public Guid Id { get; set; }
-        public string Name { get; set; } = string.Empty;
+        public int Id;
+        public string Name;
+        public string[] PresetNames;
+        [field: NonSerialized] public List<Preset> Presets = new();
 
-        public List<string> PresetNames { get; set; } = new();
-
-        [XmlIgnore] [field: NonSerialized] public List<Preset> Presets { get; set; } = new();
+        public Faction(int id, string name, string[] presetNames)
+        {
+            Id = id;
+            Name = name;
+            PresetNames = presetNames;
+        }
     }
 }

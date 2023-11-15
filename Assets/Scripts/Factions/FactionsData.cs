@@ -4,8 +4,13 @@ using System.Collections.Generic;
 namespace Factions
 {
     [Serializable]
-    public record FactionsData
+    public class FactionsData
     {
-        public IReadOnlyCollection<Faction> Factions { get; set; } = new List<Faction>().AsReadOnly();
+        public Faction[] Factions;
+
+        public FactionsData(Faction[] factions)
+        {
+            Factions = factions;
+        }
     }
 }
