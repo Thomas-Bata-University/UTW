@@ -1,8 +1,16 @@
-public struct PlayerData
+using System;
+using Factions;
+using JetBrains.Annotations;
+
+[Serializable]
+public class PlayerData
 {
-    public string PlayerName { get; private set; }
-    public ulong ClientId { get; private set; }
-    public string Preset { get; private set; }
+    public string PlayerName;
+    public ulong ClientId;
+    public string Preset;
+    public int FactionId;
+
+    [CanBeNull] public Faction Faction { get; set; }
 
     public PlayerData(string playerName, ulong clientId, string preset)
     {
