@@ -7,9 +7,11 @@ using UnityEngine;
 public class Spawn_Select : MonoBehaviour
 {
     public int players;
-    int faction;
+    int faction = 1;
     public Material mat_selected;
     public Material mat_populated1;
+    public Material mat_populated2;
+    public Material mat_populated3;
     public Material mat_empty;
     public Transform sphere;
     // Start is called before the first frame update
@@ -24,8 +26,19 @@ public class Spawn_Select : MonoBehaviour
             }
             else
             {
+            if (faction == 1)
+            {
                 sphere.GetComponent<Renderer>().material = mat_populated1;
             }
+            else if(faction == 2)
+            {
+                sphere.GetComponent<Renderer>().material = mat_populated2;
+            }
+            else
+            {
+                sphere.GetComponent<Renderer>().material = mat_populated3;
+            }
+          }
         }
     
     private void OnMouseDown()
@@ -51,7 +64,18 @@ public class Spawn_Select : MonoBehaviour
             }
             else
             {
-                druhyskript.sphere.GetComponent <Renderer>().material = mat_populated1;
+                    if (faction == 1)
+                    {
+                        druhyskript.sphere.GetComponent<Renderer>().material = mat_populated1;
+                    }
+                    else if (faction == 2)
+                    {
+                        druhyskript.sphere.GetComponent<Renderer>().material = mat_populated2;
+                    }
+                    else
+                    {
+                        druhyskript.sphere.GetComponent<Renderer>().material = mat_populated3;
+                    }
             }
           }
 
