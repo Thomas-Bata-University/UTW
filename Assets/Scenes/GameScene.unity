@@ -213,6 +213,7 @@ GameObject:
   m_Component:
   - component: {fileID: 223974227}
   - component: {fileID: 223974228}
+  - component: {fileID: 223974229}
   m_Layer: 0
   m_Name: Map
   m_TagString: Untagged
@@ -248,6 +249,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   spawnPoint: {fileID: 0}
+  spawnpoints: 0
+--- !u!114 &223974229
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 223974226}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d6225c2dc6b6ea54a92cf116a190c6ad, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &317426395
 GameObject:
   m_ObjectHideFlags: 0

@@ -11,15 +11,15 @@ public class MapSpawn : MonoBehaviour
    
     public GameObject spawnPoint;
     string mapname;
-    string scenename;
+
+    public bool spawnpoints = true;
     // Start is called before the first frame update
     void Start()
     {
         mapname = "Greenmap";   //zde místo Greenmap budeme naèítat jméno mapy, kterou chceme zobrazit
         Instantiate(Resources.Load("maps/" + mapname), transform.position, Quaternion.identity);
-        scenename = SceneManager.GetActiveScene().name;
-        if (scenename == "LobbyScene")
-                {
+        if (spawnpoints == true)
+        {
             GameObject place;
             GameObject spwn_inst;
             Boolean done = false;
@@ -39,12 +39,8 @@ public class MapSpawn : MonoBehaviour
                 }
 
             }
-        }
-        else
-        {
-            string selected = "Spawn"+PlayerPrefs.GetString("Spawn");
-            GameObject spawnpoint = GameObject.Find(selected);
-                            //máme vybraný spawnpoint, mùžeme z nìj pøeèíst transforms a získat tak polohu pro spawnování
+
+
         }
     }
     // Update is called once per frame
