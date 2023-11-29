@@ -77,29 +77,29 @@ namespace ChobiAssets.PTM
             }
            
             // Set the scene name.
-            string newName = SceneManager.GetActiveScene().name;
-            switch (Scene_Type)
-            {
-                case 0: // Input Manually.
-                    newName = Scene_Name;
-                    break;
+            //string newName = SceneManager.GetActiveScene().name;
+            //switch (Scene_Type)
+            //{
+            //    case 0: // Input Manually.
+            //        newName = Scene_Name;
+            //        break;
 
-                case 1: // Current Scene.
-                    break;
+            //    case 1: // Current Scene.
+            //        break;
 
-                case 2: // Menu Scene.
-                    newName += "_Menu";
-                    newName = newName.Replace("_01_", "_00_");
-                    break;
+            //    case 2: // Menu Scene.
+            //        newName += "_Menu";
+            //        newName = newName.Replace("_01_", "_00_");
+            //        break;
 
-                case 3: // Battle Scene.
-                    newName = newName.Replace("_Menu", "");
-                    newName = newName.Replace("_00_", "_01_");
-                    break;
-            }
+            //    case 3: // Battle Scene.
+            //        newName = newName.Replace("_Menu", "");
+            //        newName = newName.Replace("_00_", "_01_");
+            //        break;
+            //}
             
             // Load the scene.
-            SceneManager.LoadSceneAsync(newName);
+            //SceneManager.LoadSceneAsync(newName);
 
             // Start the time.
             Time.timeScale = 1.0f;
