@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
-
+using UnityEngine.SceneManagement;
 public class Spawn_Select : MonoBehaviour
 {
     public int players;
@@ -87,6 +87,9 @@ public class Spawn_Select : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+if(UnityEngine.SceneManagement.SceneManager.GetSceneAt(1).name!="LobbyScene")
+            {
+            GameObject.Destroy(this.gameObject);
+        }
     }
 }
