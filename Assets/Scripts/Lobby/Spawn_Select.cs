@@ -1,10 +1,11 @@
+using FishNet.Object;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-public class Spawn_Select : MonoBehaviour
+public class Spawn_Select : NetworkBehaviour
 {
     public int players;
     int faction = 1;
@@ -41,7 +42,7 @@ public class Spawn_Select : MonoBehaviour
           }
         }
     
-    private void OnMouseDown()
+/*    private void OnMouseDown()
     {
         Debug.Log(name);
         string selected = PlayerPrefs.GetString("Spawn");
@@ -83,13 +84,10 @@ public class Spawn_Select : MonoBehaviour
 
 
     }
-
+*/
     // Update is called once per frame
     void Update()
     {
-if(UnityEngine.SceneManagement.SceneManager.GetSceneAt(1).name!="LobbyScene")
-            {
-            GameObject.Destroy(this.gameObject);
-        }
+
     }
 }

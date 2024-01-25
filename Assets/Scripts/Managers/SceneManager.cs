@@ -11,6 +11,9 @@ public class SceneManager : NetworkBehaviour {
 
     public static SceneManager Instance;
 
+    public delegate void ClientJoinLobby(NetworkConnection networkConnection);
+    public event ClientJoinLobby OnClientJoinLobby;
+
     private List<SceneData> sceneDataList = new List<SceneData>();
 
     private void Start() {
