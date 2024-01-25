@@ -1,3 +1,4 @@
+using FishNet.Transporting;
 using FishNet.Transporting.Tugboat;
 using UnityEngine;
 
@@ -15,16 +16,19 @@ public class Menu : MonoBehaviour {
         }
     }
 
-    public void Host() {
-        _tugboat.StartConnection(true);
+    private const string sAddress = "10.5.8.71";
+    private const ushort sPort = 7770;
+    public void JoinOfficialShard()
+    {
+        _tugboat.SetServerBindAddress(sAddress, IPAddressType.IPv4);
+        _tugboat.SetPort(sPort);
+
+        _tugboat.SetClientAddress(sAddress);
+
+        _tugboat.StartConnection(false);
     }
 
     public void ExitGame() {
         Application.Quit();
     }
-
-    public void Join() {
-        _tugboat.StartConnection(false);
-    }
-
 }
