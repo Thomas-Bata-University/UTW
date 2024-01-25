@@ -20,10 +20,15 @@ public class Menu : MonoBehaviour {
     private const ushort sPort = 7770;
     public void JoinOfficialShard()
     {
-        _tugboat.SetServerBindAddress(sAddress, IPAddressType.IPv4);
+        _tugboat.SetClientAddress(sAddress);
         _tugboat.SetPort(sPort);
 
-        _tugboat.SetClientAddress(sAddress);
+        _tugboat.StartConnection(false);
+    }
+
+    public void DirectConnect()
+    {
+        _tugboat.SetClientAddress("127.0.0.1");
 
         _tugboat.StartConnection(false);
     }
