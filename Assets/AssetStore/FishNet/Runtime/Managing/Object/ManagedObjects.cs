@@ -389,7 +389,7 @@ namespace FishNet.Managing.Object
 
                 /* Default logging for server is errors only. Use error on client and warning
                  * on servers to reduce chances of allocation attacks. */
-#if DEVELOPMENT_BUILD || UNITY_EDITOR || !UNITY_SERVER
+#if DEVELOPMENT_BUILD || UNITY_EDITOR || !UNITY_SERVER || UNITY_SERVER
                 NetworkManager.LogError(msg);
 #else
                 if (NetworkManager.CanLog(LoggingType.Warning))
