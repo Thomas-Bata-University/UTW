@@ -54,6 +54,6 @@ public sealed class Player : NetworkBehaviour
 
     private void RetrieveAssetsFromServer()
     {
-        Data.Faction = FactionsManager.Instance.GetFactionById(Data.FactionId);
+        Data.Faction = GameManager.Instance.GetFactionById(Data.FactionId);
     }
 }
