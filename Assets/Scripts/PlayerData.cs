@@ -8,7 +8,7 @@ public class PlayerData
     public string PlayerName;
     public ulong ClientId;
     public string Preset;
-    public int FactionId;
+    public int FactionId = 0;
 
     [CanBeNull] public Faction Faction { get; set; }
 
