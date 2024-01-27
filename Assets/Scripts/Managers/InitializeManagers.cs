@@ -28,7 +28,7 @@ public class InitializeManagers : MonoBehaviour {
         }
     }
 
-    private void Initialize(GameObject prefab) {
+    public void Initialize(GameObject prefab) {
         GameObject go = Instantiate(prefab);
         go.name = prefab.name;
         NetworkObject no = go.GetComponent<NetworkObject>();

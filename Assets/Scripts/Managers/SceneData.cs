@@ -6,17 +6,18 @@ public class SceneData {
     public string sceneName;
     public string lobbyName;
     public int playerCount;
-    public NetworkConnection lobbyOwner; //TODO-YIRO add lobbyOwner
+    public NetworkConnection lobbyOwner;
 
     public SceneData() {
 
     }
 
-    public SceneData(int handle, string sceneName, string lobbyName, int playerCount) {
+    public SceneData(int handle, string sceneName, string lobbyName, NetworkConnection conn) {
         this.handle = handle;
         this.sceneName = sceneName;
         this.lobbyName = lobbyName;
-        this.playerCount = playerCount;
+        this.playerCount = 0;
+        this.lobbyOwner = conn;
     }
 
     public override string ToString() {
