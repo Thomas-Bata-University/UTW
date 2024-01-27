@@ -45,7 +45,9 @@ namespace UTW {
 
         [ServerRpc(RequireOwnership = false)]
         public void InitializeLobbyManager(GameObject lobbyManagerPrefab, NetworkConnection conn) {
-            Scene scene = GetScene(conn);
+            Scene scene = GetSceneForClient(conn);
+
+            if (lobbyData.ContainsKey(scene.handle)) return;
 
             CreateNewLobbyData(conn, scene);
 
@@ -93,7 +95,7 @@ namespace UTW {
         }
 
         public void UpdatePlayerCount(NetworkConnection conn, int count) {
-            Scene scene = GetScene(conn);
+            Scene scene = GetSceneForClient(conn);
             foreach (var dataPair in lobbyData) {
                 if (dataPair.Key == scene.handle) {
                     dataPair.Value.playerCount += count;
@@ -106,7 +108,7 @@ namespace UTW {
             foreach (var dataPair in lobbyData) {
                 if (dataPair.Value.lobbyOwner == conn) {
                     Debug.Log($"Removing data for owner: {conn.ClientId}");
-                    lobbyData.Remove(GetScene(conn).handle);
+                    lobbyData.Remove(GetSceneForClient(conn).handle);
                     return;
                 }
             }
@@ -131,10 +133,12 @@ namespace UTW {
         /// <param name="conn">Load scene for one Network connection</param>
         /// <param name="lookupData">Data to find a scene</param>
         /// <param name="allowStacking">True - create new scene instance | False - find existing scene</param>
+        /// PreferredActiveScene - Set active scene for spawning NO on client.
         private void LoadScene(NetworkConnection conn, SceneLookupData lookupData, bool allowStacking) {
             SceneLoadData sceneLoadData = new SceneLoadData(lookupData);
             sceneLoadData.Options.AllowStacking = allowStacking;
             sceneLoadData.ReplaceScenes = ReplaceOption.OnlineOnly;
+            sceneLoadData.PreferredActiveScene = lookupData;
             InstanceFinder.SceneManager.LoadConnectionScenes(conn, sceneLoadData);
         }
 
@@ -142,20 +146,12 @@ namespace UTW {
             SceneLoadData sceneLoadData = new SceneLoadData(lookupData);
             sceneLoadData.Options.AllowStacking = allowStacking;
             sceneLoadData.ReplaceScenes = ReplaceOption.OnlineOnly;
+            sceneLoadData.PreferredActiveScene = lookupData;
             InstanceFinder.SceneManager.LoadConnectionScenes(conns, sceneLoadData);
         }
 
-        private Scene GetScene(NetworkConnection conn) {
-            Scene scene = new Scene();
-            foreach (var pair in InstanceFinder.SceneManager.SceneConnections) {
-                if (pair.Key.name.Contains(GameSceneUtils.LOBBY_SCENE)) {
-                    foreach (var connection in pair.Value) {
-                        if (connection.ClientId == conn.ClientId) {
-                            scene = pair.Key;
-                        }
-                    }
-                }
-            }
+        public Scene GetSceneForClient(NetworkConnection conn) {
+            Scene scene = conn.Scenes.First();
             return scene;
         }
 
