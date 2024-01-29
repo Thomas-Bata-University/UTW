@@ -8,7 +8,9 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 //using UnityEngine.UIElements;
 
@@ -18,48 +20,51 @@ public class LobbyManager : NetworkBehaviour
     public GameObject playerPrefab;
     public Button SpawnButton;
     public int LobbyManagerId;
-    Transform playerPosition;
-    Preset playerPreset;
-    // public delegate void ClientJoinLobby(NetworkConnection networkConnection);
-    // public event ClientJoinLobby OnClientJoinLobby;
-    public delegate void SpawnPointChange(NetworkConnection networkConnection, Preset preset, Transform position);
+    public GameObject Canvas;
+    public GameObject mapa;
 
-    //  
-    SceneManager sceneManager = new();
+   //  public delegate void ClientJoinLobby(NetworkConnection networkConnection);
+  //   public static event ClientJoinLobby OnClientJoinLobby;
+    public delegate void SpawnPointChange(NetworkConnection networkConnection, Transform position);
     public event SpawnPointChange OnSpawnPointChange;
-    NetworkConnection pripojeni;
-
+    public delegate void PresetChange(NetworkConnection networkConnection, Preset preset);
+    public event PresetChange OnPresetChange;
+    
+    
     //    private Dictionary<int,LobbyData> LobbyDataList = new Dictionary<int,LobbyData>();
     // Start is called before the first frame update
     void Start()
     {
-        sceneManager.OnClientJoinLobby += NewClient;
+        if (InstanceFinder.IsServer)
+        {
+        Canvas = GameObject.Find("SpawnCanvas");
         SpawnMap();
+        }
     }
-    void NewClient(NetworkConnection networkConnection)
+
+
+    [ServerRpc(RequireOwnership = false)]
+    void UpdateSpawn(NetworkConnection networkConnection, Transform position)
     {
-        pripojeni = networkConnection;
-        GameObject tank = Instantiate(playerPrefab);
-        InstanceFinder.ServerManager.Spawn(tank, networkConnection);
+        Debug.Log("UpdateSpawn");
+
+        OnSpawnPointChange.Invoke(networkConnection,position);
+    }
+    void PresetChanged(Preset preset)
+    {
+        UpdatePreset(InstanceFinder.ClientManager.Connection, preset);
     }
 
     [ServerRpc(RequireOwnership = false)]
-    void UpdateTank()
+    void UpdatePreset(NetworkConnection networkConnection, Preset preset)
     {
-        OnSpawnPointChange.Invoke(pripojeni, playerPreset, playerPosition);
+        OnPresetChange.Invoke(networkConnection, preset);
     }
-
-    void UpdateSpawn(Transform position)
-    {
-        playerPosition = position;
-        UpdateTank();
-    }
-
     void SpawnMap()
     {
         Vector3 pozice = new Vector3(0, 0, 0);
-        string mapname = "Greenmap";   //zde místo Greenmap budeme naèítat jméno mapy, kterou chceme zobrazit
-        Instantiate(Resources.Load("maps/" + mapname), pozice, Quaternion.identity);
+        var mapobject = Instantiate(mapa, pozice, Quaternion.identity);
+        InstanceFinder.ServerManager.Spawn(mapobject);
         GameObject place;
         Boolean done = false;
         int i = 1;
@@ -68,9 +73,10 @@ public class LobbyManager : NetworkBehaviour
             place = GameObject.Find("Spawn" + i.ToString());
             if (place != null)
             {
-                Button button = Instantiate(SpawnButton, place.transform);
-                button.onClick.AddListener(() => UpdateSpawn(place.transform));
-                button.name = i.ToString();
+                Button button = Instantiate(SpawnButton, Canvas.transform);
+                button.transform.position = new Vector3(place.transform.position.x, place.transform.position.y+10, place.transform.position.z);
+                button.onClick.AddListener(() => UpdateSpawn(InstanceFinder.ClientManager.Connection, place.transform));
+                InstanceFinder.ServerManager.Spawn(button.gameObject);
                 i++;
             }
             else
@@ -80,6 +86,34 @@ public class LobbyManager : NetworkBehaviour
         }
     }
 
+
+    private void Awake()
+    {
+        if (InstanceFinder.IsServer)
+        {
+     //       SceneManager.OnClientJoinLobby += ClientJoin;
+        }
+    }
+
+    private void ClientJoin(NetworkConnection conn)
+    {
+        Scene scene = GetComponent<NetworkObject>().gameObject.scene;
+        if (conn.Scenes.First().handle == scene.handle)
+        {
+            GameObject tank = Instantiate(playerPrefab);
+            InstanceFinder.ServerManager.Spawn(tank, conn);
+            PresetDropdown.OnPresetChanged += PresetChanged;
+            Debug.Log($"TEST FROM LOBBY MANAGER - CLIENT: {conn.ClientId} JOINED LOBBY {scene.name}");
+        }
+    }
+
+    private void OnDestroy()
+    {
+        if (InstanceFinder.IsServer)
+        {
+            SceneManager.OnClientJoinLobby -= ClientJoin;
+        }
+    }
     /*
         public void SetPos(FishNet.Connection.NetworkConnection networkConnection, Transform position)
         {
