@@ -1,6 +1,7 @@
 using FishNet;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.UI;
 
 public class PresetDropdown : MonoBehaviour {
@@ -11,7 +12,8 @@ public class PresetDropdown : MonoBehaviour {
     private List<Preset> Presets;
     private Preset SelectedPreset;
     private Database assetDatabase;
-
+    public delegate void PresetSelect(Preset preset);
+    public static event PresetSelect OnPresetChanged;
     private void Start() {
         if (InstanceFinder.IsServer) return;
         assetDatabase = FindObjectOfType<Database>();
@@ -35,6 +37,8 @@ public class PresetDropdown : MonoBehaviour {
         SelectedPreset = Presets.Find(x => x.presetName == _presetDropdown.options[_presetDropdown.value].text);
 
         assetDatabase.SelectedPreset = SelectedPreset;
+        OnPresetChanged.Invoke(SelectedPreset);
+
     }
 
 }
