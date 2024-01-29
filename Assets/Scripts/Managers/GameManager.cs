@@ -11,16 +11,12 @@ namespace Managers
 {
     public sealed class GameManager : NetworkBehaviour
     {
-        private const string DataPath = "Assets/Resources/Users";
-
         public static GameManager Instance { get; private set; }
 
         private readonly Dictionary<string, PlayerData> _playersData = new();
 
         [SyncObject] public readonly SyncList<Player> players = new();
 
-
-        private const string FactionsDataPath = "Assets/Resources/Factions/Factions.json";
 
         [SyncObject] private readonly SyncDictionary<int, Faction> _factions = new();
 
@@ -41,12 +37,11 @@ namespace Managers
 
         private void LoadUsers()
         {
-            var dir = new DirectoryInfo(DataPath);
-            var info = dir.GetFiles("*.*");
+            var files = Directory.GetFiles(Application.streamingAssetsPath + "/Users/", "*.json");
 
-            foreach (var fi in info)
+            foreach (var fi in files)
             {
-                var reader = new StreamReader(DataPath);
+                var reader = new StreamReader(fi);
 
                 var jsonString = reader.ReadToEnd();
                 var data = JsonUtility.FromJson<PlayerData>(jsonString);
@@ -72,7 +67,7 @@ namespace Managers
         {
             var data = new PlayerData(player.name, (ulong)player.ObjectId, string.Empty);
             var json = JsonUtility.ToJson(data);
-            var writer = new StreamWriter(DataPath + $"/{data.PlayerName}.json");
+            var writer = new StreamWriter(Application.streamingAssetsPath + "/Users/" + $"/{data.PlayerName}.json");
             writer.Write(json);
             return data;
         }
@@ -84,8 +79,8 @@ namespace Managers
 
         private void LoadFactionsFromJson()
         {
-            var reader = new StreamReader(FactionsDataPath);
-
+            var files = Directory.GetFiles(Application.streamingAssetsPath + "/Factions/", "*.json");
+            var reader = new StreamReader(files.First());
             var jsonString = reader.ReadToEnd();
             var data = JsonUtility.FromJson<FactionsData>(jsonString);
 
