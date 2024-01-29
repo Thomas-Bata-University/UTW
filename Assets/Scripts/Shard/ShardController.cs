@@ -7,7 +7,7 @@ using UnityEngine.UI;
 public class ShardController : MonoBehaviour {
 
     [SerializeField]
-    private SceneManager sceneManager;
+    private UTW.SceneManager sceneManager;
 
     [Header("UI")]
     public Button buttonPrefab;
@@ -15,11 +15,11 @@ public class ShardController : MonoBehaviour {
     public TextMeshProUGUI statusText;
 
     public void CreateLobby() {
-        SceneManager.Instance.CreateLobby(InstanceFinder.ClientManager.Connection);
+        UTW.SceneManager.Instance.CreateLobby(InstanceFinder.ClientManager.Connection);
     }
 
     public void ConnectToLobby(int handle) {
-        SceneManager.Instance.ConnectToLobby(InstanceFinder.ClientManager.Connection, handle);
+        UTW.SceneManager.Instance.ConnectToLobby(InstanceFinder.ClientManager.Connection, handle);
     }
 
     public void RefreshLobby() {
@@ -27,13 +27,15 @@ public class ShardController : MonoBehaviour {
 
         ChangeStatusText("Refreshing...");
         ClearButtons();
-        SceneManager.Instance.RefreshLobby(InstanceFinder.ClientManager.Connection);
+        UTW.SceneManager.Instance.GetLobbyData(InstanceFinder.ClientManager.Connection);
     }
 
-    public void CreateLobbyButtons(List<SceneData> sceneDataList) {
-        sceneDataList.ForEach(sceneData => CreateButton(sceneData));
+    public void CreateLobbyButtons(Dictionary<int, SceneData> lobbyData) {
+        foreach (var sceneData in lobbyData) {
+            CreateButton(sceneData.Value);
+        }
 
-        if (sceneDataList.Count > 0) {
+        if (lobbyData.Count > 0) {
             ChangeStatusText("");
         } else {
             ChangeStatusText("No Lobby found.");
