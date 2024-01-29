@@ -9,22 +9,25 @@ using System.Collections.Generic;
 using System.Linq;
 using TMPro;
 using Unity.VisualScripting;
+using UnityEditor.Presets;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+//using UnityEngine.UIElements;
 //using UnityEngine.UIElements;
 
 public class LobbyManager : NetworkBehaviour
 {
 
-    public GameObject playerPrefab;
+    public GameObject V_Man;
     public Button SpawnButton;
     public int LobbyManagerId;
     public GameObject Canvas;
     public GameObject mapa;
+    private Database assetDatabase;
 
-   //  public delegate void ClientJoinLobby(NetworkConnection networkConnection);
-  //   public static event ClientJoinLobby OnClientJoinLobby;
+    //  public delegate void ClientJoinLobby(NetworkConnection networkConnection);
+    //   public static event ClientJoinLobby OnClientJoinLobby;
     public delegate void SpawnPointChange(NetworkConnection networkConnection, Transform position);
     public event SpawnPointChange OnSpawnPointChange;
     public delegate void PresetChange(NetworkConnection networkConnection, Preset preset);
@@ -35,6 +38,7 @@ public class LobbyManager : NetworkBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        assetDatabase = FindObjectOfType<Database>();
         if (InstanceFinder.IsServer)
         {
         Canvas = GameObject.Find("SpawnCanvas");
@@ -44,20 +48,32 @@ public class LobbyManager : NetworkBehaviour
 
 
     [ServerRpc(RequireOwnership = false)]
-    void UpdateSpawn(NetworkConnection networkConnection, Transform position)
+    public void UpdateSpawn(NetworkConnection networkConnection, Transform position)
     {
         Debug.Log("UpdateSpawn");
+        PlayerPrefs.SetFloat("coord_x", position.position.x);
+        PlayerPrefs.SetFloat("coord_y", position.position.y -100);
+        PlayerPrefs.SetFloat("coord_z", position.position.z);
+
+        //       VehicleManager.Instance.RpcUpdatePosition(networkConnection, position);
+        VehicleManager.Instance.SpawnVehicle(networkConnection, assetDatabase.SelectedPreset, position);
 
         OnSpawnPointChange.Invoke(networkConnection,position);
     }
     void PresetChanged(Preset preset)
     {
-        UpdatePreset(InstanceFinder.ClientManager.Connection, preset);
+        Vector3 pozice = new Vector3(PlayerPrefs.GetFloat("coord_x"), PlayerPrefs.GetFloat("coord_y"), PlayerPrefs.GetFloat("coord_z"));
+        GameObject emptyGO = new GameObject();
+        Transform pos = emptyGO.transform;
+        pos.position = pozice;
+        Destroy(emptyGO);
+        UpdatePreset(InstanceFinder.ClientManager.Connection, preset, pos);
     }
 
     [ServerRpc(RequireOwnership = false)]
-    void UpdatePreset(NetworkConnection networkConnection, Preset preset)
+    void UpdatePreset(NetworkConnection networkConnection, Preset preset, Transform position)
     {
+        VehicleManager.Instance.SpawnVehicle(networkConnection, preset, position);
         OnPresetChange.Invoke(networkConnection, preset);
     }
     void SpawnMap()
@@ -91,7 +107,11 @@ public class LobbyManager : NetworkBehaviour
     {
         if (InstanceFinder.IsServer)
         {
-     //       SceneManager.OnClientJoinLobby += ClientJoin;
+            PlayerPrefs.SetFloat("coord_x", 0);
+            PlayerPrefs.SetFloat("coord_y", -100);
+            PlayerPrefs.SetFloat("coord_z", 0);
+
+            UTW.SceneManager.OnClientJoinLobby += ClientJoin;
         }
     }
 
@@ -100,7 +120,7 @@ public class LobbyManager : NetworkBehaviour
         Scene scene = GetComponent<NetworkObject>().gameObject.scene;
         if (conn.Scenes.First().handle == scene.handle)
         {
-            GameObject tank = Instantiate(playerPrefab);
+            GameObject tank = Instantiate(V_Man);
             InstanceFinder.ServerManager.Spawn(tank, conn);
             PresetDropdown.OnPresetChanged += PresetChanged;
             Debug.Log($"TEST FROM LOBBY MANAGER - CLIENT: {conn.ClientId} JOINED LOBBY {scene.name}");
@@ -111,7 +131,7 @@ public class LobbyManager : NetworkBehaviour
     {
         if (InstanceFinder.IsServer)
         {
-            SceneManager.OnClientJoinLobby -= ClientJoin;
+            UTW.SceneManager.OnClientJoinLobby -= ClientJoin;
         }
     }
     /*

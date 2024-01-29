@@ -27,14 +27,15 @@ public class VehicleManager : NetworkBehaviour
         if (Instance == null)
             Instance = this;
         assetDatabase = FindObjectOfType<Database>();
+        
     }
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.F3))
-        {
-            SpawnVehicle(InstanceFinder.ClientManager.Connection, assetDatabase.SelectedPreset, this.transform);
-        }
+//        if (Input.GetKeyDown(KeyCode.F3))
+  //      {
+    //        SpawnVehicle(InstanceFinder.ClientManager.Connection, assetDatabase.SelectedPreset, this.transform);
+      //  }
     }
 
     [ServerRpc(RequireOwnership = false)]
