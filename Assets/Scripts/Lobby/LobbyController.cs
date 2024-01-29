@@ -1,17 +1,32 @@
 ﻿using FishNet;
 using FishNet.Connection;
-using FishNet.Object;
+using FishNet.Managing.Scened;
 using UnityEngine;
 
-public class LobbyController : MonoBehaviour
-{
-    public delegate void GameStart();
-    public event GameStart OnGameStart;
-    public GameObject UI;
-    public GameObject LobbyManager;
-    public void DisconnectFromLobby()
-    {
-        SceneManager.Instance.DisconnectLobby(InstanceFinder.ClientManager.Connection);
+public class LobbyController : MonoBehaviour {
+
+    public GameObject lobbyManagerPrefab;
+
+    private UTW.SceneManager sceneManager;
+    private NetworkConnection conn;
+
+    private void Awake() {
+        if (InstanceFinder.IsServer) return;
+
+        InstanceFinder.SceneManager.OnLoadEnd += SceneLoadEnd;
+        sceneManager = UTW.SceneManager.Instance;
+        conn = InstanceFinder.ClientManager.Connection;
+    }
+
+    private void SceneLoadEnd(SceneLoadEndEventArgs args) {
+
+        sceneManager.InitializeLobbyManager(lobbyManagerPrefab, conn);
+        sceneManager.Connected(conn);
+    }
+
+    public void DisconnectFromLobby() {
+        sceneManager.RemoveLobbyData(conn);
+        sceneManager.DisconnectLobby(conn);
     }
 
     public void StartGame()
