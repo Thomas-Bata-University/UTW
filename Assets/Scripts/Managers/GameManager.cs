@@ -13,9 +13,7 @@ namespace Managers
     {
         public static GameManager Instance { get; private set; }
 
-        private readonly Dictionary<string, PlayerData> _playersData = new();
-
-        [SyncObject] public readonly SyncList<Player> players = new();
+        [SyncObject] private readonly SyncDictionary<string, PlayerData> _playersData = new();
 
 
         [SyncObject] private readonly SyncDictionary<int, Faction> _factions = new();
@@ -49,33 +47,27 @@ namespace Managers
             }
         }
 
-        public PlayerData CreateOrSelectPlayer(Player player)
+        public PlayerData CreateOrSelectPlayer(string playerName)
         {
             // If found fill player with its json data
-            if (_playersData.TryGetValue(player.PlayerName, out var existingPlayerData))
+            if (_playersData.TryGetValue(playerName, out var existingPlayerData))
             {
-                players.Add(player);
                 return existingPlayerData;
             }
-
-            // If not found, create and return new json
-            players.Add(player);
-            return _playersData[player.PlayerName] = CreatePlayerData(player);
+            
+            return _playersData[playerName] = CreatePlayerData(playerName);
         }
 
-        private PlayerData CreatePlayerData(Player player)
+        private PlayerData CreatePlayerData(string playerName)
         {
-            var data = new PlayerData(player.name, (ulong)player.ObjectId, string.Empty);
-            var json = JsonUtility.ToJson(data);
-            var writer = new StreamWriter(Application.streamingAssetsPath + "/Users/" + $"/{data.PlayerName}.json");
+            var player = new PlayerData(playerName, default, string.Empty);
+            var json = JsonUtility.ToJson(player);
+            var writer = new StreamWriter(Application.streamingAssetsPath + "/Users/" + $"/{player.PlayerName}.json");
             writer.Write(json);
-            return data;
+            return player;
         }
 
-        public void RemovePlayer(Player player)
-        {
-            players.Remove(player);
-        }
+
 
         private void LoadFactionsFromJson()
         {
@@ -110,5 +102,6 @@ namespace Managers
 
         public Faction GetFactionByName(string factionName) =>
             _factions.FirstOrDefault(part => part.Value.Name.Equals(factionName)).Value;
+        
     }
 }

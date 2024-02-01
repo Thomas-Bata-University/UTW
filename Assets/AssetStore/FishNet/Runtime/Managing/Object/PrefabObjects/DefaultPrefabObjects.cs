@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using GameKit.Utilities;
 #if UNITY_EDITOR
-using FishNet.Editing;
 using UnityEditor;
 #endif
 using FishNet.Object;

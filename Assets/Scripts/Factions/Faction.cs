@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Xml.Serialization;
 
 namespace Factions
 {
@@ -10,6 +9,10 @@ namespace Factions
         public int Id;
         public string Name;
         [field: NonSerialized] public List<Preset> Presets = new();
+
+        public Faction()
+        {
+        }
 
         public Faction(int id, string name, string[] presetNames)
         {

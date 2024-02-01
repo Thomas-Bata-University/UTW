@@ -12,6 +12,10 @@ public class PlayerData
 
     [CanBeNull] public Faction Faction { get; set; }
 
+    public PlayerData()
+    {
+    }
+
     public PlayerData(string playerName, ulong clientId, string preset)
     {
         PlayerName = playerName;

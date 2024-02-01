@@ -10,7 +10,6 @@ using UnityEngine;
 using UnitySettingsProviderAttribute = UnityEditor.SettingsProviderAttribute;
 using UnitySettingsProvider = UnityEditor.SettingsProvider;
 using FishNet.Configuring;
-using System.Linq;
 
 namespace FishNet.Editing.PrefabCollectionGenerator
 {

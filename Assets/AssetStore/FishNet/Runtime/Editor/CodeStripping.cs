@@ -1,15 +1,8 @@
 ﻿#if UNITY_EDITOR
 
-using FishNet.Configuring;
-using System.IO;
-using UnityEngine;
-using System.Xml.Serialization;
-
 using FishNet.Editing.PrefabCollectionGenerator;
 using UnityEditor.Compilation;
 using UnityEditor.Build.Reporting;
-using UnityEditor;
-using UnityEditor.Build;
 
 namespace FishNet.Configuring
 {

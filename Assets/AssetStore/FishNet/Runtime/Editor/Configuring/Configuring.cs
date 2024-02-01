@@ -1,11 +1,6 @@
 ﻿#if UNITY_EDITOR
 using System.IO;
 using System.Xml.Serialization;
-using UnityEngine;
-using UnityEditor.Compilation;
-using UnityEditor.Build.Reporting;
-using UnityEditor;
-using UnityEditor.Build;
 
 namespace FishNet.Configuring
 {
