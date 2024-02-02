@@ -64,6 +64,7 @@ namespace Managers
             var json = JsonUtility.ToJson(player);
             var writer = new StreamWriter(Application.streamingAssetsPath + "/Users/" + $"/{player.PlayerName}.json");
             writer.Write(json);
+            writer.Close();
             return player;
         }
 

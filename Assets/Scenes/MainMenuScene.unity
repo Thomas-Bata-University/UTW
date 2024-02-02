@@ -1406,7 +1406,7 @@ GameObject:
   - component: {fileID: 1086630056}
   - component: {fileID: 1086630055}
   m_Layer: 5
-  m_Name: Text
+  m_Name: UsernameInputText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2065,7 +2065,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 211a9f6ec51ddc14f908f5acc0cd0423, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _playerPrefab: {fileID: 3711773910966413364, guid: e869115d3e2a649ab8689204e5b899e5, type: 3}
+  _playerPrefab: {fileID: 0}
   _addToDefaultScene: 1
   Spawns: []
 --- !u!4 &2737918088393768157
@@ -2231,7 +2231,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _allowHostAuthentication: 0
-  inputs: {fileID: 0}
   userNameInput: HelloWorld
 --- !u!114 &5868325400731671132
 MonoBehaviour:

@@ -33,7 +33,8 @@ namespace Managers
 
         #endregion
 
-        public TextMeshPro input;
+        TMP_Text input;
+
 
         [SerializeField] private string userNameInput = "HelloWorld";
 
@@ -41,7 +42,8 @@ namespace Managers
         {
             base.InitializeOnce(networkManager);
 
-            input = GameObject.Find("UsernameInputText").GetComponent<TextMeshPro>();
+            var inputGO = GameObject.Find("UsernameInputText");
+            input = inputGO.GetComponent<TMP_Text>();
 
             //Listen for connection state change as client.
             base.NetworkManager.ClientManager.OnClientConnectionState += ClientManager_OnClientConnectionState;
@@ -86,20 +88,18 @@ namespace Managers
             /* If client is already authenticated this could be an attack. Connections
              * are removed when a client disconnects so there is no reason they should
              * already be considered authenticated. */
-            if (conn.Authenticated)
+            /*TODO if (conn.Authenticated)
             {
                 conn.Disconnect(true);
                 return;
-            }
+            }*/
 
             GameManager.Instance.CreateOrSelectPlayer(pb.Username);
-
-            bool correctPassword = (pb.Username == string.Empty);
-            SendAuthenticationResponse(conn, correctPassword);
+            SendAuthenticationResponse(conn, true);
             /* Invoke result. This is handled internally to complete the connection or kick client.
              * It's important to call this after sending the broadcast so that the broadcast
              * makes it out to the client before the kick. */
-            OnAuthenticationResult?.Invoke(conn, correctPassword);
+            OnAuthenticationResult?.Invoke(conn, true);
         }
 
         /// <summary>
