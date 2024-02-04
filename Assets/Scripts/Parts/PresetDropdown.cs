@@ -1,15 +1,20 @@
 using FishNet;
+using FishNet.Connection;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.UI;
 
 public class PresetDropdown : MonoBehaviour {
 
-    [Header("UI")]
-    public Dropdown _presetDropdown;
+    public static UnityAction<NetworkConnection, Preset> OnPresetChange;
 
-    private List<Preset> Presets;
-    private Preset SelectedPreset;
+    [Header("UI")]
+    public TMP_Dropdown _presetDropdown;
+
+    private List<Preset> presets;
+    private Preset selectedPreset;
     private Database assetDatabase;
 
     private void Start() {
@@ -18,23 +23,26 @@ public class PresetDropdown : MonoBehaviour {
 
         _presetDropdown.options.Clear();
 
-        Presets = assetDatabase.presetList;
-        foreach (var preset in Presets) {
-            _presetDropdown.options.Add(new Dropdown.OptionData() { text = preset.presetName });
+        presets = assetDatabase.presetList;
+        foreach (var preset in presets) {
+            _presetDropdown.options.Add(new TMP_Dropdown.OptionData() { text = preset.presetName });
         }
 
-        if (Presets.Count == 0) {
+        if (presets.Count == 0) {
             Debug.Log("No preset found.");
             return;
         }
 
-        SelectedPreset = Presets[0]; //Default
-        assetDatabase.SelectedPreset = SelectedPreset;
+        selectedPreset = presets[0]; //Default
+        _presetDropdown.captionText.text = presets[0].presetName;
+        assetDatabase.SelectedPreset = selectedPreset;
     }
     public void OnPresetSelected() {
-        SelectedPreset = Presets.Find(x => x.presetName == _presetDropdown.options[_presetDropdown.value].text);
+        selectedPreset = presets.Find(x => x.presetName == _presetDropdown.options[_presetDropdown.value].text);
+        _presetDropdown.captionText.text = selectedPreset.presetName;
 
-        assetDatabase.SelectedPreset = SelectedPreset;
+        assetDatabase.SelectedPreset = selectedPreset;
+        OnPresetChange?.Invoke(InstanceFinder.ClientManager.Connection, selectedPreset);
     }
 
 }

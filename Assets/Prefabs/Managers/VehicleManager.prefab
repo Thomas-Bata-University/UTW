@@ -9,10 +9,10 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5518481256344637915}
-  - component: {fileID: -7087056345022943678}
+  - component: {fileID: 8582286189715555194}
   - component: {fileID: 5408540398499684965}
   m_Layer: 0
-  m_Name: LobbyManager
+  m_Name: VehicleManager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -33,7 +33,7 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &-7087056345022943678
+--- !u!114 &8582286189715555194
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -42,17 +42,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 40524906591757916}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b0dbbc15ce854cc43b42f38a240bb7b3, type: 3}
+  m_Script: {fileID: 11500000, guid: 9ae0bc01c4f3e1f4a95b8d7fbeb736cf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   _componentIndexCache: 0
   _addedNetworkObject: {fileID: 5408540398499684965}
   _networkObjectCache: {fileID: 5408540398499684965}
-  defaultMap: {fileID: 7934865706986916540, guid: e492e0c133a0c864cab69b4fe15eb20f, type: 3}
-  spawnpointButtonPrefab: {fileID: 5218604828139188153, guid: 2adfddad3882a754687999a63e5b82f9, type: 3}
-  lockedSpawnpoint: {r: 1, g: 0, b: 0, a: 1}
-  unlockedSpawnpoint: {r: 0, g: 1, b: 0.070261955, a: 1}
-  vehicleManagerPrefab: {fileID: 40524906591757916, guid: 9d939ae3213216b4c9a44f878c398b5c, type: 3}
 --- !u!114 &5408540398499684965
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -69,7 +64,7 @@ MonoBehaviour:
   <ComponentIndex>k__BackingField: 0
   <PredictedSpawn>k__BackingField: {fileID: 0}
   _networkBehaviours:
-  - {fileID: -7087056345022943678}
+  - {fileID: 8582286189715555194}
   <ParentNetworkObject>k__BackingField: {fileID: 0}
   <ChildNetworkObjects>k__BackingField: []
   SerializedTransformProperties:
@@ -81,8 +76,8 @@ MonoBehaviour:
   _initializeOrder: 0
   _defaultDespawnType: 0
   NetworkObserver: {fileID: 0}
-  <PrefabId>k__BackingField: 1
+  <PrefabId>k__BackingField: 24
   <SpawnableCollectionId>k__BackingField: 0
   _scenePathHash: 0
   <SceneId>k__BackingField: 0
-  <AssetPathHash>k__BackingField: 893403675455714406
+  <AssetPathHash>k__BackingField: 12375179032024147450

@@ -15,6 +15,7 @@ namespace UTW {
         public static SceneManager Instance;
 
         public static UnityAction<NetworkConnection> OnClientJoinLobby;
+        public static UnityAction<NetworkConnection> OnClientDisconnectLobby;
 
         private Dictionary<int, SceneData> lobbyData = new Dictionary<int, SceneData>();
 
@@ -41,6 +42,7 @@ namespace UTW {
         public void DisconnectLobby(NetworkConnection conn) {
             Debug.Log($"Disconnecting client ID: {conn.ClientId} from lobby...");
             LoadScene(conn, new SceneLookupData(GameSceneUtils.SHARD_SCENE), false);
+            OnClientDisconnectLobby?.Invoke(conn);
         }
 
         [ServerRpc(RequireOwnership = false)]
@@ -60,10 +62,6 @@ namespace UTW {
         [ServerRpc(RequireOwnership = false)]
         public void Connected(NetworkConnection conn) {
             UpdatePlayerCount(conn, 1);
-            ClientConnected(conn);
-        }
-
-        public void ClientConnected(NetworkConnection conn) {
             OnClientJoinLobby?.Invoke(conn);
         }
 
