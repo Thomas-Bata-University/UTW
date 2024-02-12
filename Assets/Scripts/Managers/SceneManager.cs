@@ -39,13 +39,6 @@ namespace UTW {
         }
 
         [ServerRpc(RequireOwnership = false)]
-        public void DisconnectLobby(NetworkConnection conn) {
-            Debug.Log($"Disconnecting client ID: {conn.ClientId} from lobby...");
-            LoadScene(conn, new SceneLookupData(GameSceneUtils.SHARD_SCENE), false);
-            OnClientDisconnectLobby?.Invoke(conn);
-        }
-
-        [ServerRpc(RequireOwnership = false)]
         public void InitializeLobbyManager(GameObject lobbyManagerPrefab, NetworkConnection conn) {
             Scene scene = GetSceneForClient(conn);
 
@@ -55,13 +48,14 @@ namespace UTW {
 
             GameObject go = Instantiate(lobbyManagerPrefab);
             go.name = lobbyManagerPrefab.name;
-            InstanceFinder.ServerManager.Spawn(go, null, scene);
+            InstanceFinder.ServerManager.Spawn(go, conn, scene);
             Debug.Log($"{go.name} successfully initialized.");
+            ActivateStartButtonForLobbyOwner(conn);
         }
 
         [ServerRpc(RequireOwnership = false)]
         public void Connected(NetworkConnection conn) {
-            UpdatePlayerCount(conn, 1);
+            AddClientData(conn);
             OnClientJoinLobby?.Invoke(conn);
         }
 
@@ -70,7 +64,12 @@ namespace UTW {
             LoadScene(InstanceFinder.SceneManager.SceneConnections.First(pair => pair.Value.Contains(conn)).Value.ToArray(),
                 new SceneLookupData(GameSceneUtils.GAME_SCENE),
                 false);
-            RemoveLobbyData(conn);
+            Disconnect(conn);
+        }
+
+        [TargetRpc]
+        private void ActivateStartButtonForLobbyOwner(NetworkConnection conn) {
+            FindObjectOfType<LobbyController>().ActivateStartButton();
         }
         #endregion
 
@@ -92,26 +91,45 @@ namespace UTW {
             lobbyData.Add(scene.handle, data);
         }
 
-        public void UpdatePlayerCount(NetworkConnection conn, int count) {
+        private void AddClientData(NetworkConnection conn) {
+            var data = GetData(conn);
+            if (data == null) return;
+            data.playerCount += 1;
+            data.clients.Add(conn);
+        }
+
+        private void RemoveClientData(NetworkConnection conn) {
+            var data = GetData(conn);
+            if (data == null) return;
+            data.playerCount -= 1;
+            data.clients.Remove(conn);
+        }
+
+        private SceneData GetData(NetworkConnection conn) {
             Scene scene = GetSceneForClient(conn);
             foreach (var dataPair in lobbyData) {
                 if (dataPair.Key == scene.handle) {
-                    dataPair.Value.playerCount += count;
+                    return dataPair.Value;
                 }
             }
+            return null;
         }
 
         [ServerRpc(RequireOwnership = false)]
-        public void RemoveLobbyData(NetworkConnection conn) {
-            foreach (var dataPair in lobbyData) {
-                if (dataPair.Value.lobbyOwner == conn) {
-                    Debug.Log($"Removing data for owner: {conn.ClientId}");
-                    lobbyData.Remove(GetSceneForClient(conn).handle);
-                    return;
-                }
+        public void Disconnect(NetworkConnection conn) {
+            var data = GetData(conn);
+            if (data != null && data.lobbyOwner == conn) {
+                Debug.Log($"Removing data for owner: {conn.ClientId}");
+                lobbyData.Remove(GetSceneForClient(conn).handle);
+                Debug.Log($"Disconnecting all clients from lobby...");
+                LoadScene(data.clients.ToArray(), new SceneLookupData(GameSceneUtils.SHARD_SCENE), false);
+                return;
             }
-            UpdatePlayerCount(conn, -1);
             Debug.Log($"Updating data for cliend ID: {conn.ClientId}");
+            RemoveClientData(conn);
+            Debug.Log($"Disconnecting client ID: {conn.ClientId} from lobby...");
+            LoadScene(conn, new SceneLookupData(GameSceneUtils.SHARD_SCENE), false);
+            OnClientDisconnectLobby?.Invoke(conn);
         }
 
         [ServerRpc(RequireOwnership = false)]
@@ -121,7 +139,10 @@ namespace UTW {
 
         [TargetRpc]
         public void GetLobbyDataResponse(NetworkConnection conn, Dictionary<int, SceneData> lobbyData) {
-            FindObjectOfType<ShardController>().CreateLobbyButtons(lobbyData);
+            ShardController sc = FindObjectOfType<ShardController>();
+            if (sc != null) {
+                sc.CreateLobbyButtons(lobbyData);
+            }
         }
         #endregion
 
@@ -149,7 +170,7 @@ namespace UTW {
         }
 
         public Scene GetSceneForClient(NetworkConnection conn) {
-            Scene scene = conn.Scenes.First();
+            Scene scene = conn.Scenes.First(x => x.name.Equals(GameSceneUtils.LOBBY_SCENE));
             return scene;
         }
 

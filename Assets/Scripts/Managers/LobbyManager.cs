@@ -63,11 +63,9 @@ public class LobbyManager : NetworkBehaviour {
     /// </summary>
     /// <param name="mapToSpawn">Prefab</param>
     private void InitializeMap(GameObject mapToSpawn) {
-        GameObject parent = GameObject.FindGameObjectsWithTag(GameTagsUtils.MAP).First(x => x.scene.handle == gameObject.scene.handle);
-
-        GameObject map = Instantiate(mapToSpawn, parent.transform);
+        GameObject map = Instantiate(mapToSpawn);
         activeMap = map;
-        map.GetComponent<NetworkObject>().SetParent(parent.GetComponent<NetworkObject>());
+
         Spawn(map);
 
         InitializeButtons();
@@ -146,7 +144,6 @@ public class LobbyManager : NetworkBehaviour {
     }
 
     private void ClientDisconnect(NetworkConnection conn) {
-        //TODO if client is lobby owner, disconnect all clients
         Unlock(conn);
     }
 
@@ -164,6 +161,9 @@ public class LobbyManager : NetworkBehaviour {
     private void OnDestroy() {
         if (InstanceFinder.IsServer) {
             UTW.SceneManager.OnClientJoinLobby -= ClientJoin;
+            UTW.SceneManager.OnClientDisconnectLobby -= ClientDisconnect;
+        } else {
+            positions.OnChange -= OnChange;
         }
     }
 

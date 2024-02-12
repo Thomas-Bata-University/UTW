@@ -1,4 +1,5 @@
 using FishNet;
+using System.Collections;
 using System.Collections.Generic;
 using Managers;
 using TMPro;
@@ -15,12 +16,23 @@ public class ShardController : MonoBehaviour {
     public GridLayoutGroup layoutGroup;
     public TextMeshProUGUI statusText;
 
+    private void Start() {
+        ChangeStatusText("Refreshing...");
+        StartCoroutine(LateStart());
+    }
+
+    //TODO add timer for client to prevent lobby creation
     public void CreateLobby() {
         UTW.SceneManager.Instance.CreateLobby(InstanceFinder.ClientManager.Connection);
     }
 
     public void ConnectToLobby(int handle) {
         UTW.SceneManager.Instance.ConnectToLobby(InstanceFinder.ClientManager.Connection, handle);
+    }
+
+    public IEnumerator LateStart() {
+        yield return new WaitForSeconds(1);
+        RefreshLobby();
     }
 
     public void RefreshLobby() {

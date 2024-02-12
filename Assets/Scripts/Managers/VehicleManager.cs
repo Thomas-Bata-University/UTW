@@ -9,10 +9,16 @@ public class VehicleManager : NetworkBehaviour {
         UTW.SceneManager.OnClientDisconnectLobby += Destroy;
     }
 
-    [ServerRpc]
     public void SpawnTank(NetworkConnection conn, Preset preset) {
+        if (!IsOwner) return;
+        SpawnTankServerRpc(conn, preset);
+    }
+
+    //TODO spawn tank
+    [ServerRpc]
+    public void SpawnTankServerRpc(NetworkConnection conn, Preset preset) {
         if (FindObjectOfType<LobbyManager>().CanSpawnTank(conn)) {
-            Debug.Log($"Tank spawned for client ID: {conn.ClientId} preset: {preset}");
+            SpawnTankResponse(conn, $"Tank spawned for client ID: {conn.ClientId} preset: {preset}");
         } else {
             SpawnTankResponse(conn, "You must select spawnpoint to spawn tank");
         }
@@ -30,6 +36,7 @@ public class VehicleManager : NetworkBehaviour {
 
     private void OnDestroy() {
         PresetDropdown.OnPresetChange -= SpawnTank;
+        UTW.SceneManager.OnClientDisconnectLobby -= Destroy;
     }
 
 }

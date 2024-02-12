@@ -8,6 +8,7 @@ public class LobbyController : MonoBehaviour {
 
     public GameObject lobbyManagerPrefab;
 
+    [SerializeField] private GameObject startButton;
     private UTW.SceneManager sceneManager;
     private NetworkConnection conn;
 
@@ -17,20 +18,23 @@ public class LobbyController : MonoBehaviour {
         InstanceFinder.SceneManager.OnLoadEnd += SceneLoadEnd;
         sceneManager = UTW.SceneManager.Instance;
         conn = InstanceFinder.ClientManager.Connection;
+        startButton.SetActive(false);
     }
 
     private void SceneLoadEnd(SceneLoadEndEventArgs args) {
-
         sceneManager.InitializeLobbyManager(lobbyManagerPrefab, conn);
         sceneManager.Connected(conn);
     }
 
     public void DisconnectFromLobby() {
-        sceneManager.RemoveLobbyData(conn);
-        sceneManager.DisconnectLobby(conn);
+        sceneManager.Disconnect(conn);
     }
 
-    public void StartGame() { //TODO-YIRO show button only to lobby owner
+    public void ActivateStartButton() {
+        startButton.SetActive(true);
+    }
+
+    public void StartGame() {
         sceneManager.StartGame(conn);
     }
 

@@ -1,4 +1,5 @@
 using FishNet.Connection;
+using System.Collections.Generic;
 
 public class SceneData {
 
@@ -7,6 +8,7 @@ public class SceneData {
     public string lobbyName;
     public int playerCount;
     public NetworkConnection lobbyOwner;
+    public List<NetworkConnection> clients = new List<NetworkConnection>();
 
     public SceneData() {
 
