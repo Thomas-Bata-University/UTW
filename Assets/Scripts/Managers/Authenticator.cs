@@ -16,11 +16,6 @@ namespace Managers
         public string Username;
     }
 
-    public struct Host1UsernameBroadcast : IBroadcast
-    {
-        public string Password;
-    }
-
     public class Authenticator : HostAuthenticator
     {
         #region Public.
@@ -45,11 +40,8 @@ namespace Managers
             var inputGO = GameObject.Find("UsernameInputText");
             input = inputGO.GetComponent<TMP_Text>();
 
-            //Listen for connection state change as client.
             base.NetworkManager.ClientManager.OnClientConnectionState += ClientManager_OnClientConnectionState;
-            //Listen for broadcast from client. Be sure to set requireAuthentication to false.
             base.NetworkManager.ServerManager.RegisterBroadcast<UsernameBroadcast>(OnUsernameBroadcast, false);
-            //Listen to response from server.
             base.NetworkManager.ClientManager.RegisterBroadcast<ResponseBroadcast>(OnResponseBroadcast);
         }
 
@@ -58,11 +50,6 @@ namespace Managers
         /// </summary>
         private void ClientManager_OnClientConnectionState(ClientConnectionStateArgs args)
         {
-            /* If anything but the started state then exit early.
-             * Only try to authenticate on started state. The server
-             * doesn't have to send an authentication request before client
-             * can authenticate, that is entirely optional and up to you. In this
-             * example the client tries to authenticate soon as they connect. */
             if (args.ConnectionState != LocalConnectionState.Started)
                 return;
             //Authentication was sent as host, no need to authenticate normally.
@@ -85,20 +72,12 @@ namespace Managers
         /// <param name="pb"></param>
         private void OnUsernameBroadcast(NetworkConnection conn, UsernameBroadcast pb)
         {
-            /* If client is already authenticated this could be an attack. Connections
-             * are removed when a client disconnects so there is no reason they should
-             * already be considered authenticated. */
-            /*TODO if (conn.Authenticated)
-            {
-                conn.Disconnect(true);
-                return;
-            }*/
+            var player = GameManager.Instance.CreateOrSelectPlayer(pb.Username);
+            player.ClientConnection = conn.ClientId;
+            Debug.Log($"Player {player.PlayerName} authenticated!");
 
-            GameManager.Instance.CreateOrSelectPlayer(pb.Username);
             SendAuthenticationResponse(conn, true);
-            /* Invoke result. This is handled internally to complete the connection or kick client.
-             * It's important to call this after sending the broadcast so that the broadcast
-             * makes it out to the client before the kick. */
+
             OnAuthenticationResult?.Invoke(conn, true);
         }
 
@@ -117,9 +96,6 @@ namespace Managers
         /// </summary>
         private void SendAuthenticationResponse(NetworkConnection conn, bool authenticated)
         {
-            /* Tell client if they authenticated or not. This is
-             * entirely optional but does demonstrate that you can send
-             * broadcasts to client on pass or fail. */
             ResponseBroadcast rb = new ResponseBroadcast()
             {
                 Passed = authenticated

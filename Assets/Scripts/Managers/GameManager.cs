@@ -54,9 +54,11 @@ namespace Managers
             {
                 return existingPlayerData;
             }
-            
-            return _playersData[playerName] = CreatePlayerData(playerName);
+
+            var data = _playersData[playerName] = CreatePlayerData(playerName);
+            return data;
         }
+        
 
         private PlayerData CreatePlayerData(string playerName)
         {
@@ -67,7 +69,6 @@ namespace Managers
             writer.Close();
             return player;
         }
-
 
 
         private void LoadFactionsFromJson()
@@ -101,8 +102,10 @@ namespace Managers
 
         public Faction GetFactionById(int guid) => _factions[guid];
 
+        public PlayerData GetPlayerByConnection(int clientId) =>
+            _playersData.Values.First(playerData => playerData.ClientConnection.Equals(clientId));
+
         public Faction GetFactionByName(string factionName) =>
             _factions.FirstOrDefault(part => part.Value.Name.Equals(factionName)).Value;
-        
     }
 }

@@ -6,20 +6,24 @@ using JetBrains.Annotations;
 public class PlayerData
 {
     public string PlayerName;
-    public ulong ClientId;
+
+    [NonSerialized] public int ClientConnection;
+
     public string Preset;
     public int FactionId = 0;
 
     [CanBeNull] public Faction Faction { get; set; }
 
+    [NonSerialized] public string sceneName;
+
     public PlayerData()
     {
     }
 
-    public PlayerData(string playerName, ulong clientId, string preset)
+    public PlayerData(string playerName, int clientConnection, string preset)
     {
         PlayerName = playerName;
-        ClientId = clientId;
+        ClientConnection = clientConnection;
         Preset = preset;
     }
 }
