@@ -1,13 +1,29 @@
-public struct PlayerData
-{
-    public string PlayerName { get; private set; }
-    public ulong ClientId { get; private set; }
-    public string Preset { get; private set; }
+using System;
+using Factions;
+using JetBrains.Annotations;
 
-    public PlayerData(string playerName, ulong clientId, string preset)
+[Serializable]
+public class PlayerData
+{
+    public string PlayerName;
+
+    [NonSerialized] public int ClientConnection;
+
+    public string Preset;
+    public int FactionId = 0;
+
+    [CanBeNull] public Faction Faction { get; set; }
+
+    [NonSerialized] public string sceneName;
+
+    public PlayerData()
+    {
+    }
+
+    public PlayerData(string playerName, int clientConnection, string preset)
     {
         PlayerName = playerName;
-        ClientId = clientId;
+        ClientConnection = clientConnection;
         Preset = preset;
     }
 }

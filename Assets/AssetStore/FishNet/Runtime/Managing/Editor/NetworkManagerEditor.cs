@@ -1,5 +1,4 @@
 ﻿#if UNITY_EDITOR
-using FishNet.Managing.Object;
 using UnityEditor;
 using UnityEngine;
 

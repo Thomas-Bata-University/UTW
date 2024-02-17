@@ -1,12 +1,10 @@
 ﻿#if UNITY_EDITOR || DEVELOPMENT_BUILD
-using FishNet.Managing.Logging;
 using FishNet.Object;
 using FishNet.Serializing;
 using FishNet.Transporting;
 using System;
 using System.Collections.Generic;
 using System.Text;
-using UnityEngine;
 
 namespace FishNet.Managing.Debugging
 {

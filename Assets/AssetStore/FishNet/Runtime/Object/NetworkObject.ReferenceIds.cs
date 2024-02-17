@@ -2,7 +2,6 @@
 using System;
 using GameKit.Utilities;
 #if UNITY_EDITOR
-using UnityEditor.Experimental.SceneManagement;
 using UnityEditor.SceneManagement;
 using UnityEditor;
 #endif

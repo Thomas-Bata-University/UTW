@@ -2,8 +2,6 @@
 
 using UnityEngine;
 using UnityEditor;
-using FishNet.Configuring;
-
 using UnitySettingsProviderAttribute = UnityEditor.SettingsProviderAttribute;
 using UnitySettingsProvider = UnityEditor.SettingsProvider;
 using System.Collections.Generic;

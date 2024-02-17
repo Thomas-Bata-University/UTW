@@ -6,7 +6,7 @@ public class Preset {
     public string presetName;
     public string hull;
     public string turret;
-    public string faction;
+    public int faction;
 
     public Preset() {
         //Do not delete, used for NETWORKING
@@ -16,7 +16,7 @@ public class Preset {
         this.presetName = presetName;
         this.hull = hull;
         this.turret = turret;
-        this.faction = "faction";
+        this.faction = 0;
     }
 
     public override string ToString() {
