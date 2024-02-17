@@ -1,11 +1,10 @@
 using FishNet.Connection;
 using UnityEngine;
-using UnityEngine.UI;
 
 public class MapSpawnpointData {
 
     public NetworkConnection conn;
-    public GameObject button;
+    public GameObject spawnpoint;
     public Transform position;
     public bool locked;
 
@@ -13,8 +12,8 @@ public class MapSpawnpointData {
 
     }
 
-    public MapSpawnpointData(GameObject button, Transform position) {
-        this.button = button;
+    public MapSpawnpointData(GameObject spawnpoint, Transform position) {
+        this.spawnpoint = spawnpoint;
         this.position = position;
         this.locked = false;
     }

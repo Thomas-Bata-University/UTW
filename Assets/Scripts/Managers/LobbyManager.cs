@@ -6,15 +6,13 @@ using System;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using UnityEngine.UI;
 
 public class LobbyManager : NetworkBehaviour {
 
     [Header("UI")]
     public GameObject defaultMap;
-    public Button spawnpointButtonPrefab;
-    public Color lockedSpawnpoint;
-    public Color unlockedSpawnpoint;
+    public Material lockedSpawnpoint;
+    public Material unlockedSpawnpoint;
 
     [SerializeField]
     private GameObject vehicleManagerPrefab;
@@ -43,14 +41,11 @@ public class LobbyManager : NetworkBehaviour {
     private void OnChange(SyncDictionaryOperation op, string key, MapSpawnpointData value, bool asServer) {
         switch (op) {
             case SyncDictionaryOperation.Add: {
-                    Button button = value.button.GetComponent<Button>();
-                    button.onClick.AddListener(() => ChangePosition(LocalConnection, key));
-                    button.image.color = value.locked ? lockedSpawnpoint : unlockedSpawnpoint;
+                    value.spawnpoint.GetComponent<MeshRenderer>().material = value.locked ? lockedSpawnpoint : unlockedSpawnpoint;
                 }
                 break;
             case SyncDictionaryOperation.Set: {
-                    Button button = value.button.GetComponent<Button>();
-                    button.image.color = value.locked ? lockedSpawnpoint : unlockedSpawnpoint;
+                    value.spawnpoint.GetComponent<MeshRenderer>().material = value.locked ? lockedSpawnpoint : unlockedSpawnpoint;
                 }
                 break;
             case SyncDictionaryOperation.Remove: positions.Remove(key); break;
@@ -64,29 +59,34 @@ public class LobbyManager : NetworkBehaviour {
     /// <param name="mapToSpawn">Prefab</param>
     private void InitializeMap(GameObject mapToSpawn) {
         GameObject map = Instantiate(mapToSpawn);
+        map.GetComponent<MapController>().SetPosition();
         activeMap = map;
 
-        Spawn(map);
+        Spawn(map, null, gameObject.scene);
 
-        InitializeButtons();
+        InitializeSpawnpoints();
     }
 
-    private void InitializeButtons() {
-        GameObject[] spawnpointButtons = GameObject
-            .FindGameObjectsWithTag(GameTagsUtils.SPAWNPOINT_BUTTON)
+    private void InitializeSpawnpoints() {
+        GameObject[] spawnpoints = GameObject
+            .FindGameObjectsWithTag(GameTagsUtils.MAP_SPAWNPOINT)
             .Where(x => x.scene.handle == gameObject.scene.handle).ToArray();
-        Array.Sort(spawnpointButtons.Where(x => x.scene.handle == gameObject.scene.handle).ToArray(), (a, b) => a.name.CompareTo(b.name));
+        Array.Sort(spawnpoints.Where(x => x.scene.handle == gameObject.scene.handle).ToArray(), (a, b) => a.name.CompareTo(b.name));
 
-        for (int i = 0; i < spawnpointButtons.Length; i++) {
-            string key = spawnpointButtons[i].name;
-            GameObject button = spawnpointButtons[i];
-            positions.Add(key, new MapSpawnpointData(button, button.transform));
+        for (int i = 0; i < spawnpoints.Length; i++) {
+            string key = spawnpoints[i].name;
+            GameObject spawnpoint = spawnpoints[i];
+            positions.Add(key, new MapSpawnpointData(spawnpoint, spawnpoint.transform));
         }
     }
 
     //Call this when owner change map
     private void OnMapChange() {
         Despawn(activeMap);
+    }
+
+    public void ChangePosition(string name) {
+        ChangePosition(LocalConnection, name);
     }
 
     [ServerRpc(RequireOwnership = false)]

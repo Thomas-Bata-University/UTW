@@ -14,12 +14,14 @@ public class VehicleManager : NetworkBehaviour {
         SpawnTankServerRpc(conn, preset);
     }
 
-    //TODO spawn tank
     [ServerRpc]
     public void SpawnTankServerRpc(NetworkConnection conn, Preset preset) {
         if (FindObjectOfType<LobbyManager>().CanSpawnTank(conn)) {
+            //TODO spawn tank
+            Debug.Log($"Tank spawned for client ID: {conn.ClientId} preset: {preset}");
             SpawnTankResponse(conn, $"Tank spawned for client ID: {conn.ClientId} preset: {preset}");
         } else {
+            Debug.Log($"Tank spawned for client ID: {conn.ClientId} preset: {preset}");
             SpawnTankResponse(conn, "You must select spawnpoint to spawn tank");
         }
     }
