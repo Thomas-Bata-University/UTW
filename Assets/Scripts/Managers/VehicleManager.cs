@@ -19,21 +19,21 @@ public class VehicleManager : NetworkBehaviour {
         if (FindObjectOfType<LobbyManager>().CanSpawnTank(conn)) {
             //TODO spawn tank
             Debug.Log($"Tank spawned for client ID: {conn.ClientId} preset: {preset}");
-            SpawnTankResponse(conn, $"Tank spawned for client ID: {conn.ClientId} preset: {preset}");
+            LogResponse(conn, $"Tank spawned for client ID: {conn.ClientId} preset: {preset}");
         } else {
             Debug.Log($"Tank spawned for client ID: {conn.ClientId} preset: {preset}");
-            SpawnTankResponse(conn, "You must select spawnpoint to spawn tank");
+            LogResponse(conn, "You must select spawnpoint to spawn tank");
         }
-    }
-
-    [TargetRpc]
-    private void SpawnTankResponse(NetworkConnection conn, string reason) {
-        Debug.Log(reason);
     }
 
     private void Destroy(NetworkConnection conn) {
         if (Owner != conn) return;
         Despawn(gameObject);
+    }
+
+    [TargetRpc]
+    public void LogResponse(NetworkConnection conn, string text) {
+        Debug.Log(text);
     }
 
     private void OnDestroy() {
