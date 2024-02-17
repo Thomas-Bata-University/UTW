@@ -621,11 +621,7 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 202771725}
   m_CullTransparentMesh: 1
-<<<<<<< HEAD
 --- !u!1 &241031961
-=======
---- !u!1 &317305450
->>>>>>> 8d006f4 (Map controller)
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -633,43 +629,26 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-<<<<<<< HEAD
   - component: {fileID: 241031962}
   - component: {fileID: 241031963}
   m_Layer: 5
   m_Name: Text Area
-=======
-  - component: {fileID: 317305451}
-  - component: {fileID: 317305453}
-  - component: {fileID: 317305454}
-  m_Layer: 3
-  m_Name: delete
->>>>>>> 8d006f4 (Map controller)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
-<<<<<<< HEAD
 --- !u!224 &241031962
-=======
---- !u!224 &317305451
->>>>>>> 8d006f4 (Map controller)
 RectTransform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-<<<<<<< HEAD
   m_GameObject: {fileID: 241031961}
-=======
-  m_GameObject: {fileID: 317305450}
->>>>>>> 8d006f4 (Map controller)
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-<<<<<<< HEAD
   m_Children:
   - {fileID: 842797461}
   - {fileID: 1086630054}
@@ -682,16 +661,6 @@ RectTransform:
   m_SizeDelta: {x: -20, y: -13}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &241031963
-=======
-  m_Children: []
-  m_Father: {fileID: 2141718742}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 300, y: 0}
-  m_SizeDelta: {x: 1000, y: 1000}
-  m_Pivot: {x: 0.5, y: 0.5}
---- !u!222 &317305453
 CanvasRenderer:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -700,22 +669,11 @@ CanvasRenderer:
   m_GameObject: {fileID: 317305450}
   m_CullTransparentMesh: 1
 --- !u!114 &317305454
->>>>>>> 8d006f4 (Map controller)
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-<<<<<<< HEAD
-  m_GameObject: {fileID: 241031961}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3312d7739989d2b4e91e6319e9a96d76, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Padding: {x: -8, y: -5, z: -8, w: -5}
-  m_Softness: {x: 0, y: 0}
-=======
   m_GameObject: {fileID: 317305450}
   m_Enabled: 1
   m_EditorHideFlags: 0
@@ -737,7 +695,6 @@ MonoBehaviour:
     y: 0
     width: 1
     height: 1
->>>>>>> 8d006f4 (Map controller)
 --- !u!1 &515669058
 GameObject:
   m_ObjectHideFlags: 0
@@ -2283,9 +2240,6 @@ MonoBehaviour:
   _lightProbeUpdating: 0
   _moveClientHostObjects: 1
   _setActiveScene: 1
-<<<<<<< HEAD
---- !u!114 &4806261148019744251
-=======
 --- !u!224 &4851568966013236408
 RectTransform:
   m_ObjectHideFlags: 0
@@ -2326,22 +2280,11 @@ GameObject:
   m_StaticEditorFlags: 0
   m_IsActive: 1
 --- !u!114 &5343843899933924726
->>>>>>> 8d006f4 (Map controller)
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-<<<<<<< HEAD
-  m_GameObject: {fileID: 2737918088393768159}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 95da5694ea16406a9705c833dd2bc62d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _allowHostAuthentication: 0
-  userNameInput: HelloWorld
-=======
   m_GameObject: {fileID: 4168350247082768999}
   m_Enabled: 1
   m_EditorHideFlags: 0
@@ -2481,7 +2424,6 @@ Camera:
   m_OcclusionCulling: 1
   m_StereoConvergence: 10
   m_StereoSeparation: 0.022
->>>>>>> 8d006f4 (Map controller)
 --- !u!114 &5868325400731671132
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2951,8 +2893,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
-<<<<<<< HEAD
-=======
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
@@ -2964,4 +2904,3 @@ SceneRoots:
   - {fileID: 2737918088393768157}
   - {fileID: 536186844}
   - {fileID: 2658495974313710711}
->>>>>>> 8d006f4 (Map controller)
