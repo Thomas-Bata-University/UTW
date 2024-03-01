@@ -9,8 +9,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5518481256344637915}
-  - component: {fileID: -5766975964671441781}
-  - component: {fileID: 5153135897695731066}
+  - component: {fileID: -7087056345022943678}
+  - component: {fileID: 5408540398499684965}
   m_Layer: 0
   m_Name: LobbyManager
   m_TagString: Untagged
@@ -33,7 +33,7 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &-5766975964671441781
+--- !u!114 &-7087056345022943678
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -42,14 +42,17 @@ MonoBehaviour:
   m_GameObject: {fileID: 40524906591757916}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f2c3bb6e30aade64da58d9c962d6cc02, type: 3}
+  m_Script: {fileID: 11500000, guid: b0dbbc15ce854cc43b42f38a240bb7b3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 255
-  _addedNetworkObject: {fileID: 5153135897695731066}
-  _networkObjectCache: {fileID: 0}
-  Notes: Comment
---- !u!114 &5153135897695731066
+  _componentIndexCache: 0
+  _addedNetworkObject: {fileID: 5408540398499684965}
+  _networkObjectCache: {fileID: 5408540398499684965}
+  defaultMap: {fileID: 3744106449401182432, guid: 2fa4fb6a8c5243d49be372ff641ee2f9, type: 3}
+  lockedSpawnpoint: {fileID: 2100000, guid: 17a59ed52de77d44392ba96f609f35a7, type: 2}
+  unlockedSpawnpoint: {fileID: 2100000, guid: 851b4306e4e9b9d4c8a282f9f4bbc06c, type: 2}
+  vehicleManagerPrefab: {fileID: 40524906591757916, guid: 9d939ae3213216b4c9a44f878c398b5c, type: 3}
+--- !u!114 &5408540398499684965
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -64,19 +67,20 @@ MonoBehaviour:
   <IsNested>k__BackingField: 0
   <ComponentIndex>k__BackingField: 0
   <PredictedSpawn>k__BackingField: {fileID: 0}
-  _networkBehaviours: []
+  _networkBehaviours:
+  - {fileID: -7087056345022943678}
   <ParentNetworkObject>k__BackingField: {fileID: 0}
   <ChildNetworkObjects>k__BackingField: []
   SerializedTransformProperties:
-    Position: {x: 0, y: 0, z: 0}
-    Rotation: {x: 0, y: 0, z: 0, w: 0}
-    LocalScale: {x: 0, y: 0, z: 0}
+    Position: {x: 1057.6052, y: 487.6056, z: 322.63895}
+    Rotation: {x: -0, y: -0, z: -0, w: 1}
+    LocalScale: {x: 1, y: 1, z: 1}
   _isNetworked: 1
   _isGlobal: 0
   _initializeOrder: 0
   _defaultDespawnType: 0
   NetworkObserver: {fileID: 0}
-  <PrefabId>k__BackingField: 0
+  <PrefabId>k__BackingField: 1
   <SpawnableCollectionId>k__BackingField: 0
   _scenePathHash: 0
   <SceneId>k__BackingField: 0
