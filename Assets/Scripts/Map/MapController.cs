@@ -1,49 +1,75 @@
 using FishNet;
-using System.Linq;
 using UnityEngine;
 
 public class MapController : MonoBehaviour {
 
-    private GameObject renderImage;
-    [SerializeField] private Camera mapCamera;
+    [SerializeField] private LayerMask mapLayerMask, spawnpointLayerMask;
+    [SerializeField] private float zoomSpeed, minSize;
     [SerializeField] private Canvas mapCanvas;
-    [SerializeField] private LayerMask layerMask;
+    [SerializeField] private Camera mapCamera;
+    private float maxSize;
 
     private LobbyManager lobbyManager;
+
+    private Vector3 lastPosition, defaultPosition;
+    private bool isMouseOverObject = false;
 
     private void Start() {
         if (InstanceFinder.IsClient) {
             lobbyManager = FindObjectOfType<LobbyManager>();
         }
+        defaultPosition = mapCamera.transform.position;
+        maxSize = mapCamera.orthographicSize;
     }
 
     private void Update() {
-        Vector3 newPosition = TransformPosition();
+        Move();
+        Zoom();
+        ResetMap();
+    }
 
-        if (Input.GetMouseButtonDown(0)) {
-            Ray rayCamera = new Ray(newPosition, Vector3.up);
-            //Debug.DrawRay(rayCamera.origin, rayCamera.direction * 300, Color.red);
-            if (Physics.Raycast(rayCamera, out RaycastHit hit, layerMask)) {
-                Debug.Log($"HIT: {hit.transform.gameObject.name}");
-                lobbyManager.ChangePosition(hit.transform.gameObject.name);
-            }
+    private void Move() { //TODO - fix map moving
+        GameObject spawnpoint = IsMouseOverObject(spawnpointLayerMask);
+        if (Input.GetMouseButtonDown(0) && spawnpoint != null) {
+            lobbyManager.ChangePosition(spawnpoint.name);
+        } else if (Input.GetMouseButtonDown(0) && IsMouseOverObject(mapLayerMask) != null) {
+            isMouseOverObject = true;
+            lastPosition = Input.mousePosition;
+        } else if (Input.GetMouseButtonUp(0)) {
+            isMouseOverObject = false;
+        }
+
+        if (Input.GetMouseButton(0) && isMouseOverObject) {
+            Vector2 canvasSize = mapCanvas.GetComponent<RectTransform>().sizeDelta;
+            float x = Mathf.Clamp(mapCamera.transform.position.x, -canvasSize.x / 2, canvasSize.x / 2);
+            float z = Mathf.Clamp(mapCamera.transform.position.z, -canvasSize.y / 2, canvasSize.y / 2);
+            Vector3 diff = lastPosition - Input.mousePosition;
+            mapCamera.transform.position = new Vector3(x + diff.x, mapCamera.transform.position.y, z + diff.y);
+            lastPosition = Input.mousePosition;
         }
     }
 
-    private Vector3 TransformPosition() {
-        return TransformPosition(Input.mousePosition);
+    private void Zoom() {
+        float scroll = Input.GetAxis("Mouse ScrollWheel");
+        if (scroll != 0 && IsMouseOverObject(mapLayerMask) != null) {
+            mapCamera.orthographicSize = Mathf.Clamp(mapCamera.orthographicSize - scroll * zoomSpeed, minSize, maxSize);
+        }
     }
 
-    private Vector3 TransformPosition(Vector3 position) {
-        Vector2 localPosition;
-        RectTransformUtility.ScreenPointToLocalPointInRectangle(mapCanvas.GetComponent<RectTransform>(), position, mapCamera, out localPosition);
-        return new Vector3(localPosition.x, 0, localPosition.y);
+    private GameObject IsMouseOverObject(LayerMask layer) {
+        RaycastHit hit;
+        var ray = mapCamera.ScreenPointToRay(Input.mousePosition);
+        if (Physics.Raycast(ray, out hit, Mathf.Infinity, layer)) {
+            return hit.transform.gameObject;
+        }
+        return null;
     }
 
-    public void SetPosition() {
-        //Correct position of the map
-        renderImage = GameObject.FindGameObjectsWithTag(GameTagsUtils.MAP).First();
-        transform.position = TransformPosition(renderImage.transform.position);
+    private void ResetMap() {
+        if (Input.GetMouseButtonDown(1)) {
+            mapCamera.transform.position = defaultPosition;
+            mapCamera.orthographicSize = maxSize;
+        }
     }
 
 }

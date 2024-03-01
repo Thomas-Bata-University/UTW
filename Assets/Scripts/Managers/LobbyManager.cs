@@ -60,7 +60,6 @@ public class LobbyManager : NetworkBehaviour {
     /// <param name="mapToSpawn">Prefab</param>
     private void InitializeMap(GameObject mapToSpawn) {
         GameObject map = Instantiate(mapToSpawn);
-        map.GetComponent<MapController>().SetPosition();
         activeMap = map;
 
         Spawn(map, null, gameObject.scene);
