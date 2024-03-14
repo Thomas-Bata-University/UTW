@@ -3,11 +3,16 @@ using FishNet.Connection;
 using FishNet.Object;
 using FishNet.Object.Synchronizing;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.SceneManagement;
 
-public class LobbyManager : NetworkBehaviour {
+public class LobbyManager : NetworkBehaviour
+{
+    // TODO Make a getter for spawnpoints
+    public static UnityAction<Transform, bool> onSpawnpointChanged;
 
     [Header("UI")]
     public GameObject defaultMap;
@@ -22,30 +27,42 @@ public class LobbyManager : NetworkBehaviour {
     //KEY - name of the gameobject | VALUE - MapSpawnpointData
     [SyncObject]
     private readonly SyncDictionary<string, MapSpawnpointData> spawnpoints = new();
+    //KEY - clientID | VALUE - VehicleManager
+    private Dictionary<long, NetworkObject> vehicleManagers = new();
 
-    private void Awake() {
-        if (InstanceFinder.IsServer) {
+    private void Awake()
+    {
+        if (InstanceFinder.IsServer)
+        {
             UTW.SceneManager.OnClientJoinLobby += ClientJoin;
             UTW.SceneManager.OnClientDisconnectLobby += ClientDisconnect;
-        } else {
+        }
+        else
+        {
             spawnpoints.OnChange += OnChange;
         }
     }
 
-    private void Start() {
-        if (InstanceFinder.IsServer) {
+    private void Start()
+    {
+        if (InstanceFinder.IsServer)
+        {
             InitializeMap(defaultMap);
         }
     }
 
     #region Map
-    private void OnChange(SyncDictionaryOperation op, string key, MapSpawnpointData value, bool asServer) {
-        switch (op) {
-            case SyncDictionaryOperation.Add: {
+    private void OnChange(SyncDictionaryOperation op, string key, MapSpawnpointData value, bool asServer)
+    {
+        switch (op)
+        {
+            case SyncDictionaryOperation.Add:
+                {
                     value.spawnpoint.GetComponent<MeshRenderer>().material = value.locked ? lockedSpawnpoint : unlockedSpawnpoint;
                 }
                 break;
-            case SyncDictionaryOperation.Set: {
+            case SyncDictionaryOperation.Set:
+                {
                     value.spawnpoint.GetComponent<MeshRenderer>().material = value.locked ? lockedSpawnpoint : unlockedSpawnpoint;
                 }
                 break;
@@ -58,7 +75,8 @@ public class LobbyManager : NetworkBehaviour {
     /// Create map using prefab. There must be only ONE spawned map with this tag for EACH lobby!
     /// </summary>
     /// <param name="mapToSpawn">Prefab</param>
-    private void InitializeMap(GameObject mapToSpawn) {
+    private void InitializeMap(GameObject mapToSpawn)
+    {
         GameObject map = Instantiate(mapToSpawn);
         activeMap = map;
 
@@ -67,13 +85,15 @@ public class LobbyManager : NetworkBehaviour {
         InitializeSpawnpoints();
     }
 
-    private void InitializeSpawnpoints() {
+    private void InitializeSpawnpoints()
+    {
         GameObject[] spawnpoints = GameObject
             .FindGameObjectsWithTag(GameTagsUtils.MAP_SPAWNPOINT)
             .Where(x => x.scene.handle == gameObject.scene.handle).ToArray();
         Array.Sort(spawnpoints.Where(x => x.scene.handle == gameObject.scene.handle).ToArray(), (a, b) => a.name.CompareTo(b.name));
 
-        for (int i = 0; i < spawnpoints.Length; i++) {
+        for (int i = 0; i < spawnpoints.Length; i++)
+        {
             string key = spawnpoints[i].name;
             GameObject spawnpoint = spawnpoints[i];
             this.spawnpoints.Add(key, new MapSpawnpointData(spawnpoint, spawnpoint.transform));
@@ -81,21 +101,29 @@ public class LobbyManager : NetworkBehaviour {
     }
 
     //Call this when owner change map
-    private void OnMapChange() {
+    private void OnMapChange()
+    {
         Despawn(activeMap);
     }
 
-    public void ChangePosition(string name) {
+    public void ChangePosition(string name)
+    {
+        // TODO
+        onSpawnpointChanged?.Invoke(spawnpoints[name].position, spawnpoints[name].locked);
+
         ChangePosition(LocalConnection, name);
     }
 
     [ServerRpc(RequireOwnership = false)]
-    private void ChangePosition(NetworkConnection conn, string key) {
-        if (spawnpoints[key].conn == conn) {
+    private void ChangePosition(NetworkConnection conn, string key)
+    {
+        if (spawnpoints[key].conn == conn)
+        {
             ChangePositionResponse(conn, "You have already selected this spawnpoint.");
             return;
         }
-        if (spawnpoints[key].locked) {
+        if (spawnpoints[key].locked)
+        {
             ChangePositionResponse(conn, "Spawnpoint is selected by another client.");
             return;
         }
@@ -104,7 +132,8 @@ public class LobbyManager : NetworkBehaviour {
     }
 
     [TargetRpc]
-    private void ChangePositionResponse(NetworkConnection conn, string reason) {
+    private void ChangePositionResponse(NetworkConnection conn, string reason)
+    {
         Debug.Log(reason);
     }
 
@@ -113,7 +142,8 @@ public class LobbyManager : NetworkBehaviour {
     /// </summary>
     /// <param name="conn"></param>
     /// <param name="key"></param>
-    private void Lock(NetworkConnection conn, string key) {
+    private void Lock(NetworkConnection conn, string key)
+    {
         Unlock(conn);
         spawnpoints[key].locked = true;
         spawnpoints[key].conn = conn;
@@ -125,8 +155,10 @@ public class LobbyManager : NetworkBehaviour {
     /// Unlock spawnpoint.
     /// </summary>
     /// <param name="conn"></param>
-    private void Unlock(NetworkConnection conn) {
-        if (spawnpoints.Any(x => x.Value.conn == conn)) {
+    private void Unlock(NetworkConnection conn)
+    {
+        if (spawnpoints.Any(x => x.Value.conn == conn))
+        {
             string oldKey = spawnpoints.First(x => x.Value.conn == conn).Key;
             MapSpawnpointData data = spawnpoints[oldKey];
             data.locked = false;
@@ -137,34 +169,39 @@ public class LobbyManager : NetworkBehaviour {
     #endregion
 
     #region Client
-    private void ClientJoin(NetworkConnection conn) {
+    private void ClientJoin(NetworkConnection conn)
+    {
         Scene scene = GetComponent<NetworkObject>().gameObject.scene;
-        if (conn.Scenes.First().handle == scene.handle) {
+        if (conn.Scenes.First().handle == scene.handle)
+        {
             InitializeVehicleManager(conn, scene);
         }
     }
 
-    private void ClientDisconnect(NetworkConnection conn) {
+    private void ClientDisconnect(NetworkConnection conn)
+    {
         Unlock(conn);
     }
 
-    private void InitializeVehicleManager(NetworkConnection conn, Scene scene) {
+    private void InitializeVehicleManager(NetworkConnection conn, Scene scene)
+    {
         GameObject go = Instantiate(vehicleManagerPrefab);
         go.name = vehicleManagerPrefab.name;
         Spawn(go, conn, scene);
+        // TODO Add to list, on client disconnect despawn and remove from list
         Debug.Log($"{go.name} successfully initialized.");
-    }
-
-    public bool CanSpawnTank(NetworkConnection conn) {
-        return spawnpoints.Any(x => x.Value.conn == conn);
     }
     #endregion
 
-    private void OnDestroy() {
-        if (InstanceFinder.IsServer) {
+    private void OnDestroy()
+    {
+        if (InstanceFinder.IsServer)
+        {
             UTW.SceneManager.OnClientJoinLobby -= ClientJoin;
             UTW.SceneManager.OnClientDisconnectLobby -= ClientDisconnect;
-        } else {
+        }
+        else
+        {
             spawnpoints.OnChange -= OnChange;
         }
     }
