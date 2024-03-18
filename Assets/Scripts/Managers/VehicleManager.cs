@@ -10,7 +10,13 @@ public class VehicleManager : NetworkBehaviour {
 
     [Header("UI")]
     public GameObject crewInfoPrefab;
-    private GameObject parent;
+
+    [Header("Tank")]
+    public GameObject tankPrefab;
+    private GameObject actualTank;
+
+    private NetworkObject networkObject;
+    [SyncVar] private Vector3 spawnpointPosition;
 
     //Crew
     private int maxCrewCount;
@@ -18,19 +24,23 @@ public class VehicleManager : NetworkBehaviour {
     private List<GameObject> crewButtons = new List<GameObject>();
 
     private void Awake() {
-        PresetDropdown.OnPresetChange += SpawnTank;
+        PresetDropdown.OnPresetChange += ChangePreset;
         UTW.SceneManager.OnClientDisconnectLobby += Destroy;
-        parent = GameObject.FindGameObjectWithTag(GameTagsUtils.CREW_GRID);
     }
 
     #region Crew
-    #region Server
-    public void SetCrewData(Preset preset) {
+    #region Server-Crew
+    public void SetCrewData(Preset preset, NetworkConnection conn, Vector3 spawnpoint) {
+        networkObject = GetComponent<NetworkObject>();
+        this.spawnpointPosition = spawnpoint;
+
         //TODO Set this data from preset on VM creation
         tankCrew.Add(0, new CrewData(TankPositions.Driver));
         tankCrew.Add(1, new CrewData(TankPositions.Shooter));
         tankCrew.Add(2, new CrewData(TankPositions.Shooter));
         maxCrewCount = tankCrew.Count;
+
+        SpawnTank(preset);
     }
 
     public bool JoinCrew(NetworkConnection joiningClientConn) {
@@ -61,9 +71,9 @@ public class VehicleManager : NetworkBehaviour {
     public bool IsInCrew(NetworkConnection conn) {
         return tankCrew.Any(client => client.Value.conn == conn);
     }
-    #endregion Server
+    #endregion Server-Crew
 
-    #region Client
+    #region Client-Crew
     private void OnChange(SyncDictionaryOperation op, int key, CrewData value, bool asServer) {
         switch (op) {
             case SyncDictionaryOperation.Add: { //This event catch only client that created this VM.
@@ -86,6 +96,7 @@ public class VehicleManager : NetworkBehaviour {
     }
 
     private void CreateCrewButton(int key, CrewData data) {
+        GameObject parent = GameObject.FindGameObjectWithTag(GameTagsUtils.CREW_GRID);
         GameObject go = Instantiate(crewInfoPrefab, parent.transform);
         go.GetComponentInChildren<TextMeshProUGUI>().text = GetName(data);
         crewButtons.Insert(key, go);
@@ -123,19 +134,25 @@ public class VehicleManager : NetworkBehaviour {
     private void SwapRequest(NetworkConnection conn) {
         Debug.Log($"Client ID: {conn.ClientId} requesting for position swap.");
     }
-    #endregion Client
+    #endregion Client-Crew
     #endregion Crew
 
     #region Tank
-    public void SpawnTank(NetworkConnection conn, Preset preset) {
+    #region Server-Tank
+    private void SpawnTank(Preset preset) {
+        actualTank = Instantiate(tankPrefab, spawnpointPosition, Quaternion.identity);
+        NetworkObject no = actualTank.GetComponent<NetworkObject>();
+        no.SetParent(networkObject);
+        Spawn(no);
+    }
+    #endregion Server-Tank
+
+    #region Client-Tank
+    public void ChangePreset(NetworkConnection conn, Preset preset) {
         if (!IsOwner) return;
-        SpawnTankServerRpc(conn, preset);
+        Debug.Log("Preset changed."); //TODO Change preset request
     }
-
-    [ServerRpc]
-    public void SpawnTankServerRpc(NetworkConnection conn, Preset preset) { //TODO Delete tank owner
-
-    }
+    #endregion Client-Tank
     #endregion Tank
 
     private void Destroy(NetworkConnection conn) {
@@ -149,7 +166,7 @@ public class VehicleManager : NetworkBehaviour {
     }
 
     private void OnDestroy() {
-        PresetDropdown.OnPresetChange -= SpawnTank;
+        PresetDropdown.OnPresetChange -= ChangePreset;
         UTW.SceneManager.OnClientDisconnectLobby -= Destroy;
     }
 

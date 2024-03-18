@@ -1,5 +1,4 @@
 using FishNet.Connection;
-using UnityEngine;
 
 public class CrewData {
 
