@@ -30,28 +30,24 @@ public class ControlSwitch : MonoBehaviour {
 
     private void Update() {
         if (Input.GetKeyDown(KeyCode.Alpha1)) {
-            ChangeSeat(Seat.Driver);
+            ChangeSeat(TankPositions.Driver);
         } else if (Input.GetKeyDown(KeyCode.Alpha2)) {
-            ChangeSeat(Seat.Observer);
+            ChangeSeat(TankPositions.Observer);
         } else if (!Input.GetKeyDown(KeyCode.Alpha3)) {
-            ChangeSeat(Seat.Shooter);
+            ChangeSeat(TankPositions.Shooter);
         }
     }
 
-    private void ChangeSeat(Seat seat) {
+    private void ChangeSeat(TankPositions seat) {
         playerControllers.ForEach(controller => controller.enabled = false);
 
         switch (seat) {
-            case Seat.Driver: playerController = driverController; break;
-            case Seat.Observer: playerController = observerController; break;
+            case TankPositions.Driver: playerController = driverController; break;
+            case TankPositions.Observer: playerController = observerController; break;
         }
 
         playerController.enabled = true;
         playerController.SetPosition();
-    }
-
-    public enum Seat {
-        Driver, Observer, Shooter
     }
 
 }//END

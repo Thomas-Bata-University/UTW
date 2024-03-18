@@ -1,7 +1,6 @@
 ﻿using FishNet;
 using FishNet.Connection;
 using FishNet.Managing.Scened;
-using Managers;
 using UnityEngine;
 
 public class LobbyController : MonoBehaviour {
@@ -26,7 +25,16 @@ public class LobbyController : MonoBehaviour {
         sceneManager.Connected(conn);
     }
 
+    public void SpawnpointReady() {
+        FindObjectOfType<LobbyManager>().SetSpawnpointReady();
+    }
+
+    public void LeaveSpawnpoint() {
+        FindObjectOfType<LobbyManager>().LeaveSpawnpoint(conn);
+    }
+
     public void DisconnectFromLobby() {
+        FindObjectOfType<LobbyManager>().LeaveSpawnpoint(conn);
         sceneManager.Disconnect(conn);
     }
 
