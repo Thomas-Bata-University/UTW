@@ -3,9 +3,10 @@ using UnityEngine;
 
 public class MapSpawnpointData {
 
-    public NetworkConnection conn;
+    public SpawnpointState spawnpointState = SpawnpointState.EMPTY;
+    public VehicleManager vehicleManager;
     public GameObject spawnpoint;
-    public Transform position;
+    public Transform transform;
     public bool locked;
 
     public MapSpawnpointData() {
@@ -14,7 +15,7 @@ public class MapSpawnpointData {
 
     public MapSpawnpointData(GameObject spawnpoint, Transform position) {
         this.spawnpoint = spawnpoint;
-        this.position = position;
+        this.transform = position;
         this.locked = false;
     }
 
