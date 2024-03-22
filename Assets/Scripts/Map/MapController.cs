@@ -1,5 +1,5 @@
 using FishNet;
-using System.Collections.Generic;
+using System.Text;
 using TMPro;
 using UnityEngine;
 
@@ -74,15 +74,20 @@ public class MapController : MonoBehaviour {
     }
 
     private void ShowPopup(string key, Vector3 position) {
-        List<CrewData> data = FindObjectOfType<LobbyManager>().GetCrewData(key);
-        if (data is null) return;
-        SetPopupData(data);
+        VehicleManager vehicleManager = FindObjectOfType<LobbyManager>().GetCrewData(key);
+        if (vehicleManager is null) return;
+        SetPopupData(vehicleManager);
         popupPanel.SetActive(true);
-        popupPanel.transform.position = position;
+        popupPanel.transform.parent.position = position;
     }
 
-    private void SetPopupData(List<CrewData> data) {
-        popupPanel.transform.GetChild(0).GetChild(0).GetComponent<TextMeshProUGUI>().text = $"Member size: {data.Count}";
+    private void SetPopupData(VehicleManager vehicleManager) {
+        popupPanel.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = $"Tank: {vehicleManager.tankName}";
+        StringBuilder info = new StringBuilder();
+        foreach (CrewData data in vehicleManager.tankCrew.Values) {
+            info.AppendLine($"{data.tankPosition}: {vehicleManager.GetName(data)}");
+        }
+        popupPanel.transform.GetChild(1).GetComponent<TextMeshProUGUI>().text = info.ToString();
     }
 
     private void ResetMap() {

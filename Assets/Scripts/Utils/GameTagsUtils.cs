@@ -6,5 +6,6 @@ public class GameTagsUtils {
     public static string CREW_GRID = "CrewGrid";
     public static string CREW_INFO_POPUP = "InfoPopup";
     public static string TANK_LOBBY_RENDER = "TankLobbyRender";
+    public static string SWAP_REQUEST = "SwapRequest";
 
 }

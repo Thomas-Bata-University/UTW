@@ -3,10 +3,8 @@ using FishNet.Connection;
 using FishNet.Object;
 using FishNet.Object.Synchronizing;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using UnityEngine.UI;
 
 public class LobbyManager : NetworkBehaviour {
 
@@ -202,7 +200,7 @@ public class LobbyManager : NetworkBehaviour {
 
         //Prepare CREW data
         VehicleManager vehicleManager = go.GetComponent<VehicleManager>();
-        vehicleManager.SetCrewData(null, conn, data.transform.position); //TODO add preset
+        vehicleManager.SetCrewData(new Preset("Default", null, null, 0, "Default_Tank"), conn, data.transform.position); //TODO add preset
         vehicleManager.JoinCrew(conn);
 
         //Set camera
@@ -287,16 +285,16 @@ public class LobbyManager : NetworkBehaviour {
     [TargetRpc]
     private void SetSpawnpointCamera(NetworkConnection conn, string key, bool visible = true) {
         tankLobbyCameraRender.SetActive(visible);
-        spawnpoints[key].spawnpoint.GetComponentInChildren<Camera>().enabled = visible;
+        spawnpoints[key].spawnpoint.GetComponentInChildren<Camera>().enabled = visible; //TODO maybe change to disable object not just component
     }
 
     public void LeaveSpawnpoint(NetworkConnection conn) {
         LeaveSpawnpointRpc(conn, activeSpawnpointKey);
     }
 
-    public List<CrewData> GetCrewData(string key) {
+    public VehicleManager GetCrewData(string key) {
         if (spawnpoints[key].vehicleManager is null) return null;
-        return spawnpoints[key].vehicleManager.tankCrew.Values.ToList();
+        return spawnpoints[key].vehicleManager;
     }
     #endregion Client
     #endregion Map

@@ -5,6 +5,7 @@ public class CrewData {
     public NetworkConnection conn;
     public TankPositions tankPosition;
     public bool empty;
+    public bool swapRequest;
 
     public CrewData() {
 
