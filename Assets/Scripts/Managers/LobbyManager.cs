@@ -10,10 +10,6 @@ public class LobbyManager : NetworkBehaviour {
 
     [Header("UI")]
     public GameObject defaultMap;
-    public Material lockedSpawnpoint;
-    public Material unlockedSpawnpoint;
-    public Material readySpawnpoint;
-    public Material fullSpawnpoint;
     private GameObject tankLobbyCameraRender;
 
     [SerializeField]
@@ -245,22 +241,26 @@ public class LobbyManager : NetworkBehaviour {
         if (value.spawnpoint is null) return;
         switch (value.spawnpointState) {
             case SpawnpointState.EMPTY: {
-                    value.spawnpoint.GetComponent<MeshRenderer>().material = unlockedSpawnpoint;
+                    SetColor(value, Color.green);
                 }
                 break;
             case SpawnpointState.LOCKED: {
-                    value.spawnpoint.GetComponent<MeshRenderer>().material = lockedSpawnpoint;
+                    SetColor(value, Color.red);
                 }
                 break;
             case SpawnpointState.UNLOCKED: {
-                    value.spawnpoint.GetComponent<MeshRenderer>().material = readySpawnpoint;
+                    SetColor(value, Color.yellow);
                 }
                 break;
             case SpawnpointState.FULL: {
-                    value.spawnpoint.GetComponent<MeshRenderer>().material = fullSpawnpoint;
+                    SetColor(value, Color.grey);
                 }
                 break;
         }
+    }
+
+    private void SetColor(MapSpawnpointData data, Color color) {
+        data.spawnpoint.GetComponent<MeshRenderer>().material.color = color;
     }
 
     public void SelectSpawnpoint(string name) {
@@ -285,7 +285,7 @@ public class LobbyManager : NetworkBehaviour {
     [TargetRpc]
     private void SetSpawnpointCamera(NetworkConnection conn, string key, bool visible = true) {
         tankLobbyCameraRender.SetActive(visible);
-        spawnpoints[key].spawnpoint.GetComponentInChildren<Camera>().enabled = visible; //TODO maybe change to disable object not just component
+        spawnpoints[key].spawnpoint.transform.GetChild(0).gameObject.SetActive(visible);
     }
 
     public void LeaveSpawnpoint(NetworkConnection conn) {
