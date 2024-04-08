@@ -127,7 +127,7 @@ public class LobbyManager : NetworkBehaviour {
 
     [ServerRpc(RequireOwnership = false)]
     private void SetSpawnpointReady(string newKey) {
-        if (newKey is null) return;
+        if (newKey is null || spawnpoints[newKey].spawnpointState != SpawnpointState.LOCKED) return;
         spawnpoints[newKey].spawnpointState = SpawnpointState.UNLOCKED;
         spawnpoints.Dirty(newKey);
     }

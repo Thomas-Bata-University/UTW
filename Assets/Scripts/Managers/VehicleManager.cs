@@ -40,7 +40,9 @@ public class VehicleManager : NetworkBehaviour {
         //TODO Set this data from preset on VM creation
         tankCrew.Add(0, new CrewData(TankPositions.DRIVER));
         tankCrew.Add(1, new CrewData(TankPositions.GUNNER));
-        tankCrew.Add(2, new CrewData(TankPositions.GUNNER));
+        //tankCrew.Add(2, new CrewData(TankPositions.GUNNER));
+        //tankCrew.Add(3, new CrewData(TankPositions.OBSERVER));
+        //tankCrew.Add(4, new CrewData(TankPositions.GUNNER));
         maxCrewCount = tankCrew.Count;
 
         SpawnTank(preset);
@@ -146,6 +148,7 @@ public class VehicleManager : NetworkBehaviour {
     private void OnChange(SyncDictionaryOperation op, int key, CrewData value, bool asServer) {
         switch (op) {
             case SyncDictionaryOperation.Add: { //This event catch only client that created this VM.
+                    FindObjectOfType<LobbyController>().HideObjects(false);
                     CreateCrewButton(key, value);
                 }
                 break;
@@ -203,7 +206,6 @@ public class VehicleManager : NetworkBehaviour {
 
     [TargetRpc]
     private void SwapRequestPopup(NetworkConnection targetConn, NetworkConnection requestConn, int key, int oldKey) {
-        //TODO Add countdown (after countdown send decline)
         //TODO Fix client leaving during swap request
         FindObjectOfType<LobbyController>().SetSwapData(this, requestConn, key, oldKey);
     }
