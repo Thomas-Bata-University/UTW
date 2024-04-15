@@ -1,16 +1,22 @@
 using FishNet.Transporting.Tugboat;
 using UnityEngine;
 
-public class Menu : MonoBehaviour {
-
+public class Menu : MonoBehaviour
+{
     [SerializeField] private GameObject networkManager;
     [SerializeField] private GameObject presetManager;
     private Tugboat _tugboat;
 
-    private void Start() {
-        if (networkManager.TryGetComponent(out Tugboat t)) {
+    private string _username = "";
+
+    private void Start()
+    {
+        if (networkManager.TryGetComponent(out Tugboat t))
+        {
             _tugboat = t;
-        } else {
+        }
+        else
+        {
             Debug.LogError("Couldn't find Tugboat component!");
         }
     }
@@ -32,7 +38,16 @@ public class Menu : MonoBehaviour {
         _tugboat.StartConnection(false);
     }
 
-    public void ExitGame() {
+    // Temporary until PlayerData is functional 
+    public void ReadStringInput(string name)
+    {
+        PlayerPrefs.SetString("username", name);
+
+        Debug.Log($"New user name: {PlayerPrefs.GetString("username")}");
+    }
+
+    public void ExitGame()
+    {
         Application.Quit();
     }
 }
