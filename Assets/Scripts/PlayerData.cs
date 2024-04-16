@@ -7,14 +7,16 @@ public class PlayerData
 {
     public string PlayerName;
 
-    [NonSerialized] public int ClientConnection;
+    public int ClientConnection;
 
     public string Preset;
     public int FactionId = 0;
 
-    [CanBeNull] public Faction Faction { get; set; }
+    [CanBeNull]
+    public Faction Faction { get; set; }
 
-    [NonSerialized] public string sceneName;
+    [NonSerialized]
+    public string sceneName;
 
     public PlayerData()
     {

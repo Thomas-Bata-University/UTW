@@ -6,7 +6,8 @@ using System;
 using System.Linq;
 using UnityEngine;
 
-public class LobbyManager : NetworkBehaviour {
+public class LobbyManager : NetworkBehaviour
+{
 
     [Header("UI")]
     public GameObject defaultMap;
@@ -23,18 +24,24 @@ public class LobbyManager : NetworkBehaviour {
     [SyncObject]
     private readonly SyncDictionary<string, MapSpawnpointData> spawnpoints = new();
 
-    private void Awake() {
-        if (InstanceFinder.IsServer) {
+    private void Awake()
+    {
+        if (InstanceFinder.IsServer)
+        {
             UTW.SceneManager.OnClientJoinLobby += ClientJoin;
             UTW.SceneManager.OnClientDisconnectLobby += ClientDisconnect;
-        } else {
+        }
+        else
+        {
             spawnpoints.OnChange += OnChange;
             tankLobbyCameraRender = GameObject.FindGameObjectWithTag(GameTagsUtils.TANK_LOBBY_RENDER);
         }
     }
 
-    private void Start() {
-        if (InstanceFinder.IsServer) {
+    private void Start()
+    {
+        if (InstanceFinder.IsServer)
+        {
             InitializeMap(defaultMap);
         }
     }
@@ -45,7 +52,8 @@ public class LobbyManager : NetworkBehaviour {
     /// Create map using prefab. There must be only ONE spawned map with this tag for EACH lobby!
     /// </summary>
     /// <param name="mapToSpawn">Prefab</param>
-    private void InitializeMap(GameObject mapToSpawn) {
+    private void InitializeMap(GameObject mapToSpawn)
+    {
         GameObject map = Instantiate(mapToSpawn);
         activeMap = map;
 
@@ -54,13 +62,15 @@ public class LobbyManager : NetworkBehaviour {
         InitializeSpawnpoints();
     }
 
-    private void InitializeSpawnpoints() {
+    private void InitializeSpawnpoints()
+    {
         GameObject[] spawnpoints = GameObject
             .FindGameObjectsWithTag(GameTagsUtils.MAP_SPAWNPOINT)
             .Where(x => x.scene.handle == gameObject.scene.handle).ToArray();
         Array.Sort(spawnpoints.Where(x => x.scene.handle == gameObject.scene.handle).ToArray(), (a, b) => a.name.CompareTo(b.name));
 
-        for (int i = 0; i < spawnpoints.Length; i++) {
+        for (int i = 0; i < spawnpoints.Length; i++)
+        {
             string newKey = spawnpoints[i].name;
             GameObject spawnpoint = spawnpoints[i];
             this.spawnpoints.Add(newKey, new MapSpawnpointData(spawnpoint, spawnpoint.transform));
@@ -68,39 +78,49 @@ public class LobbyManager : NetworkBehaviour {
     }
 
     [ServerRpc(RequireOwnership = false)]
-    private void SelectSpawnpoint(NetworkConnection conn, string newKey, string activeKey) {
-        switch (spawnpoints[newKey].spawnpointState) {
-            case SpawnpointState.EMPTY: {
+    private void SelectSpawnpoint(NetworkConnection conn, string newKey, string activeKey)
+    {
+        switch (spawnpoints[newKey].spawnpointState)
+        {
+            case SpawnpointState.EMPTY:
+                {
                     ChangeSpawnpoint(conn, newKey, activeKey);
                 }
                 break;
-            case SpawnpointState.LOCKED: {
+            case SpawnpointState.LOCKED:
+                {
                     LogResponse(conn, "Cannot join... CREW is not ready.");
                 }
                 break;
-            case SpawnpointState.UNLOCKED: {
+            case SpawnpointState.UNLOCKED:
+                {
                     JoinSpawnpoint(conn, newKey, activeKey);
                 }
                 break;
-            case SpawnpointState.FULL: {
+            case SpawnpointState.FULL:
+                {
                     LogResponse(conn, "Cannot join... CREW is full.");
                 }
                 break;
         }
     }
 
-    private void ChangeSpawnpoint(NetworkConnection conn, string newKey, string activeKey) {
+    private void ChangeSpawnpoint(NetworkConnection conn, string newKey, string activeKey)
+    {
         if (activeKey is not null)
             return;
 
-        if (activeKey is null) {
+        if (activeKey is null)
+        {
             InitializeVehicleManager(conn, newKey);
             return;
         }
     }
 
-    private void JoinSpawnpoint(NetworkConnection conn, string newKey, string activeKey) {
-        if (activeKey is not null && spawnpoints[activeKey].vehicleManager.IsInCrew(conn)) {
+    private void JoinSpawnpoint(NetworkConnection conn, string newKey, string activeKey)
+    {
+        if (activeKey is not null && spawnpoints[activeKey].vehicleManager.IsInCrew(conn))
+        {
             LogResponse(conn, "Cannot join... Already in CREW.");
             return;
         }
@@ -115,30 +135,37 @@ public class LobbyManager : NetworkBehaviour {
     }
 
     //Call this when owner change map
-    private void OnMapChange() {
+    private void OnMapChange()
+    {
         Despawn(activeMap);
     }
 
-    private void SetSpawnpointFull(string newKey) {
+    private void SetSpawnpointFull(string newKey)
+    {
         Debug.Log("CREW is FULL");
         spawnpoints[newKey].spawnpointState = SpawnpointState.FULL;
         spawnpoints.Dirty(newKey);
     }
 
     [ServerRpc(RequireOwnership = false)]
-    private void SetSpawnpointReady(string newKey) {
+    private void SetSpawnpointReady(string newKey)
+    {
         if (newKey is null || spawnpoints[newKey].spawnpointState != SpawnpointState.LOCKED) return;
         spawnpoints[newKey].spawnpointState = SpawnpointState.UNLOCKED;
         spawnpoints.Dirty(newKey);
     }
 
-    private void LeaveSpawnpoint(NetworkConnection conn, string activeKey) {
+    private void LeaveSpawnpoint(NetworkConnection conn, string activeKey)
+    {
         if (activeKey is null) return;
         MapSpawnpointData data = spawnpoints[activeKey];
-        if (data.vehicleManager.LeaveCrew(conn)) {
+        if (data.vehicleManager.LeaveCrew(conn))
+        {
             data.vehicleManager.Despawn();
             Unlock(conn, activeKey);
-        } else {
+        }
+        else
+        {
             data.spawnpointState = SpawnpointState.UNLOCKED;
             spawnpoints.Dirty(activeKey);
         }
@@ -149,7 +176,8 @@ public class LobbyManager : NetworkBehaviour {
     }
 
     [ServerRpc(RequireOwnership = false)]
-    private void LeaveSpawnpointRpc(NetworkConnection conn, string activeKey) {
+    private void LeaveSpawnpointRpc(NetworkConnection conn, string activeKey)
+    {
         LeaveSpawnpoint(conn, activeKey);
     }
 
@@ -158,7 +186,8 @@ public class LobbyManager : NetworkBehaviour {
     /// </summary>
     /// <param name="conn"></param>
     /// <param name="key"></param>
-    private void Lock(NetworkConnection conn, string newKey, string activeKey) {
+    private void Lock(NetworkConnection conn, string newKey, string activeKey)
+    {
         MapSpawnpointData data = spawnpoints[newKey];
         data.locked = true;
         data.spawnpointState = SpawnpointState.LOCKED;
@@ -174,7 +203,8 @@ public class LobbyManager : NetworkBehaviour {
     /// Unlock spawnpoint.
     /// </summary>
     /// <param name="conn"></param>
-    private void Unlock(NetworkConnection conn, string activeKey) {
+    private void Unlock(NetworkConnection conn, string activeKey)
+    {
         MapSpawnpointData data = spawnpoints[activeKey];
         if (activeKey == null || !data.vehicleManager.CrewIsEmpty()) return;
         data.vehicleManager = null;
@@ -186,7 +216,8 @@ public class LobbyManager : NetworkBehaviour {
         SetKey(conn, $"Spawnpoint UNLOCKED at position {data.transform.position}", null);
     }
 
-    private void InitializeVehicleManager(NetworkConnection conn, string newKey) {
+    private void InitializeVehicleManager(NetworkConnection conn, string newKey)
+    {
         MapSpawnpointData data = spawnpoints[newKey];
 
         //Spawn VM
@@ -212,23 +243,29 @@ public class LobbyManager : NetworkBehaviour {
         SetKey(conn, "CREW created.", newKey);
     }
 
-    private void ClientJoin(NetworkConnection conn) {
+    private void ClientJoin(NetworkConnection conn)
+    {
 
     }
 
-    private void ClientDisconnect(NetworkConnection conn) {
+    private void ClientDisconnect(NetworkConnection conn)
+    {
 
     }
     #endregion Server
 
     #region Client
-    private void OnChange(SyncDictionaryOperation op, string key, MapSpawnpointData value, bool asServer) {
-        switch (op) {
-            case SyncDictionaryOperation.Add: {
+    private void OnChange(SyncDictionaryOperation op, string key, MapSpawnpointData value, bool asServer)
+    {
+        switch (op)
+        {
+            case SyncDictionaryOperation.Add:
+                {
                     SetSpawnpointMaterial(value);
                 }
                 break;
-            case SyncDictionaryOperation.Set: {
+            case SyncDictionaryOperation.Set:
+                {
                     SetSpawnpointMaterial(value);
                 }
                 break;
@@ -237,73 +274,91 @@ public class LobbyManager : NetworkBehaviour {
         }
     }
 
-    private void SetSpawnpointMaterial(MapSpawnpointData value) {
+    private void SetSpawnpointMaterial(MapSpawnpointData value)
+    {
         if (value.spawnpoint is null) return;
-        switch (value.spawnpointState) {
-            case SpawnpointState.EMPTY: {
+        switch (value.spawnpointState)
+        {
+            case SpawnpointState.EMPTY:
+                {
                     SetColor(value, Color.green);
                 }
                 break;
-            case SpawnpointState.LOCKED: {
+            case SpawnpointState.LOCKED:
+                {
                     SetColor(value, Color.red);
                 }
                 break;
-            case SpawnpointState.UNLOCKED: {
+            case SpawnpointState.UNLOCKED:
+                {
                     SetColor(value, Color.yellow);
                 }
                 break;
-            case SpawnpointState.FULL: {
+            case SpawnpointState.FULL:
+                {
                     SetColor(value, Color.grey);
                 }
                 break;
         }
     }
 
-    private void SetColor(MapSpawnpointData data, Color color) {
+    private void SetColor(MapSpawnpointData data, Color color)
+    {
         data.spawnpoint.GetComponent<MeshRenderer>().material.color = color;
     }
 
-    public void SelectSpawnpoint(string name) {
+    public void SelectSpawnpoint(string name)
+    {
         SelectSpawnpoint(LocalConnection, name, activeSpawnpointKey);
     }
 
-    public void SetSpawnpointReady() {
+    public void SetSpawnpointReady()
+    {
         SetSpawnpointReady(activeSpawnpointKey);
     }
 
     [TargetRpc]
-    private void SetKey(NetworkConnection conn, string info, string newKey) {
+    private void SetKey(NetworkConnection conn, string info, string newKey)
+    {
         Debug.Log(info);
         activeSpawnpointKey = newKey;
     }
 
     [TargetRpc]
-    private void LogResponse(NetworkConnection conn, string info) {
+    private void LogResponse(NetworkConnection conn, string info)
+    {
         Debug.Log(info);
     }
 
     [TargetRpc]
-    private void SetSpawnpointCamera(NetworkConnection conn, string key, bool visible = true) {
+    private void SetSpawnpointCamera(NetworkConnection conn, string key, bool visible = true)
+    {
         tankLobbyCameraRender.SetActive(visible);
         spawnpoints[key].spawnpoint.transform.GetChild(0).gameObject.SetActive(visible);
     }
 
-    public void LeaveSpawnpoint(NetworkConnection conn) {
+    public void LeaveSpawnpoint(NetworkConnection conn)
+    {
         LeaveSpawnpointRpc(conn, activeSpawnpointKey);
     }
 
-    public VehicleManager GetCrewData(string key) {
+    public VehicleManager GetCrewData(string key)
+    {
         if (spawnpoints[key].vehicleManager is null) return null;
         return spawnpoints[key].vehicleManager;
     }
     #endregion Client
     #endregion Map
 
-    private void OnDestroy() {
-        if (InstanceFinder.IsServer) {
+    private void OnDestroy()
+    {
+        if (InstanceFinder.IsServer)
+        {
             UTW.SceneManager.OnClientJoinLobby -= ClientJoin;
             UTW.SceneManager.OnClientDisconnectLobby -= ClientDisconnect;
-        } else {
+        }
+        else
+        {
             spawnpoints.OnChange -= OnChange;
         }
     }

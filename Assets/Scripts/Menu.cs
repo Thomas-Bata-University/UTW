@@ -38,14 +38,6 @@ public class Menu : MonoBehaviour
         _tugboat.StartConnection(false);
     }
 
-    // Temporary until PlayerData is functional 
-    public void ReadStringInput(string name)
-    {
-        PlayerPrefs.SetString("username", name);
-
-        Debug.Log($"New user name: {PlayerPrefs.GetString("username")}");
-    }
-
     public void ExitGame()
     {
         Application.Quit();
