@@ -37,10 +37,17 @@ public sealed class GameManager : NetworkBehaviour
         {
             Debug.Log($"The user {conn.ClientId} has disconnected!");
 
-            PlayerData p = GetPlayerByConnection(conn.ClientId);
-            p.ClientConnection = -2;
+            try
+            {
+                PlayerData p = GetPlayerByConnection(conn.ClientId);
+                p.ClientConnection = -2;
 
-            UpdateDictionary(p.PlayerName);
+                UpdateDictionary(p.PlayerName);
+            }
+            catch (System.Exception)
+            {
+                Debug.LogWarning("Couldn't find a matching connection.");
+            }
         }
     }
 
@@ -92,7 +99,7 @@ public sealed class GameManager : NetworkBehaviour
 
     private PlayerData CreatePlayerData(string playerName)
     {
-        var player = new PlayerData(playerName, default, string.Empty);
+        var player = new PlayerData(playerName, -2, string.Empty);
         var json = JsonUtility.ToJson(player);
         var writer = new StreamWriter(Application.streamingAssetsPath + "/Users/" + $"/{player.PlayerName}.json");
         writer.Write(json);
