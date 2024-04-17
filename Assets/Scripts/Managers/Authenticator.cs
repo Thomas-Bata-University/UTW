@@ -65,14 +65,32 @@ public class Authenticator : HostAuthenticator
     private void OnUsernameBroadcast(NetworkConnection conn, UsernameBroadcast pb)
     {
         var player = GameManager.Instance.CreateOrSelectPlayer(pb.Username);
+
+        if (IsAlreadyConnected(player))
+        {
+            Debug.Log($"Player {player.PlayerName} is already connected!");
+
+            SendAuthenticationResponse(conn, false);
+            OnAuthenticationResult?.Invoke(conn, false);
+
+            return;
+        }
+
         player.ClientConnection = conn.ClientId;
         GameManager.Instance.UpdateDictionary(player.PlayerName);
 
         Debug.Log($"Player {player.PlayerName} authenticated!");
 
         SendAuthenticationResponse(conn, true);
-
         OnAuthenticationResult?.Invoke(conn, true);
+    }
+
+    private bool IsAlreadyConnected(PlayerData player)
+    {
+        if (GameManager.Instance.GetPlayerByName(player.PlayerName).ClientConnection == -2)
+            return false;
+
+        return true;
     }
 
     /// <summary>

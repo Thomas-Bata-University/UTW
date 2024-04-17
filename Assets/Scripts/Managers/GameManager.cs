@@ -6,6 +6,9 @@ using System.Linq;
 using Factions;
 using UnityEngine;
 using Utils;
+using FishNet;
+using FishNet.Connection;
+using FishNet.Transporting;
 
 public sealed class GameManager : NetworkBehaviour
 {
@@ -24,6 +27,21 @@ public sealed class GameManager : NetworkBehaviour
         LoadUsers();
         LoadFactionsFromJson();
         LoadFactionPresets();
+
+        InstanceFinder.NetworkManager.ServerManager.OnRemoteConnectionState += HandleClientDisconnect;
+    }
+
+    private void HandleClientDisconnect(NetworkConnection conn, RemoteConnectionStateArgs args)
+    {
+        if (args.ConnectionState == RemoteConnectionState.Stopped)
+        {
+            Debug.Log($"The user {conn.ClientId} has disconnected!");
+
+            PlayerData p = GetPlayerByConnection(conn.ClientId);
+            p.ClientConnection = -2;
+
+            UpdateDictionary(p.PlayerName);
+        }
     }
 
     private void Update()
@@ -110,11 +128,19 @@ public sealed class GameManager : NetworkBehaviour
         }
     }
 
-    public Faction GetFactionById(int guid) => _factions[guid];
-
     public PlayerData GetPlayerByConnection(int clientId) =>
         _playersData.Values.First(playerData => playerData.ClientConnection.Equals(clientId));
 
+    public PlayerData GetPlayerByName(string clientName) =>
+        _playersData.Values.First(playerData => playerData.PlayerName.Equals(clientName));
+
+    public Faction GetFactionById(int guid) => _factions[guid];
+
     public Faction GetFactionByName(string factionName) =>
         _factions.FirstOrDefault(part => part.Value.Name.Equals(factionName)).Value;
+
+    private void OnDestroy()
+    {
+        InstanceFinder.NetworkManager.ServerManager.OnRemoteConnectionState -= HandleClientDisconnect;
+    }
 }
