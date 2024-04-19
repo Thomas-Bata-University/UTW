@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using FishNet.Authenticating;
 using FishNet.Broadcast;
 using FishNet.Connection;
@@ -8,9 +9,10 @@ using FishNet.Transporting;
 using TMPro;
 using UnityEngine;
 
-public struct UsernameBroadcast : IBroadcast
+public struct UserBroadcast : IBroadcast
 {
     public string Username;
+    public List<string> Hashes;
 }
 
 public class Authenticator : HostAuthenticator
@@ -33,7 +35,7 @@ public class Authenticator : HostAuthenticator
         input = inputGO.GetComponent<TMP_Text>();
 
         NetworkManager.ClientManager.OnClientConnectionState += ClientManager_OnClientConnectionState;
-        NetworkManager.ServerManager.RegisterBroadcast<UsernameBroadcast>(OnUsernameBroadcast, false);
+        NetworkManager.ServerManager.RegisterBroadcast<UserBroadcast>(OnUserBroadcast, false);
         NetworkManager.ClientManager.RegisterBroadcast<ResponseBroadcast>(OnResponseBroadcast);
     }
 
@@ -49,22 +51,23 @@ public class Authenticator : HostAuthenticator
         if (AuthenticateAsHost())
             return;
 
-        UsernameBroadcast pb = new UsernameBroadcast()
+        UserBroadcast ub = new UserBroadcast()
         {
-            Username = input.text
+            Username = input.text,
+            Hashes = Database.hashes
         };
 
-        NetworkManager.ClientManager.Broadcast(pb);
+        NetworkManager.ClientManager.Broadcast(ub);
     }
 
     /// <summary>
     /// Received on server when a client sends the password broadcast message.
     /// </summary>
     /// <param name="conn">Connection sending broadcast.</param>
-    /// <param name="pb"></param>
-    private void OnUsernameBroadcast(NetworkConnection conn, UsernameBroadcast pb)
+    /// <param name="ub"></param>
+    private void OnUserBroadcast(NetworkConnection conn, UserBroadcast ub)
     {
-        var player = GameManager.Instance.CreateOrSelectPlayer(pb.Username);
+        var player = GameManager.Instance.CreateOrSelectPlayer(ub.Username);
 
         if (IsAlreadyConnected(player))
         {
@@ -75,6 +78,20 @@ public class Authenticator : HostAuthenticator
 
             return;
         }
+
+        Debug.Log($"Checking hashes for {player.PlayerName}");
+
+        if (!UserHasRequiredHashes(ub.Hashes))
+        {
+            Debug.Log($"Player {player.PlayerName} has different AssetDB!");
+
+            SendAuthenticationResponse(conn, false);
+            OnAuthenticationResult?.Invoke(conn, false);
+
+            return;
+        }
+
+        Debug.Log($"Hash check successful for {player.PlayerName}");
 
         player.ClientConnection = conn.ClientId;
         GameManager.Instance.UpdateDictionary(player.PlayerName);
@@ -91,6 +108,14 @@ public class Authenticator : HostAuthenticator
             return false;
 
         return true;
+    }
+
+    private bool UserHasRequiredHashes(List<string> hashes)
+    {
+        HashSet<string> userHashes = new HashSet<string>(hashes);
+        HashSet<string> serverHashes = new HashSet<string>(Database.hashes);
+
+        return userHashes.IsSupersetOf(serverHashes);
     }
 
     /// <summary>

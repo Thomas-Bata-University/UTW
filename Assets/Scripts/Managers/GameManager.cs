@@ -28,14 +28,14 @@ public sealed class GameManager : NetworkBehaviour
         LoadFactionsFromJson();
         LoadFactionPresets();
 
-        InstanceFinder.NetworkManager.ServerManager.OnRemoteConnectionState += HandleClientDisconnect;
+        InstanceFinder.NetworkManager.ServerManager.OnRemoteConnectionState += ServerManager_OnRemoteConnectionState;
     }
 
-    private void HandleClientDisconnect(NetworkConnection conn, RemoteConnectionStateArgs args)
+    private void ServerManager_OnRemoteConnectionState(NetworkConnection conn, RemoteConnectionStateArgs args)
     {
         if (args.ConnectionState == RemoteConnectionState.Stopped)
         {
-            Debug.Log($"The user {conn.ClientId} has disconnected!");
+            Debug.Log($"The user with id: {conn.ClientId} has disconnected!");
 
             try
             {
@@ -148,6 +148,6 @@ public sealed class GameManager : NetworkBehaviour
 
     private void OnDestroy()
     {
-        InstanceFinder.NetworkManager.ServerManager.OnRemoteConnectionState -= HandleClientDisconnect;
+        InstanceFinder.NetworkManager.ServerManager.OnRemoteConnectionState -= ServerManager_OnRemoteConnectionState;
     }
 }

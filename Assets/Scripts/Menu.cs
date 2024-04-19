@@ -7,8 +7,6 @@ public class Menu : MonoBehaviour
     [SerializeField] private GameObject presetManager;
     private Tugboat _tugboat;
 
-    private string _username = "";
-
     private void Start()
     {
         if (networkManager.TryGetComponent(out Tugboat t))
