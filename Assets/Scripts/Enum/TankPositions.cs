@@ -1,5 +1,5 @@
 public enum TankPositions {
-    DRIVER,
-    OBSERVER,
-    GUNNER
+    DRIVER = 0,
+    OBSERVER = 1,
+    GUNNER = 2
 }

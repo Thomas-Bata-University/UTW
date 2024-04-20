@@ -1,18 +1,24 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
-public class ObserverController : MonoBehaviour
-{
-    // Start is called before the first frame update
-    void Start()
-    {
-        
+public class ObserverController : PlayerController {
+    //Add comment to a script
+    [TextArea(1, 5)]
+    public string Notes = "Comment";
+
+    //--------------------------------------------------------------------------------------------------------------------------
+
+    protected override void Start() {
+        tankPosition = TankPositions.OBSERVER;
+        Debug.Log($"Active position {tankPosition} | owner {Owner.ClientId}");
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
+    private void Update() {
+        MouseLook(100f, 100f, 80f);
+        Move();
     }
-}
+
+    protected override void Move() {
+
+    }
+
+}//END

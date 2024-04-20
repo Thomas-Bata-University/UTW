@@ -14,7 +14,7 @@ public class PresetManager : NetworkBehaviour {
         assetDatabase = FindObjectOfType<Database>();
 
         if (IsServer) {
-            TestPreset(new Preset());
+            TestPreset(Preset.CreateDefaultPresat());
         }
     }
 
@@ -48,7 +48,7 @@ public class PresetManager : NetworkBehaviour {
         assetDatabase.AddAll(presetList);
     }
 
-    [Obsolete]
+    [Obsolete("Generate testing preset on server start")]
     public void TestPreset(Preset preset) {
         string json = JsonUtility.ToJson(preset);
         if (!Directory.Exists(Application.streamingAssetsPath + "/Presets/")) Directory.CreateDirectory(Application.streamingAssetsPath + "/Presets/");
