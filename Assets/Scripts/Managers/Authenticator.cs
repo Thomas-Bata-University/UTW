@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using FishNet.Authenticating;
 using FishNet.Broadcast;
 using FishNet.Connection;
-using FishNet.Example.Authenticating;
 using FishNet.Managing;
 using FishNet.Transporting;
 using TMPro;
@@ -13,6 +12,12 @@ public struct UserBroadcast : IBroadcast
 {
     public string Username;
     public List<string> Hashes;
+}
+
+public struct ResponseBroadcast : IBroadcast
+{
+    public bool Passed;
+    public string Message;
 }
 
 public class Authenticator : HostAuthenticator
@@ -73,7 +78,7 @@ public class Authenticator : HostAuthenticator
         {
             Debug.Log($"Player {player.PlayerName} is already connected!");
 
-            SendAuthenticationResponse(conn, false);
+            SendAuthenticationResponse(conn, false, "Player with this name is already connected!");
             OnAuthenticationResult?.Invoke(conn, false);
 
             return;
@@ -85,7 +90,7 @@ public class Authenticator : HostAuthenticator
         {
             Debug.Log($"Player {player.PlayerName} has different AssetDB!");
 
-            SendAuthenticationResponse(conn, false);
+            SendAuthenticationResponse(conn, false, "You have a different AssetDB!");
             OnAuthenticationResult?.Invoke(conn, false);
 
             return;
@@ -93,18 +98,18 @@ public class Authenticator : HostAuthenticator
 
         Debug.Log($"Hash check successful for {player.PlayerName}");
 
-        player.ClientConnection = conn.ClientId;
+        player.ClientConnectionId = conn.ClientId;
         GameManager.Instance.UpdateDictionary(player.PlayerName);
 
         Debug.Log($"Player {player.PlayerName} authenticated!");
 
-        SendAuthenticationResponse(conn, true);
+        SendAuthenticationResponse(conn, true, "Authentication complete.");
         OnAuthenticationResult?.Invoke(conn, true);
     }
 
     private bool IsAlreadyConnected(PlayerData player)
     {
-        if (GameManager.Instance.GetPlayerByName(player.PlayerName).ClientConnection == -2)
+        if (GameManager.Instance.GetPlayerByName(player.PlayerName).ClientConnectionId == -2)
             return false;
 
         return true;
@@ -124,18 +129,19 @@ public class Authenticator : HostAuthenticator
     /// <param name="rb"></param>
     private void OnResponseBroadcast(ResponseBroadcast rb)
     {
-        string result = (rb.Passed) ? "Authentication complete." : "Authenitcation failed.";
+        string result = rb.Message;
         NetworkManager.Log(result);
     }
 
     /// <summary>
     /// Sends an authentication result to a connection.
     /// </summary>
-    private void SendAuthenticationResponse(NetworkConnection conn, bool authenticated)
+    private void SendAuthenticationResponse(NetworkConnection conn, bool authenticated, string message)
     {
         ResponseBroadcast rb = new ResponseBroadcast()
         {
-            Passed = authenticated
+            Passed = authenticated,
+            Message = message
         };
 
         NetworkManager.ServerManager.Broadcast(conn, rb, false);
@@ -148,7 +154,7 @@ public class Authenticator : HostAuthenticator
     /// <param name="authenticated">True if authentication passed.</param>
     protected override void OnHostAuthenticationResult(NetworkConnection conn, bool authenticated)
     {
-        SendAuthenticationResponse(conn, authenticated);
+        SendAuthenticationResponse(conn, authenticated, string.Empty);
         OnAuthenticationResult?.Invoke(conn, authenticated);
     }
 }

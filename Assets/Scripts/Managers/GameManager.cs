@@ -40,7 +40,7 @@ public sealed class GameManager : NetworkBehaviour
             try
             {
                 PlayerData p = GetPlayerByConnection(conn.ClientId);
-                p.ClientConnection = -2;
+                p.ClientConnectionId = -2;
 
                 UpdateDictionary(p.PlayerName);
             }
@@ -60,7 +60,7 @@ public sealed class GameManager : NetworkBehaviour
     {
         foreach (var p in _playersData.Values)
         {
-            Debug.Log($"Name: {p.PlayerName} | Conn: {p.ClientConnection}");
+            Debug.Log($"Name: {p.PlayerName} | Conn: {p.ClientConnectionId}");
         }
     }
 
@@ -81,13 +81,11 @@ public sealed class GameManager : NetworkBehaviour
             var jsonString = reader.ReadToEnd();
             var data = JsonUtility.FromJson<PlayerData>(jsonString);
             _playersData[data.PlayerName] = data;
-            _playersData[data.PlayerName].ClientConnection = -2;
         }
     }
 
     public PlayerData CreateOrSelectPlayer(string playerName)
     {
-        // If found fill player with its json data
         if (_playersData.TryGetValue(playerName, out var existingPlayerData))
         {
             return existingPlayerData;
@@ -99,7 +97,7 @@ public sealed class GameManager : NetworkBehaviour
 
     private PlayerData CreatePlayerData(string playerName)
     {
-        var player = new PlayerData(playerName, -2, string.Empty);
+        var player = new PlayerData(playerName, string.Empty);
         var json = JsonUtility.ToJson(player);
         var writer = new StreamWriter(Application.streamingAssetsPath + "/Users/" + $"/{player.PlayerName}.json");
         writer.Write(json);
@@ -128,7 +126,6 @@ public sealed class GameManager : NetworkBehaviour
 
         foreach (var faction in _factions.Values)
         {
-            //Genius serialization utility in Unity...just dont ask
             faction.Presets ??= new List<Preset>();
             faction.Presets.AddRange(
                 presets.Where(preset => preset.faction.Equals(faction.Id)));
@@ -136,7 +133,7 @@ public sealed class GameManager : NetworkBehaviour
     }
 
     public PlayerData GetPlayerByConnection(int clientId) =>
-        _playersData.Values.First(playerData => playerData.ClientConnection.Equals(clientId));
+        _playersData.Values.First(playerData => playerData.ClientConnectionId.Equals(clientId));
 
     public PlayerData GetPlayerByName(string clientName) =>
         _playersData.Values.First(playerData => playerData.PlayerName.Equals(clientName));

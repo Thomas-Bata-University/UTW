@@ -7,7 +7,7 @@ public class PlayerData
 {
     public string PlayerName;
 
-    public int ClientConnection;
+    public int ClientConnectionId;
 
     public string Preset;
     public int FactionId = 0;
@@ -22,10 +22,10 @@ public class PlayerData
     {
     }
 
-    public PlayerData(string playerName, int clientConnection, string preset)
+    public PlayerData(string playerName, string preset)
     {
         PlayerName = playerName;
-        ClientConnection = clientConnection;
+        ClientConnectionId = -2;
         Preset = preset;
     }
 }
