@@ -1,5 +1,6 @@
 using FishNet.Connection;
 using FishNet.Object;
+using System;
 using System.IO;
 using System.Linq;
 using UnityEngine;
@@ -11,6 +12,10 @@ public class PresetManager : NetworkBehaviour {
 
     private void Start() {
         assetDatabase = FindObjectOfType<Database>();
+
+        if (IsServer) {
+            TestPreset(new Preset());
+        }
     }
 
     public override void OnStartClient() {
@@ -41,6 +46,14 @@ public class PresetManager : NetworkBehaviour {
     private void LoadPresetOnClient(NetworkConnection networkConnection, Preset[] presetList) {
         if (!networkConnection.IsLocalClient) return;
         assetDatabase.AddAll(presetList);
+    }
+
+    [Obsolete]
+    public void TestPreset(Preset preset) {
+        string json = JsonUtility.ToJson(preset);
+        if (!Directory.Exists(Application.streamingAssetsPath + "/Presets/")) Directory.CreateDirectory(Application.streamingAssetsPath + "/Presets/");
+        string filePath = Path.Combine(Application.streamingAssetsPath, "Presets", preset.presetName + ".json");
+        File.WriteAllText(filePath, json);
     }
 
     //YIRO-TODO add faction

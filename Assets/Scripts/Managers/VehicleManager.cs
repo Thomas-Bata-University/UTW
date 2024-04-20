@@ -1,11 +1,13 @@
 using FishNet.Connection;
 using FishNet.Object;
 using FishNet.Object.Synchronizing;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using static Preset;
 
 public class VehicleManager : NetworkBehaviour {
 
@@ -156,7 +158,7 @@ public class VehicleManager : NetworkBehaviour {
                     crewButtons[key].GetComponentInChildren<TextMeshProUGUI>().text = GetName(value);
                 }
                 break;
-            case SyncDictionaryOperation.Clear: { 
+            case SyncDictionaryOperation.Clear: {
                     Debug.Log("Destroying buttons");
                     DestroyCrewButton();
                 }
@@ -207,11 +209,11 @@ public class VehicleManager : NetworkBehaviour {
         FindObjectOfType<LobbyController>().SetSwapData(this, requestConn, key, oldKey);
     }
 
-    private TankPositions GetActualTankPosition() {
+    private CrewData GetActualTankPosition() {
         foreach (var pair in tankCrew) {
             if (pair.Value.conn == LocalConnection) {
                 Debug.Log($"Player position {pair.Value.tankPosition}");
-                return pair.Value.tankPosition;
+                return pair.Value;
             }
         }
         throw new System.Exception("Player position not found.");
@@ -229,34 +231,53 @@ public class VehicleManager : NetworkBehaviour {
         JoinCrew(conn);
     }
 
-    private void SpawnTank(Preset preset) { //TODO Create logic for adding NO to crew data
+    private void SpawnTank(Preset preset) {
         if (actualTank is not null) Despawn(actualTank);
         tankName = preset.tankName;
-        actualTank = Instantiate(tankPrefab, spawnpointPosition, Quaternion.identity);
-        NetworkObject hullNo = actualTank.GetComponent<NetworkObject>();
-        hullNo.SetParent(networkObject);
-        Spawn(hullNo);
-        tankCrew.Add(0, new CrewData(TankPositions.DRIVER));
-        tankCrew[0].tankPart = hullNo;
+        SpawnTankParts(preset.mainPart);
+        BuildTank(preset, actualTank);
+    }
 
-        GameObject cannon = Instantiate(cannonPrefab, cannonPrefab.transform.position, Quaternion.identity); //TODO add where to spawn parts
-        NetworkObject cannonNo = cannon.GetComponent<NetworkObject>();
-        cannonNo.SetParent(hullNo);
-        Spawn(cannonNo);
-        tankCrew.Add(1, new CrewData(TankPositions.OBSERVER));
-        tankCrew[1].tankPart = cannonNo;
+    private void SpawnTankParts(MainPart mainPart) {
+        actualTank = Instantiate(tankPrefab, spawnpointPosition, Quaternion.identity);
+        NetworkObject tankNo = actualTank.GetComponent<NetworkObject>();
+        actualTank.name = mainPart.mainData.partName;
+        tankNo.SetParent(networkObject);
+        Spawn(tankNo);
+
+        tankCrew.Add(mainPart.mainData.key, new CrewData(mainPart.mainData.tankPosition, tankNo, 0));
+
+        int childIndex = 1; // child index 0 is camera
+
+        foreach (var part in mainPart.parts) {
+            TankData data = part.partData;
+            Debug.Log($"Spawning part {data.partName}");
+            GameObject tankPart = Instantiate(SelectPrefab(data.prefabName), data.partPosition, Quaternion.identity); //TODO select prefab
+            tankPart.name = data.partName;
+            NetworkObject partNo = tankPart.GetComponent<NetworkObject>();
+            partNo.SetParent(tankNo);
+            Spawn(partNo);
+
+            tankCrew.Add(data.key, new CrewData(data.tankPosition, partNo, childIndex));
+            childIndex++;
+        }
 
         maxCrewCount = tankCrew.Count;
+    }
 
-        BuildTank(preset, actualTank);
+    [Obsolete("Just for testing purpose. Will be deleted after Database prefab implementation.")]
+    private GameObject SelectPrefab(string prefabName) {
+        if (prefabName.Equals("tower"))
+            return tankPrefab;
+        if (prefabName.Equals("cannon"))
+            return cannonPrefab;
+        throw new Exception("Prefab not found!");
     }
     #endregion Server-Tank
 
     #region Client-Tank
     [ObserversRpc(BufferLast = true)]
     private void BuildTank(Preset preset, GameObject actualTank) {
-        //TODO Build tank
-
         //TODO Just for testing purpose, delete in future
         Color color = Color.grey;
         if (preset.color != 0)
@@ -273,30 +294,33 @@ public class VehicleManager : NetworkBehaviour {
 
     public void StartGame() {
         FindObjectOfType<LobbyController>().menuPanel.SetActive(false);
-        activateController();
+        ActivateController();
     }
 
-    private void activateController() { //TODO create logic for enabling part for each position
-        TankPositions tankPositions = GetActualTankPosition();
-        switch (tankPositions) {
-            case TankPositions.DRIVER: {
-                    EnableCamera(0);
-                    GetComponentInChildren<DriverController>().enabled = true;
-                    // actualTank.GetComponent<DriverController>().enabled = true;
+    private void ActivateController() {
+        CrewData data = GetActualTankPosition();
+        Transform tankPart;
+        switch (data.tankPosition) {
+            case TankPositions.OBSERVER: {
+                    tankPart = actualTank.transform.GetChild(data.childIndex);
                 }
                 break;
-            case TankPositions.OBSERVER: {
-                    EnableCamera(1);
-                    GetComponentInChildren<ObserverController>().enabled = true;
+            case TankPositions.GUNNER: {
+                    tankPart = actualTank.transform.GetChild(data.childIndex);
+                }
+                break;
+            default: {
+                    tankPart = actualTank.transform;
                 }
                 break;
         }
+        EnableController(tankPart);
     }
 
-    private void EnableCamera(int childIndex) {
-        Transform child = actualTank.transform.GetChild(childIndex);
-        child.GetComponentInChildren<Camera>().enabled = true;
-        child.GetComponentInChildren<AudioListener>().enabled = true;
+    private void EnableController(Transform parent) {
+        parent.GetComponentInChildren<Camera>().enabled = true;
+        parent.GetComponentInChildren<AudioListener>().enabled = true;
+        parent.GetComponent<PlayerController>().enabled = true;
     }
     #endregion Client-Tank
     #endregion Tank
