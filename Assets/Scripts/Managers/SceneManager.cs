@@ -16,7 +16,7 @@ namespace UTW {
 
         public static UnityAction<NetworkConnection> OnClientJoinLobby;
         public static UnityAction<NetworkConnection> OnClientDisconnectLobby;
-        
+
         //KEY - scene handle | value - SceneData
         private Dictionary<int, SceneData> lobbyData = new Dictionary<int, SceneData>();
 
@@ -54,6 +54,7 @@ namespace UTW {
 
             GameObject go = Instantiate(lobbyManagerPrefab);
             go.name = lobbyManagerPrefab.name;
+            lobbyData[scene.handle].lobbyManager = go.GetComponent<LobbyManager>();
             InstanceFinder.ServerManager.Spawn(go, conn, scene);
             Debug.Log($"{go.name} successfully initialized.");
             ActivateStartButtonForLobbyOwner(conn);
@@ -67,7 +68,9 @@ namespace UTW {
 
         [ServerRpc(RequireOwnership = false)]
         public void StartGame(NetworkConnection conn) {
-            RemoveLobbyData(conn);
+            SceneData data = GetData(conn);
+            data.lobbyManager.StartGame();
+            RemoveLobbyData(conn, data);
         }
 
         [TargetRpc]
@@ -102,14 +105,10 @@ namespace UTW {
         private bool RemoveLobbyData(NetworkConnection conn, SceneData data) {
             if (data != null && data.lobbyOwner == conn) {
                 Debug.Log($"Removing data for owner: {conn.ClientId}");
-                lobbyData.Remove(GetSceneForClient(conn, GameSceneUtils.LOBBY_SCENE).handle);
+                lobbyData.Remove(data.handle);
                 return true;
             }
             return false;
-        }
-
-        private bool RemoveLobbyData(NetworkConnection conn) {
-            return RemoveLobbyData(conn, GetData(conn));
         }
 
         private void AddClientData(NetworkConnection conn) {

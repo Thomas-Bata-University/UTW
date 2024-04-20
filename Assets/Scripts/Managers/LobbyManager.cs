@@ -299,6 +299,11 @@ public class LobbyManager : NetworkBehaviour {
     #endregion Client
     #endregion Map
 
+    [ObserversRpc]
+    public void StartGame() {
+        spawnpoints[activeSpawnpointKey].vehicleManager.StartGame();
+    }
+
     private void OnDestroy() {
         if (InstanceFinder.IsServer) {
             UTW.SceneManager.OnClientJoinLobby -= ClientJoin;
