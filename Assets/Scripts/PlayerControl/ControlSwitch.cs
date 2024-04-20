@@ -11,13 +11,13 @@ public class ControlSwitch : MonoBehaviour {
     PlayerController playerController;
 
     DriverController driverController;
-    ObserverController observerController;
+    GunnerController observerController;
 
     private List<PlayerController> playerControllers;
 
     private void Start() {
         driverController = FindObjectOfType<DriverController>();
-        observerController = FindObjectOfType<ObserverController>();
+        observerController = FindObjectOfType<GunnerController>();
 
         playerControllers = new List<PlayerController> { driverController, observerController };
 

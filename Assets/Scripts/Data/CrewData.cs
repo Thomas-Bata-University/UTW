@@ -8,14 +8,16 @@ public class CrewData {
     public bool empty;
     public bool swapRequest;
     public NetworkObject tankPart;
-    public int tankPartChild;
+    public int childIndex;
 
     public CrewData() {
 
     }
 
-    public CrewData(TankPositions tankPosition) {
+    public CrewData(TankPositions tankPosition, NetworkObject tankPart, int childIndex) {
         this.tankPosition = tankPosition;
+        this.tankPart = tankPart;
+        this.childIndex = childIndex;
         empty = true;
     }
 

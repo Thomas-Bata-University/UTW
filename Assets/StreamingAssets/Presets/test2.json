@@ -1,0 +1,35 @@
+{
+    "presetName": "Test_2",
+    "hull": "",
+    "turret": "",
+    "faction": 0,
+    "color": 2,
+    "tankName": "Tank 2",
+    "mainPart": {
+        "mainData": {
+            "key": 0,
+            "partName": "hull",
+            "tankPosition": 0,
+            "partPosition": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            }
+        },
+        "parts": [
+            {
+                "partData": {
+                    "key": 1,
+                    "prefabName": "cannon",
+                    "partName": "cannon_1",
+                    "tankPosition": 2,
+                    "partPosition": {
+                        "x": 0.0,
+                        "y": 0.0,
+                        "z": 0.0
+                    }
+                }
+            }
+        ]
+    }
+}
