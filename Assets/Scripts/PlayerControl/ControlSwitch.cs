@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+using FishNet;
 using UnityEngine;
 
 public class ControlSwitch : MonoBehaviour {
@@ -8,46 +8,20 @@ public class ControlSwitch : MonoBehaviour {
 
     //--------------------------------------------------------------------------------------------------------------------------
 
-    PlayerController playerController;
-
-    DriverController driverController;
-    GunnerController observerController;
-
-    private List<PlayerController> playerControllers;
+    private VehicleManager vehicleManager;
 
     private void Start() {
-        driverController = FindObjectOfType<DriverController>();
-        observerController = FindObjectOfType<GunnerController>();
-
-        playerControllers = new List<PlayerController> { driverController, observerController };
-
-        //TODO Enable controller by chosen role.
-        playerController = driverController;
-
-        playerController.enabled = true;
-        playerController.SetPosition();
+        vehicleManager = GetComponent<VehicleManager>();
     }
 
     private void Update() {
         if (Input.GetKeyDown(KeyCode.Alpha1)) {
-            ChangeSeat(TankPositions.DRIVER);
-        } else if (Input.GetKeyDown(KeyCode.Alpha2)) {
-            ChangeSeat(TankPositions.OBSERVER);
-        } else if (!Input.GetKeyDown(KeyCode.Alpha3)) {
-            ChangeSeat(TankPositions.GUNNER);
+            ChangeSeat();
         }
     }
 
-    private void ChangeSeat(TankPositions seat) {
-        playerControllers.ForEach(controller => controller.enabled = false);
-
-        switch (seat) {
-            case TankPositions.DRIVER: playerController = driverController; break;
-            case TankPositions.OBSERVER: playerController = observerController; break;
-        }
-
-        playerController.enabled = true;
-        playerController.SetPosition();
+    private void ChangeSeat() {
+        vehicleManager.InGameSwap(InstanceFinder.ClientManager.Connection);
     }
 
 }//END

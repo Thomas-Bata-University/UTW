@@ -99,7 +99,7 @@ public class VehicleManager : NetworkBehaviour {
     }
 
     [ServerRpc(RequireOwnership = false)]
-    private void SwapRequest(NetworkConnection requestConn, int key) {
+    public void SwapRequest(NetworkConnection requestConn, int key) {
         CrewData data = tankCrew[key];
         int oldKey = GetKey(requestConn);
         if (tankCrew[oldKey].swapRequest) {
@@ -121,6 +121,19 @@ public class VehicleManager : NetworkBehaviour {
         SetSwapping(key, oldKey, true);
         SwapRequestPopup(data.conn, requestConn, key, oldKey);
         Debug.Log($"Client ID: {requestConn.ClientId} requesting position {key} in tank.");
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    public void InGameSwap(NetworkConnection requestConn) {
+        try {
+            int oldKey = GetKey(requestConn);
+            int key = tankCrew.First(x => x.Value.empty).Key;
+            Swap(requestConn, key);
+            ActivateController(requestConn, tankCrew[oldKey], tankCrew[key]);
+
+        } catch {
+            LogResponse(requestConn, "No position to swap.");
+        }
     }
 
     [ServerRpc(RequireOwnership = false)]
@@ -209,11 +222,10 @@ public class VehicleManager : NetworkBehaviour {
         FindObjectOfType<LobbyController>().SetSwapData(this, requestConn, key, oldKey);
     }
 
-    private CrewData GetActualTankPosition() {
+    public KeyValuePair<int, CrewData> GetActualTankPosition() {
         foreach (var pair in tankCrew) {
             if (pair.Value.conn == LocalConnection) {
-                Debug.Log($"Player position {pair.Value.tankPosition}");
-                return pair.Value;
+                return pair;
             }
         }
         throw new System.Exception("Player position not found.");
@@ -252,7 +264,7 @@ public class VehicleManager : NetworkBehaviour {
         foreach (var part in mainPart.parts) {
             TankData data = part.partData;
             Debug.Log($"Spawning part {data.partName}");
-            GameObject tankPart = Instantiate(SelectPrefab(data.prefabName), data.partPosition, Quaternion.identity); //TODO select prefab
+            GameObject tankPart = Instantiate(SelectPrefab(data.prefabName), data.partPosition + transform.position, Quaternion.identity, actualTank.transform); //TODO select prefab
             tankPart.name = data.partName;
             NetworkObject partNo = tankPart.GetComponent<NetworkObject>();
             partNo.SetParent(tankNo);
@@ -267,8 +279,6 @@ public class VehicleManager : NetworkBehaviour {
 
     [Obsolete("Just for testing purpose. Will be deleted after Database prefab implementation.")]
     private GameObject SelectPrefab(string prefabName) {
-        if (prefabName.Equals("tower"))
-            return tankPrefab;
         if (prefabName.Equals("cannon"))
             return cannonPrefab;
         throw new Exception("Prefab not found!");
@@ -294,33 +304,29 @@ public class VehicleManager : NetworkBehaviour {
 
     public void StartGame() {
         FindObjectOfType<LobbyController>().menuPanel.SetActive(false);
-        ActivateController();
+        ActivateController(GetActualTankPosition().Value, true);
     }
 
-    private void ActivateController() {
-        CrewData data = GetActualTankPosition();
-        Transform tankPart;
-        switch (data.tankPosition) {
-            case TankPositions.OBSERVER: {
-                    tankPart = actualTank.transform.GetChild(data.childIndex);
-                }
-                break;
-            case TankPositions.GUNNER: {
-                    tankPart = actualTank.transform.GetChild(data.childIndex);
-                }
-                break;
-            default: {
-                    tankPart = actualTank.transform;
-                }
-                break;
-        }
-        EnableController(tankPart);
+    [TargetRpc]
+    private void ActivateController(NetworkConnection conn, CrewData oldData, CrewData newData) {
+        ActivateController(oldData, false);
+        ActivateController(newData, true);
+    }
+    private void ActivateController(CrewData data, bool active) {
+        Transform part = actualTank.transform;
+        Debug.Log($"Index {data.childIndex}");
+
+        if (!data.tankPosition.Equals(TankPositions.DRIVER))
+            part = part.GetChild(data.childIndex);
+
+        EnableController(part, active);
     }
 
-    private void EnableController(Transform parent) {
-        parent.GetComponentInChildren<Camera>().enabled = true;
-        parent.GetComponentInChildren<AudioListener>().enabled = true;
-        parent.GetComponent<PlayerController>().enabled = true;
+    private void EnableController(Transform tankPart, bool active) {
+        tankPart.GetComponentInChildren<Camera>().enabled = active;
+        tankPart.GetComponentInChildren<AudioListener>().enabled = active;
+        tankPart.GetComponent<PlayerController>().enabled = active;
+        GetComponent<ControlSwitch>().enabled = active;
     }
     #endregion Client-Tank
     #endregion Tank

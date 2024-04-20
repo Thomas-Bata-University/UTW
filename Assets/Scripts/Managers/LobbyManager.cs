@@ -196,7 +196,7 @@ public class LobbyManager : NetworkBehaviour {
 
         //Prepare CREW data
         VehicleManager vehicleManager = go.GetComponent<VehicleManager>();
-        vehicleManager.SetCrewData(new Preset("Default", null, null, 0, "Default_Tank"), conn, data.transform.position); //TODO add preset
+        vehicleManager.SetCrewData(Preset.CreateDefaultPresat(), conn, data.transform.position); //TODO add preset
         vehicleManager.JoinCrew(conn);
 
         //Set camera

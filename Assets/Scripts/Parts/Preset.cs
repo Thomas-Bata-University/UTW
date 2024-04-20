@@ -1,5 +1,4 @@
 using System;
-using System.Runtime.CompilerServices;
 using UnityEngine;
 
 [Serializable]
@@ -11,7 +10,7 @@ public class Preset {
     public int faction = 0;
     public int color = 0;
     public string tankName = "Default-tank";
-    public MainPart mainPart = CreateDefaultPart();
+    public MainPart mainPart;
 
     public Preset() {
         //Do not delete, used for NETWORKING
@@ -22,15 +21,6 @@ public class Preset {
         this.hull = hull;
         this.turret = turret;
         this.faction = 0;
-    }
-
-    public Preset(string presetName, string hull, string turret, int color, string tankName) {
-        this.presetName = presetName;
-        this.hull = hull;
-        this.turret = turret;
-        this.faction = 0;
-        this.color = color;
-        this.tankName = tankName;
     }
 
     public override string ToString() {
@@ -87,14 +77,21 @@ public class Preset {
         }
     }
 
-    [Obsolete("Just for testing purpose.")]
-    private static MainPart CreateDefaultPart() {
+    [Obsolete("Default testing preset")]
+    public static Preset CreateDefaultPresat() {
         TankPart[] parts = new TankPart[] {
-            new TankPart(new TankData(1, "cannon", "cannon_1", TankPositions.GUNNER, Vector3.zero)),
-            new TankPart(new TankData(2, "cannon", "cannon_2", TankPositions.GUNNER, Vector3.zero))
+            new TankPart(new TankData(1, "cannon", "cannon_1", TankPositions.GUNNER, new Vector3(0, -1.2f, -1.33f))),
+            new TankPart(new TankData(2, "cannon", "cannon_2", TankPositions.GUNNER, new Vector3(0, -1.2f, -1.33f)))
         };
 
-        return new MainPart(new TankData(0, "hull", "main", TankPositions.DRIVER, Vector3.zero), parts);
+        Preset preset = new Preset();
+        preset.presetName = "Default";
+        preset.faction = 0;
+        preset.color = 0;
+        preset.tankName = "Default-tank";
+        preset.mainPart = new MainPart(new TankData(0, "hull", "main", TankPositions.DRIVER, Vector3.zero), parts);
+
+        return preset;
     }
 
 }
