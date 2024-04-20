@@ -10,6 +10,7 @@ using static UnityEngine.UI.Button;
 public class LobbyController : MonoBehaviour
 {
     public GameObject lobbyManagerPrefab;
+    public GameObject menuPanel;
     public GameObject chatPrefab;
     public GameObject chatManagerPrefab;
 

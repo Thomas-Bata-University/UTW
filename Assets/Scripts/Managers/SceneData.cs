@@ -9,6 +9,7 @@ public class SceneData {
     public int playerCount;
     public NetworkConnection lobbyOwner;
     public List<NetworkConnection> clients = new List<NetworkConnection>();
+    public LobbyManager lobbyManager;
 
     public SceneData() {
 

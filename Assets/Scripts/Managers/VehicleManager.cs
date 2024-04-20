@@ -14,7 +14,8 @@ public class VehicleManager : NetworkBehaviour {
 
     [Header("Tank")]
     public GameObject tankPrefab;
-    private GameObject actualTank;
+    public GameObject cannonPrefab;
+    [SyncVar] private GameObject actualTank;
     [SyncVar, HideInInspector] public string tankName;
 
     private NetworkObject networkObject;
@@ -35,16 +36,7 @@ public class VehicleManager : NetworkBehaviour {
     #region Server-Crew
     public void SetCrewData(Preset preset, NetworkConnection conn, Vector3 spawnpoint) {
         networkObject = GetComponent<NetworkObject>();
-        this.spawnpointPosition = spawnpoint;
-
-        //TODO Set this data from preset on VM creation
-        tankCrew.Add(0, new CrewData(TankPositions.DRIVER));
-        tankCrew.Add(1, new CrewData(TankPositions.GUNNER));
-        //tankCrew.Add(2, new CrewData(TankPositions.GUNNER));
-        //tankCrew.Add(3, new CrewData(TankPositions.OBSERVER));
-        //tankCrew.Add(4, new CrewData(TankPositions.GUNNER));
-        maxCrewCount = tankCrew.Count;
-
+        spawnpointPosition = spawnpoint;
         SpawnTank(preset);
     }
 
@@ -54,6 +46,7 @@ public class VehicleManager : NetworkBehaviour {
             CrewData data = tankCrew.First(x => x.Value.conn is null).Value;
             data.conn = joiningClientConn;
             data.empty = false;
+            data.tankPart.GiveOwnership(joiningClientConn);
             tankCrew.Dirty(data);
             return !tankCrew.Any(x => x.Value.empty);
         }
@@ -66,6 +59,7 @@ public class VehicleManager : NetworkBehaviour {
         data.conn = null;
         data.empty = true;
         data.swapRequest = false;
+        data.tankPart.RemoveOwnership();
         tankCrew.Dirty(data);
         return CrewIsEmpty();
     }
@@ -88,9 +82,11 @@ public class VehicleManager : NetworkBehaviour {
         var conn = requestedData.conn;
         oldData.conn = conn;
         oldData.empty = conn is null;
+        oldData.tankPart.GiveOwnership(conn);
 
         requestedData.conn = requestConn;
         requestedData.empty = false;
+        requestedData.tankPart.GiveOwnership(requestConn);
 
         tankCrew.Dirty(key);
         tankCrew.Dirty(oldKey);
@@ -160,8 +156,9 @@ public class VehicleManager : NetworkBehaviour {
                     crewButtons[key].GetComponentInChildren<TextMeshProUGUI>().text = GetName(value);
                 }
                 break;
-            case SyncDictionaryOperation.Clear: {
-
+            case SyncDictionaryOperation.Clear: { 
+                    Debug.Log("Destroying buttons");
+                    DestroyCrewButton();
                 }
                 break;
         }
@@ -209,23 +206,48 @@ public class VehicleManager : NetworkBehaviour {
         //TODO Fix client leaving during swap request
         FindObjectOfType<LobbyController>().SetSwapData(this, requestConn, key, oldKey);
     }
+
+    private TankPositions GetActualTankPosition() {
+        foreach (var pair in tankCrew) {
+            if (pair.Value.conn == LocalConnection) {
+                Debug.Log($"Player position {pair.Value.tankPosition}");
+                return pair.Value.tankPosition;
+            }
+        }
+        throw new System.Exception("Player position not found.");
+    }
     #endregion Client-Crew
     #endregion Crew
 
     #region Tank
     #region Server-Tank
     [ServerRpc(RequireOwnership = false)]
-    private void SpawntankServer(Preset preset) {
+    private void ChangePresetServer(NetworkConnection conn, Preset preset) {
+        LeaveCrew(conn);
+        tankCrew.Clear();
         SpawnTank(preset);
+        JoinCrew(conn);
     }
 
-    private void SpawnTank(Preset preset) {
+    private void SpawnTank(Preset preset) { //TODO Create logic for adding NO to crew data
         if (actualTank is not null) Despawn(actualTank);
         tankName = preset.tankName;
         actualTank = Instantiate(tankPrefab, spawnpointPosition, Quaternion.identity);
-        NetworkObject no = actualTank.GetComponent<NetworkObject>();
-        no.SetParent(networkObject);
-        Spawn(no);
+        NetworkObject hullNo = actualTank.GetComponent<NetworkObject>();
+        hullNo.SetParent(networkObject);
+        Spawn(hullNo);
+        tankCrew.Add(0, new CrewData(TankPositions.DRIVER));
+        tankCrew[0].tankPart = hullNo;
+
+        GameObject cannon = Instantiate(cannonPrefab, cannonPrefab.transform.position, Quaternion.identity); //TODO add where to spawn parts
+        NetworkObject cannonNo = cannon.GetComponent<NetworkObject>();
+        cannonNo.SetParent(hullNo);
+        Spawn(cannonNo);
+        tankCrew.Add(1, new CrewData(TankPositions.OBSERVER));
+        tankCrew[1].tankPart = cannonNo;
+
+        maxCrewCount = tankCrew.Count;
+
         BuildTank(preset, actualTank);
     }
     #endregion Server-Tank
@@ -246,7 +268,35 @@ public class VehicleManager : NetworkBehaviour {
     }
 
     public void ChangePreset(NetworkConnection conn, Preset preset) {
-        SpawntankServer(preset);
+        ChangePresetServer(conn, preset);
+    }
+
+    public void StartGame() {
+        FindObjectOfType<LobbyController>().menuPanel.SetActive(false);
+        activateController();
+    }
+
+    private void activateController() { //TODO create logic for enabling part for each position
+        TankPositions tankPositions = GetActualTankPosition();
+        switch (tankPositions) {
+            case TankPositions.DRIVER: {
+                    EnableCamera(0);
+                    GetComponentInChildren<DriverController>().enabled = true;
+                    // actualTank.GetComponent<DriverController>().enabled = true;
+                }
+                break;
+            case TankPositions.OBSERVER: {
+                    EnableCamera(1);
+                    GetComponentInChildren<ObserverController>().enabled = true;
+                }
+                break;
+        }
+    }
+
+    private void EnableCamera(int childIndex) {
+        Transform child = actualTank.transform.GetChild(childIndex);
+        child.GetComponentInChildren<Camera>().enabled = true;
+        child.GetComponentInChildren<AudioListener>().enabled = true;
     }
     #endregion Client-Tank
     #endregion Tank

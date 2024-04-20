@@ -1,4 +1,5 @@
 using FishNet.Connection;
+using FishNet.Object;
 
 public class CrewData {
 
@@ -6,6 +7,8 @@ public class CrewData {
     public TankPositions tankPosition;
     public bool empty;
     public bool swapRequest;
+    public NetworkObject tankPart;
+    public int tankPartChild;
 
     public CrewData() {
 

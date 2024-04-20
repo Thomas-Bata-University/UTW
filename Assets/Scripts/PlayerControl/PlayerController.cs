@@ -1,36 +1,52 @@
+using FishNet.Object;
 using UnityEngine;
 
-public abstract class PlayerController : MonoBehaviour {
+public abstract class PlayerController : NetworkBehaviour {
 
-    private float actualAngleX = 0f;
-    private float actualAngleY = 0f;
+    private bool isRotating = false;
 
-    public GameObject player;
+    protected TankPositions tankPosition;
+
+    public GameObject tankPart;
+    public GameObject object2Rotate;
     public Vector3 seatPosition;
 
     protected void Awake() {
         enabled = false;
     }
 
+    protected abstract void Start();
+
     public void SetPosition() {
-        player.transform.position = seatPosition;
+        tankPart.transform.position = seatPosition;
     }
 
     protected virtual void MouseLook(float mouseSpeed, float viewAngleX, float viewAngleY) {
-        float x = Input.GetAxis("Mouse X");
-        float y = Input.GetAxis("Mouse Y");
+        if (Input.GetMouseButtonDown(1)) {
+            isRotating = true;
+        }
 
-        transform.Rotate(Vector3.up * x * mouseSpeed);
+        if (Input.GetMouseButtonUp(1)) {
+            isRotating = false;
+            Cursor.lockState = CursorLockMode.None;
+            Cursor.visible = true;
+        }
 
-        actualAngleX -= y * mouseSpeed;
-        float angleX = viewAngleX / 2;
-        actualAngleX = Mathf.Clamp(actualAngleX, -angleX, angleX);
+        if (isRotating) {
+            float rotationX = Input.GetAxis("Mouse X") * mouseSpeed * Time.deltaTime;
+            float rotationY = Input.GetAxis("Mouse Y") * mouseSpeed * Time.deltaTime;
 
-        actualAngleY -= y * mouseSpeed;
-        float angleY = viewAngleY / 2;
-        actualAngleY = Mathf.Clamp(actualAngleY, -angleY, angleY);
+            rotationX = Mathf.Clamp(rotationX, -viewAngleX, viewAngleX);
+            rotationY = Mathf.Clamp(rotationY, -viewAngleY, viewAngleY);
 
-        transform.localRotation = Quaternion.Euler(actualAngleX, actualAngleY, 0f);
+            object2Rotate.transform.Rotate(Vector3.up, rotationX, Space.World);
+            object2Rotate.transform.Rotate(Vector3.left, rotationY, Space.Self);
+
+            Cursor.lockState = CursorLockMode.Locked;
+            Cursor.visible = false;
+        }
     }
+
+    protected abstract void Move();
 
 }//END
