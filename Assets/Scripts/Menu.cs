@@ -7,8 +7,6 @@ public class Menu : MonoBehaviour
     [SerializeField] private GameObject presetManager;
     private Tugboat _tugboat;
 
-    private string _username = "";
-
     private void Start()
     {
         if (networkManager.TryGetComponent(out Tugboat t))
@@ -36,14 +34,6 @@ public class Menu : MonoBehaviour
         _tugboat.SetClientAddress("127.0.0.1");
 
         _tugboat.StartConnection(false);
-    }
-
-    // Temporary until PlayerData is functional 
-    public void ReadStringInput(string name)
-    {
-        PlayerPrefs.SetString("username", name);
-
-        Debug.Log($"New user name: {PlayerPrefs.GetString("username")}");
     }
 
     public void ExitGame()

@@ -1,4 +1,4 @@
-﻿using FishNet.Object;
+using FishNet.Object;
 using System;
 using UnityEngine;
 
@@ -17,7 +17,7 @@ public class ChatManager : NetworkBehaviour
         {
             _chat = FindAnyObjectByType<Chat>(FindObjectsInactive.Include);
 
-            SetUsername(PlayerPrefs.GetString("username"));
+            username = GameManager.Instance.GetPlayerByConnection(LocalConnection.ClientId).PlayerName;
         }
     }
 

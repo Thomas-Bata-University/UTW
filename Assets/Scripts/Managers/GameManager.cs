@@ -6,106 +6,145 @@ using System.Linq;
 using Factions;
 using UnityEngine;
 using Utils;
+using FishNet;
+using FishNet.Connection;
+using FishNet.Transporting;
 
-namespace Managers
+public sealed class GameManager : NetworkBehaviour
 {
-    public sealed class GameManager : NetworkBehaviour
+    public static GameManager Instance { get; private set; }
+
+    [SyncObject]
+    private readonly SyncDictionary<string, PlayerData> _playersData = new();
+    [SyncObject]
+    private readonly SyncDictionary<int, Faction> _factions = new();
+
+    public int CountOfFactions => _factions.Count;
+
+    private void Awake()
     {
-        public static GameManager Instance { get; private set; }
+        Instance = this;
+        LoadUsers();
+        LoadFactionsFromJson();
+        LoadFactionPresets();
 
-        [SyncObject] private readonly SyncDictionary<string, PlayerData> _playersData = new();
+        InstanceFinder.NetworkManager.ServerManager.OnRemoteConnectionState += ServerManager_OnRemoteConnectionState;
+    }
 
-
-        [SyncObject] private readonly SyncDictionary<int, Faction> _factions = new();
-
-        public int CountOfFactions => _factions.Count;
-
-        private void Awake()
+    private void ServerManager_OnRemoteConnectionState(NetworkConnection conn, RemoteConnectionStateArgs args)
+    {
+        if (args.ConnectionState == RemoteConnectionState.Stopped)
         {
-            Instance = this;
-            LoadUsers();
-            LoadFactionsFromJson();
-            LoadFactionPresets();
-        }
+            Debug.Log($"The user with id: {conn.ClientId} has disconnected!");
 
-        private void Update()
-        {
-            if (!IsServer) return;
-        }
-
-        private void LoadUsers()
-        {
-            var files = Directory.GetFiles(Application.streamingAssetsPath + "/Users/", "*.json");
-
-            foreach (var fi in files)
+            try
             {
-                var reader = new StreamReader(fi);
+                PlayerData p = GetPlayerByConnection(conn.ClientId);
+                p.ClientConnectionId = -2;
 
-                var jsonString = reader.ReadToEnd();
-                var data = JsonUtility.FromJson<PlayerData>(jsonString);
-                _playersData[data.PlayerName] = data;
+                UpdateDictionary(p.PlayerName);
+            }
+            catch (System.Exception)
+            {
+                Debug.LogWarning("Couldn't find a matching connection.");
             }
         }
+    }
 
-        public PlayerData CreateOrSelectPlayer(string playerName)
+    private void Update()
+    {
+        if (!IsServer) return;
+    }
+
+    public void ListAllUsers()
+    {
+        foreach (var p in _playersData.Values)
         {
-            // If found fill player with its json data
-            if (_playersData.TryGetValue(playerName, out var existingPlayerData))
-            {
-                return existingPlayerData;
-            }
-
-            var data = _playersData[playerName] = CreatePlayerData(playerName);
-            return data;
+            Debug.Log($"Name: {p.PlayerName} | Conn: {p.ClientConnectionId}");
         }
-        
+    }
 
-        private PlayerData CreatePlayerData(string playerName)
+    [Server]
+    public void UpdateDictionary(string name)
+    {
+        _playersData.Dirty(name);
+    }
+
+    private void LoadUsers()
+    {
+        var files = Directory.GetFiles(Application.streamingAssetsPath + "/Users/", "*.json");
+
+        foreach (var fi in files)
         {
-            var player = new PlayerData(playerName, default, string.Empty);
-            var json = JsonUtility.ToJson(player);
-            var writer = new StreamWriter(Application.streamingAssetsPath + "/Users/" + $"/{player.PlayerName}.json");
-            writer.Write(json);
-            writer.Close();
-            return player;
-        }
+            var reader = new StreamReader(fi);
 
-
-        private void LoadFactionsFromJson()
-        {
-            var files = Directory.GetFiles(Application.streamingAssetsPath + "/Factions/", "*.json");
-            var reader = new StreamReader(files.First());
             var jsonString = reader.ReadToEnd();
-            var data = JsonUtility.FromJson<FactionsData>(jsonString);
-
-            foreach (var faction in data.Factions)
-            {
-                _factions[faction.Id] = faction;
-            }
+            var data = JsonUtility.FromJson<PlayerData>(jsonString);
+            _playersData[data.PlayerName] = data;
         }
+    }
 
-        private void LoadFactionPresets()
+    public PlayerData CreateOrSelectPlayer(string playerName)
+    {
+        if (_playersData.TryGetValue(playerName, out var existingPlayerData))
         {
-            var files = Directory.GetFiles(Application.streamingAssetsPath + "/Presets/", "*.xml");
-
-            var presets = files.Select(SerializationUtils.DeserializeXml<Preset>).ToList();
-
-            foreach (var faction in _factions.Values)
-            {
-                //Genius serialization utility in Unity...just dont ask
-                faction.Presets ??= new List<Preset>();
-                faction.Presets.AddRange(
-                    presets.Where(preset => preset.faction.Equals(faction.Id)));
-            }
+            return existingPlayerData;
         }
 
+        var data = _playersData[playerName] = CreatePlayerData(playerName);
+        return data;
+    }
 
-        public Faction GetFactionById(int guid) => _factions[guid];
+    private PlayerData CreatePlayerData(string playerName)
+    {
+        var player = new PlayerData(playerName, string.Empty);
+        var json = JsonUtility.ToJson(player);
+        var writer = new StreamWriter(Application.streamingAssetsPath + "/Users/" + $"/{player.PlayerName}.json");
+        writer.Write(json);
+        writer.Close();
+        return player;
+    }
 
-        public PlayerData GetPlayerByConnection(int clientId) =>
-            _playersData.Values.First(playerData => playerData.ClientConnection.Equals(clientId));
+    private void LoadFactionsFromJson()
+    {
+        var files = Directory.GetFiles(Application.streamingAssetsPath + "/Factions/", "*.json");
+        var reader = new StreamReader(files.First());
+        var jsonString = reader.ReadToEnd();
+        var data = JsonUtility.FromJson<FactionsData>(jsonString);
 
-        public Faction GetFactionByName(string factionName) =>
-            _factions.FirstOrDefault(part => part.Value.Name.Equals(factionName)).Value;
+        foreach (var faction in data.Factions)
+        {
+            _factions[faction.Id] = faction;
+        }
+    }
+
+    private void LoadFactionPresets()
+    {
+        var files = Directory.GetFiles(Application.streamingAssetsPath + "/Presets/", "*.xml");
+
+        var presets = files.Select(SerializationUtils.DeserializeXml<Preset>).ToList();
+
+        foreach (var faction in _factions.Values)
+        {
+            faction.Presets ??= new List<Preset>();
+            faction.Presets.AddRange(
+                presets.Where(preset => preset.faction.Equals(faction.Id)));
+        }
+    }
+
+    public PlayerData GetPlayerByConnection(int clientId) =>
+        _playersData.Values.First(playerData => playerData.ClientConnectionId.Equals(clientId));
+
+    public PlayerData GetPlayerByName(string clientName) =>
+        _playersData.Values.First(playerData => playerData.PlayerName.Equals(clientName));
+
+    public Faction GetFactionById(int guid) => _factions[guid];
+
+    public Faction GetFactionByName(string factionName) =>
+        _factions.FirstOrDefault(part => part.Value.Name.Equals(factionName)).Value;
+
+    private void OnDestroy()
+    {
+        InstanceFinder.NetworkManager.ServerManager.OnRemoteConnectionState -= ServerManager_OnRemoteConnectionState;
     }
 }

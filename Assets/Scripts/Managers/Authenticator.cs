@@ -1,117 +1,160 @@
 using System;
-using FishNet;
+using System.Collections.Generic;
 using FishNet.Authenticating;
 using FishNet.Broadcast;
 using FishNet.Connection;
-using FishNet.Example.Authenticating;
 using FishNet.Managing;
 using FishNet.Transporting;
 using TMPro;
 using UnityEngine;
 
-namespace Managers
+public struct UserBroadcast : IBroadcast
 {
-    public struct UsernameBroadcast : IBroadcast
+    public string Username;
+    public List<string> Hashes;
+}
+
+public struct ResponseBroadcast : IBroadcast
+{
+    public bool Passed;
+    public string Message;
+}
+
+public class Authenticator : HostAuthenticator
+{
+    /// <summary>
+    /// Called when authenticator has concluded a result for a connection. Boolean is true if authentication passed, false if failed.
+    /// Server listens for this event automatically.
+    /// </summary>
+    public override event Action<NetworkConnection, bool> OnAuthenticationResult;
+
+    TMP_Text input;
+
+    [SerializeField] private string userNameInput = "HelloWorld";
+
+    public override void InitializeOnce(NetworkManager networkManager)
     {
-        public string Username;
+        base.InitializeOnce(networkManager);
+
+        var inputGO = GameObject.Find("UsernameInputText");
+        input = inputGO.GetComponent<TMP_Text>();
+
+        NetworkManager.ClientManager.OnClientConnectionState += ClientManager_OnClientConnectionState;
+        NetworkManager.ServerManager.RegisterBroadcast<UserBroadcast>(OnUserBroadcast, false);
+        NetworkManager.ClientManager.RegisterBroadcast<ResponseBroadcast>(OnResponseBroadcast);
     }
 
-    public class Authenticator : HostAuthenticator
+    /// <summary>
+    /// Called when a connection state changes for the local client.
+    /// </summary>
+    private void ClientManager_OnClientConnectionState(ClientConnectionStateArgs args)
     {
-        #region Public.
+        if (args.ConnectionState != LocalConnectionState.Started)
+            return;
 
-        /// <summary>
-        /// Called when authenticator has concluded a result for a connection. Boolean is true if authentication passed, false if failed.
-        /// Server listens for this event automatically.
-        /// </summary>
-        public override event Action<NetworkConnection, bool> OnAuthenticationResult;
+        //Authentication was sent as host, no need to authenticate normally.
+        if (AuthenticateAsHost())
+            return;
 
-        #endregion
-
-        TMP_Text input;
-
-
-        [SerializeField] private string userNameInput = "HelloWorld";
-
-        public override void InitializeOnce(NetworkManager networkManager)
+        UserBroadcast ub = new UserBroadcast()
         {
-            base.InitializeOnce(networkManager);
+            Username = input.text,
+            Hashes = Database.hashes
+        };
 
-            var inputGO = GameObject.Find("UsernameInputText");
-            input = inputGO.GetComponent<TMP_Text>();
+        NetworkManager.ClientManager.Broadcast(ub);
+    }
 
-            base.NetworkManager.ClientManager.OnClientConnectionState += ClientManager_OnClientConnectionState;
-            base.NetworkManager.ServerManager.RegisterBroadcast<UsernameBroadcast>(OnUsernameBroadcast, false);
-            base.NetworkManager.ClientManager.RegisterBroadcast<ResponseBroadcast>(OnResponseBroadcast);
+    /// <summary>
+    /// Received on server when a client sends the password broadcast message.
+    /// </summary>
+    /// <param name="conn">Connection sending broadcast.</param>
+    /// <param name="ub"></param>
+    private void OnUserBroadcast(NetworkConnection conn, UserBroadcast ub)
+    {
+        var player = GameManager.Instance.CreateOrSelectPlayer(ub.Username);
+
+        if (IsAlreadyConnected(player))
+        {
+            Debug.Log($"Player {player.PlayerName} is already connected!");
+
+            SendAuthenticationResponse(conn, false, "Player with this name is already connected!");
+            OnAuthenticationResult?.Invoke(conn, false);
+
+            return;
         }
 
-        /// <summary>
-        /// Called when a connection state changes for the local client.
-        /// </summary>
-        private void ClientManager_OnClientConnectionState(ClientConnectionStateArgs args)
+        Debug.Log($"Checking hashes for {player.PlayerName}");
+
+        if (!UserHasRequiredHashes(ub.Hashes))
         {
-            if (args.ConnectionState != LocalConnectionState.Started)
-                return;
-            //Authentication was sent as host, no need to authenticate normally.
-            if (AuthenticateAsHost())
-                return;
+            Debug.Log($"Player {player.PlayerName} has different AssetDB!");
 
-            UsernameBroadcast pb = new UsernameBroadcast()
-            {
-                Username = input.text
-            };
+            SendAuthenticationResponse(conn, false, "You have a different AssetDB!");
+            OnAuthenticationResult?.Invoke(conn, false);
 
-            base.NetworkManager.ClientManager.Broadcast(pb);
+            return;
         }
 
+        Debug.Log($"Hash check successful for {player.PlayerName}");
 
-        /// <summary>
-        /// Received on server when a client sends the password broadcast message.
-        /// </summary>
-        /// <param name="conn">Connection sending broadcast.</param>
-        /// <param name="pb"></param>
-        private void OnUsernameBroadcast(NetworkConnection conn, UsernameBroadcast pb)
+        player.ClientConnectionId = conn.ClientId;
+        GameManager.Instance.UpdateDictionary(player.PlayerName);
+
+        Debug.Log($"Player {player.PlayerName} authenticated!");
+
+        SendAuthenticationResponse(conn, true, "Authentication complete.");
+        OnAuthenticationResult?.Invoke(conn, true);
+    }
+
+    private bool IsAlreadyConnected(PlayerData player)
+    {
+        if (GameManager.Instance.GetPlayerByName(player.PlayerName).ClientConnectionId == -2)
+            return false;
+
+        return true;
+    }
+
+    private bool UserHasRequiredHashes(List<string> hashes)
+    {
+        HashSet<string> userHashes = new HashSet<string>(hashes);
+        HashSet<string> serverHashes = new HashSet<string>(Database.hashes);
+
+        return userHashes.IsSupersetOf(serverHashes);
+    }
+
+    /// <summary>
+    /// Received on client after server sends an authentication response.
+    /// </summary>
+    /// <param name="rb"></param>
+    private void OnResponseBroadcast(ResponseBroadcast rb)
+    {
+        string result = rb.Message;
+        NetworkManager.Log(result);
+    }
+
+    /// <summary>
+    /// Sends an authentication result to a connection.
+    /// </summary>
+    private void SendAuthenticationResponse(NetworkConnection conn, bool authenticated, string message)
+    {
+        ResponseBroadcast rb = new ResponseBroadcast()
         {
-            var player = GameManager.Instance.CreateOrSelectPlayer(pb.Username);
-            player.ClientConnection = conn.ClientId;
-            Debug.Log($"Player {player.PlayerName} authenticated!");
+            Passed = authenticated,
+            Message = message
+        };
 
-            SendAuthenticationResponse(conn, true);
+        NetworkManager.ServerManager.Broadcast(conn, rb, false);
+    }
 
-            OnAuthenticationResult?.Invoke(conn, true);
-        }
-
-        /// <summary>
-        /// Received on client after server sends an authentication response.
-        /// </summary>
-        /// <param name="rb"></param>
-        private void OnResponseBroadcast(ResponseBroadcast rb)
-        {
-            string result = (rb.Passed) ? "Authentication complete." : "Authenitcation failed.";
-            NetworkManager.Log(result);
-        }
-
-        /// <summary>
-        /// Sends an authentication result to a connection.
-        /// </summary>
-        private void SendAuthenticationResponse(NetworkConnection conn, bool authenticated)
-        {
-            ResponseBroadcast rb = new ResponseBroadcast()
-            {
-                Passed = authenticated
-            };
-            base.NetworkManager.ServerManager.Broadcast(conn, rb, false);
-        }
-
-        /// <summary>
-        /// Called after handling a host authentication result.
-        /// </summary>
-        /// <param name="conn">Connection authenticating.</param>
-        /// <param name="authenticated">True if authentication passed.</param>
-        protected override void OnHostAuthenticationResult(NetworkConnection conn, bool authenticated)
-        {
-            SendAuthenticationResponse(conn, authenticated);
-            OnAuthenticationResult?.Invoke(conn, authenticated);
-        }
+    /// <summary>
+    /// Called after handling a host authentication result.
+    /// </summary>
+    /// <param name="conn">Connection authenticating.</param>
+    /// <param name="authenticated">True if authentication passed.</param>
+    protected override void OnHostAuthenticationResult(NetworkConnection conn, bool authenticated)
+    {
+        SendAuthenticationResponse(conn, authenticated, string.Empty);
+        OnAuthenticationResult?.Invoke(conn, authenticated);
     }
 }
