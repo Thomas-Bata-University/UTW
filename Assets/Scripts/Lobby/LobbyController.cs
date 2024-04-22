@@ -7,9 +7,11 @@ using UnityEngine;
 using UnityEngine.UI;
 using static UnityEngine.UI.Button;
 
-public class LobbyController : MonoBehaviour {
-
+public class LobbyController : MonoBehaviour
+{
     public GameObject lobbyManagerPrefab;
+    public GameObject chatPrefab;
+    public GameObject chatManagerPrefab;
 
     [Header("Hide after spawnpoint lock")]
     public GameObject presetDropdown;
@@ -25,7 +27,8 @@ public class LobbyController : MonoBehaviour {
     private UTW.SceneManager sceneManager;
     private NetworkConnection conn;
 
-    private void Awake() {
+    private void Awake()
+    {
         if (InstanceFinder.IsServer) return;
 
         InstanceFinder.SceneManager.OnLoadEnd += SceneLoadEnd;
@@ -36,12 +39,15 @@ public class LobbyController : MonoBehaviour {
         HideObjects(true);
     }
 
-    private void SceneLoadEnd(SceneLoadEndEventArgs args) {
-        sceneManager.InitializeLobbyManager(lobbyManagerPrefab, conn);
+    private void SceneLoadEnd(SceneLoadEndEventArgs args)
+    {
+        sceneManager.InitializeLobbyManagers(lobbyManagerPrefab, chatPrefab, conn);
+        sceneManager.InitializeChatManager(chatManagerPrefab, conn);
         sceneManager.Connected(conn);
     }
 
-    public void SetSwapData(VehicleManager vehicleManager, NetworkConnection requestConn, int key, int oldKey) {
+    public void SetSwapData(VehicleManager vehicleManager, NetworkConnection requestConn, int key, int oldKey)
+    {
         swapRequestPanel.SetActive(true);
         swapRequestPanel.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = $"Request from client ID: {requestConn.ClientId}";
         swapRequestPanel.transform.GetChild(1).GetComponent<TextMeshProUGUI>().text = $"Swap from {vehicleManager.tankCrew[key].tankPosition} to {vehicleManager.tankCrew[oldKey].tankPosition}?";
@@ -52,20 +58,24 @@ public class LobbyController : MonoBehaviour {
         OnClick(3).AddListener(() => Swap(vehicleManager, requestConn, key, oldKey, false));
     }
 
-    private ButtonClickedEvent OnClick(int childIndex) {
+    private ButtonClickedEvent OnClick(int childIndex)
+    {
         return swapRequestPanel.transform.GetChild(childIndex).GetComponent<Button>().onClick;
     }
 
-    private void Swap(VehicleManager vehicleManager, NetworkConnection requestConn, int key, int oldKey, bool swap) {
+    private void Swap(VehicleManager vehicleManager, NetworkConnection requestConn, int key, int oldKey, bool swap)
+    {
         StopCoroutine(swapCoroutine);
         vehicleManager.SwapRequestResponse(requestConn, key, oldKey, swap);
         swapRequestPanel.SetActive(false);
     }
 
-    private IEnumerator StartCountdown(VehicleManager vehicleManager, NetworkConnection requestConn, int key, int oldKey) {
+    private IEnumerator StartCountdown(VehicleManager vehicleManager, NetworkConnection requestConn, int key, int oldKey)
+    {
         float currentTime = countdownTime;
 
-        while (currentTime > 0) {
+        while (currentTime > 0)
+        {
             currentTime -= Time.deltaTime;
             progressBar.fillAmount = currentTime / countdownTime;
             yield return null;
@@ -73,37 +83,43 @@ public class LobbyController : MonoBehaviour {
         Swap(vehicleManager, requestConn, key, oldKey, false);
     }
 
-    public void SpawnpointReady() {
+    public void SpawnpointReady()
+    {
         HideObjects(true);
         FindObjectOfType<LobbyManager>().SetSpawnpointReady();
     }
 
-    public void LeaveSpawnpoint() {
+    public void LeaveSpawnpoint()
+    {
         HideObjects(true);
         FindObjectOfType<LobbyManager>().LeaveSpawnpoint(conn);
     }
 
-    public void DisconnectFromLobby() {
+    public void DisconnectFromLobby()
+    {
         FindObjectOfType<LobbyManager>().LeaveSpawnpoint(conn);
         sceneManager.Disconnect(conn);
     }
 
-    public void ActivateStartButton() {
+    public void ActivateStartButton()
+    {
         startButton.SetActive(true);
     }
 
-    public void StartGame() {
+    public void StartGame()
+    {
         sceneManager.StartGame(conn);
     }
 
-    public void HideObjects(bool active) {
+    public void HideObjects(bool active)
+    {
         presetDropdown.SetActive(!active);
         readyButton.SetActive(!active);
     }
 
-    private void OnDestroy() {
+    private void OnDestroy()
+    {
         if (InstanceFinder.IsServer) return;
         InstanceFinder.SceneManager.OnLoadEnd -= SceneLoadEnd;
     }
-
 }

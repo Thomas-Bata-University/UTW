@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &40524906591757916
+--- !u!1 &502480274050441957
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -8,23 +8,23 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 5518481256344637915}
-  - component: {fileID: -7087056345022943678}
-  - component: {fileID: 5408540398499684965}
+  - component: {fileID: 2326887074730637257}
+  - component: {fileID: 3125613259720125025}
+  - component: {fileID: 5842391197231379416}
   m_Layer: 0
-  m_Name: LobbyManager
+  m_Name: ChatManager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &5518481256344637915
+--- !u!4 &2326887074730637257
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 40524906591757916}
+  m_GameObject: {fileID: 502480274050441957}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
@@ -33,31 +33,29 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &-7087056345022943678
+--- !u!114 &3125613259720125025
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 40524906591757916}
+  m_GameObject: {fileID: 502480274050441957}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b0dbbc15ce854cc43b42f38a240bb7b3, type: 3}
+  m_Script: {fileID: 11500000, guid: 3ab2ab64f573b334899ff3db2275d0a5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 0
-  _addedNetworkObject: {fileID: 5408540398499684965}
-  _networkObjectCache: {fileID: 5408540398499684965}
-  defaultMap: {fileID: 3744106449401182432, guid: 2fa4fb6a8c5243d49be372ff641ee2f9, type: 3}
-  vehicleManagerPrefab: {fileID: 40524906591757916, guid: 9d939ae3213216b4c9a44f878c398b5c, type: 3}
-  chatManagerPrefab: {fileID: 502480274050441957, guid: 84fd24e2c84b20b47ae4200f1fc825f9, type: 3}
---- !u!114 &5408540398499684965
+  _componentIndexCache: 255
+  _addedNetworkObject: {fileID: 5842391197231379416}
+  _networkObjectCache: {fileID: 0}
+  username: 
+--- !u!114 &5842391197231379416
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 40524906591757916}
+  m_GameObject: {fileID: 502480274050441957}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 26b716c41e9b56b4baafaf13a523ba2e, type: 3}
@@ -66,21 +64,20 @@ MonoBehaviour:
   <IsNested>k__BackingField: 0
   <ComponentIndex>k__BackingField: 0
   <PredictedSpawn>k__BackingField: {fileID: 0}
-  _networkBehaviours:
-  - {fileID: -7087056345022943678}
+  _networkBehaviours: []
   <ParentNetworkObject>k__BackingField: {fileID: 0}
   <ChildNetworkObjects>k__BackingField: []
   SerializedTransformProperties:
-    Position: {x: 1057.6052, y: 487.6056, z: 322.63895}
-    Rotation: {x: -0, y: -0, z: -0, w: 1}
-    LocalScale: {x: 1, y: 1, z: 1}
+    Position: {x: 0, y: 0, z: 0}
+    Rotation: {x: 0, y: 0, z: 0, w: 0}
+    LocalScale: {x: 0, y: 0, z: 0}
   _isNetworked: 1
   _isGlobal: 0
   _initializeOrder: 0
   _defaultDespawnType: 0
   NetworkObserver: {fileID: 0}
-  <PrefabId>k__BackingField: 1
+  <PrefabId>k__BackingField: 0
   <SpawnableCollectionId>k__BackingField: 0
   _scenePathHash: 0
   <SceneId>k__BackingField: 0
-  <AssetPathHash>k__BackingField: 893403675455714406
+  <AssetPathHash>k__BackingField: 435081577668247712
