@@ -1,4 +1,4 @@
-﻿using FishNet.Object;
+using FishNet.Object;
 using System;
 using UnityEngine;
 
