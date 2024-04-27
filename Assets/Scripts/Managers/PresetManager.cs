@@ -1,8 +1,8 @@
-using FishNet.Connection;
-using FishNet.Object;
 using System;
 using System.IO;
 using System.Linq;
+using FishNet.Connection;
+using FishNet.Object;
 using UnityEngine;
 
 public class PresetManager : NetworkBehaviour {
@@ -22,7 +22,8 @@ public class PresetManager : NetworkBehaviour {
         if (LocalConnection.IsLocalClient) {
             Debug.Log($"Client ID: {LocalConnection.ClientId} connected... Loading asset.");
             LoadPreset(LocalConnection);
-        } else {
+        }
+        else {
             Debug.LogWarning($"Client ID: {Owner.ClientId} is owner of this object... Cannot load asset.");
         }
     }
@@ -51,7 +52,8 @@ public class PresetManager : NetworkBehaviour {
     [Obsolete("Generate testing preset on server start")]
     public void TestPreset(Preset preset) {
         string json = JsonUtility.ToJson(preset);
-        if (!Directory.Exists(Application.streamingAssetsPath + "/Presets/")) Directory.CreateDirectory(Application.streamingAssetsPath + "/Presets/");
+        if (!Directory.Exists(Application.streamingAssetsPath + "/Presets/"))
+            Directory.CreateDirectory(Application.streamingAssetsPath + "/Presets/");
         string filePath = Path.Combine(Application.streamingAssetsPath, "Presets", preset.presetName + ".json");
         File.WriteAllText(filePath, json);
     }
@@ -60,7 +62,8 @@ public class PresetManager : NetworkBehaviour {
     [ServerRpc(RequireOwnership = false)]
     public void SavePreset(NetworkConnection networkConnection, Preset tankPreset) {
         string json = JsonUtility.ToJson(tankPreset);
-        if (!Directory.Exists(Application.streamingAssetsPath + "/Presets/")) Directory.CreateDirectory(Application.streamingAssetsPath + "/Presets/");
+        if (!Directory.Exists(Application.streamingAssetsPath + "/Presets/"))
+            Directory.CreateDirectory(Application.streamingAssetsPath + "/Presets/");
         string filePath = Path.Combine(Application.streamingAssetsPath, "Presets", tankPreset.presetName + ".json");
         File.WriteAllText(filePath, json);
 
@@ -78,7 +81,8 @@ public class PresetManager : NetworkBehaviour {
             string json = File.ReadAllText(path);
             Preset deserialized = JsonUtility.FromJson<Preset>(json);
             return deserialized;
-        } else {
+        }
+        else {
             Debug.LogError("File not found: " + path);
             return null;
         }

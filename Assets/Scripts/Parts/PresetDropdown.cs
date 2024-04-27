@@ -43,6 +43,7 @@ public class PresetDropdown : MonoBehaviour {
 
         assetDatabase.SelectedPreset = selectedPreset;
         OnPresetChange?.Invoke(InstanceFinder.ClientManager.Connection, selectedPreset);
+        Debug.Log($"Changin preset {InstanceFinder.ClientManager.Connection}");
     }
 
 }

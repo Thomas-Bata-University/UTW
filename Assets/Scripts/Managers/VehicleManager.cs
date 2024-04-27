@@ -30,7 +30,7 @@ public class VehicleManager : NetworkBehaviour {
     private int maxCrewCount;
 
     private void Awake() {
-        PresetDropdown.OnPresetChange += ChangePreset;
+        PresetDropdown.OnPresetChange += ChangePreset; //Client side - use this after joining crew
         UTW.SceneManager.OnClientDisconnectLobby += Destroy;
     }
 
@@ -237,6 +237,7 @@ public class VehicleManager : NetworkBehaviour {
     #region Server-Tank
     [ServerRpc(RequireOwnership = false)]
     private void ChangePresetServer(NetworkConnection conn, Preset preset) {
+        //TODO Refactor this shit
         LeaveCrew(conn);
         tankCrew.Clear();
         SpawnTank(preset);
@@ -298,7 +299,8 @@ public class VehicleManager : NetworkBehaviour {
         actualTank.name = preset.tankName;
     }
 
-    public void ChangePreset(NetworkConnection conn, Preset preset) {
+    public void ChangePreset(NetworkConnection conn, Preset preset) { //TODO cannot swap preset if there are more clients
+        Debug.Log($"Calling for server to change preset {conn}");
         ChangePresetServer(conn, preset);
     }
 
@@ -309,6 +311,7 @@ public class VehicleManager : NetworkBehaviour {
 
     [TargetRpc]
     private void ActivateController(NetworkConnection conn, CrewData oldData, CrewData newData) {
+        //TODO Can we do it better?
         ActivateController(oldData, false);
         ActivateController(newData, true);
     }
