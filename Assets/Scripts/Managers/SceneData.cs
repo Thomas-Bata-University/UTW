@@ -7,6 +7,7 @@ public class SceneData {
     public string sceneName;
     public string lobbyName;
     public int playerCount;
+    public LobbyState lobbyState = LobbyState.OPEN;
     public NetworkConnection lobbyOwner;
     public List<NetworkConnection> clients = new List<NetworkConnection>();
     public LobbyManager lobbyManager;

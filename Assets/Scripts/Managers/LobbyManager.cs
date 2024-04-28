@@ -34,7 +34,6 @@ public class LobbyManager : NetworkBehaviour
         else
         {
             spawnpoints.OnChange += OnChange;
-            tankLobbyCameraRender = GameObject.FindGameObjectWithTag(GameTagsUtils.TANK_LOBBY_RENDER);
         }
     }
 
@@ -43,6 +42,10 @@ public class LobbyManager : NetworkBehaviour
         if (InstanceFinder.IsServer)
         {
             InitializeMap(defaultMap);
+        }
+        else
+        {
+            tankLobbyCameraRender = GameObject.FindGameObjectWithTag(GameTagsUtils.TANK_LOBBY_RENDER);
         }
     }
 
@@ -227,7 +230,7 @@ public class LobbyManager : NetworkBehaviour
 
         //Prepare CREW data
         VehicleManager vehicleManager = go.GetComponent<VehicleManager>();
-        vehicleManager.SetCrewData(Preset.CreateDefaultPresat(), conn, data.transform.position); //TODO add preset
+        vehicleManager.SetCrewData(Preset.CreateDefaultPreset(), conn, data.transform.position); //TODO add preset
         vehicleManager.JoinCrew(conn);
 
         //Set camera
@@ -351,12 +354,15 @@ public class LobbyManager : NetworkBehaviour
     #endregion Map
 
     [ObserversRpc]
-    public void StartGame() {
+    public void StartGame()
+    {
         spawnpoints[activeSpawnpointKey].vehicleManager.StartGame();
     }
 
-    private void OnDestroy() {
-        if (InstanceFinder.IsServer) {
+    private void OnDestroy()
+    {
+        if (InstanceFinder.IsServer)
+        {
             UTW.SceneManager.OnClientJoinLobby -= ClientJoin;
             UTW.SceneManager.OnClientDisconnectLobby -= ClientDisconnect;
         }

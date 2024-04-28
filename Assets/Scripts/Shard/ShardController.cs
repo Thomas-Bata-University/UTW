@@ -5,7 +5,8 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class ShardController : MonoBehaviour {
+public class ShardController : MonoBehaviour
+{
 
     [SerializeField]
     private UTW.SceneManager sceneManager;
@@ -15,26 +16,31 @@ public class ShardController : MonoBehaviour {
     public GridLayoutGroup layoutGroup;
     public TextMeshProUGUI statusText;
 
-    private void Start() {
+    private void Start()
+    {
         ChangeStatusText("Refreshing...");
         StartCoroutine(LateStart());
     }
 
     //TODO add timer for client to prevent lobby creation
-    public void CreateLobby() {
+    public void CreateLobby()
+    {
         UTW.SceneManager.Instance.CreateLobby(InstanceFinder.ClientManager.Connection);
     }
 
-    public void ConnectToLobby(int handle) {
+    public void ConnectToLobby(int handle)
+    {
         UTW.SceneManager.Instance.ConnectToLobby(InstanceFinder.ClientManager.Connection, handle);
     }
 
-    public IEnumerator LateStart() {
+    public IEnumerator LateStart()
+    {
         yield return new WaitForSeconds(1);
         RefreshLobby();
     }
 
-    public void RefreshLobby() {
+    public void RefreshLobby()
+    {
         if (InstanceFinder.IsServer) return;
 
         ChangeStatusText("Refreshing...");
@@ -42,35 +48,53 @@ public class ShardController : MonoBehaviour {
         UTW.SceneManager.Instance.GetLobbyData(InstanceFinder.ClientManager.Connection);
     }
 
-    public void CreateLobbyButtons(Dictionary<int, SceneData> lobbyData) {
-        foreach (var sceneData in lobbyData) {
+    public void CreateLobbyButtons(Dictionary<int, SceneData> lobbyData)
+    {
+        var cnt = lobbyData.Count;
+
+        foreach (var sceneData in lobbyData)
+        {
+            if (sceneData.Value.lobbyState == LobbyState.ONGOING)
+            {
+                cnt--;
+                continue;
+            }
+                
             CreateButton(sceneData.Value);
         }
 
-        if (lobbyData.Count > 0) {
+        if (cnt > 0)
+        {
             ChangeStatusText("");
-        } else {
+        }
+        else
+        {
             ChangeStatusText("No Lobby found.");
         }
     }
 
-    private void ClearButtons() {
-        for (int i = 0; i < layoutGroup.transform.childCount; i++) {
+    private void ClearButtons()
+    {
+        for (int i = 0; i < layoutGroup.transform.childCount; i++)
+        {
             Destroy(layoutGroup.transform.GetChild(i).gameObject);
         }
     }
 
-    private void CreateButton(SceneData sceneData) {
+    private void CreateButton(SceneData sceneData)
+    {
         Button button = Instantiate(buttonPrefab, layoutGroup.transform);
         button.GetComponentInChildren<TextMeshProUGUI>().text = $"{sceneData.sceneName} - players: {sceneData.playerCount}";
         button.onClick.AddListener(() => ConnectToLobby(sceneData.handle));
     }
 
-    private void ChangeStatusText(string text) {
+    private void ChangeStatusText(string text)
+    {
         statusText.text = text;
     }
 
-    public void ExitGame() {
+    public void ExitGame()
+    {
         Application.Quit();
     }
 

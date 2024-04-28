@@ -2,7 +2,8 @@ using System;
 using UnityEngine;
 
 [Serializable]
-public class Preset {
+public class Preset
+{
 
     public string presetName = "Default";
     [Obsolete] public string hull;
@@ -12,18 +13,21 @@ public class Preset {
     public string tankName = "Default-tank";
     public MainPart mainPart;
 
-    public Preset() {
+    public Preset()
+    {
         //Do not delete, used for NETWORKING
     }
 
-    public Preset(string presetName, string hull, string turret) {
+    public Preset(string presetName, string hull, string turret)
+    {
         this.presetName = presetName;
         this.hull = hull;
         this.turret = turret;
         this.faction = 0;
     }
 
-    public override string ToString() {
+    public override string ToString()
+    {
         return $"Preset name: {presetName} " +
             $"| Hull: {hull} " +
             $"| Turret: {turret} " +
@@ -31,17 +35,20 @@ public class Preset {
     }
 
     [Serializable]
-    public class TankData {
+    public class TankData
+    {
         public int key;
         public string prefabName;
         public string partName;
         public TankPositions tankPosition;
         public Vector3 partPosition;
 
-        public TankData() {
+        public TankData()
+        {
         }
 
-        public TankData(int key, string prefabName, string partName, TankPositions tankPosition, Vector3 partPosition) {
+        public TankData(int key, string prefabName, string partName, TankPositions tankPosition, Vector3 partPosition)
+        {
             this.key = key;
             this.prefabName = prefabName;
             this.partName = partName;
@@ -51,34 +58,40 @@ public class Preset {
     }
 
     [Serializable]
-    public class MainPart {
+    public class MainPart
+    {
         public TankData mainData;
         public TankPart[] parts;
 
-        public MainPart() {
+        public MainPart()
+        {
         }
 
-        public MainPart(TankData mainData, TankPart[] parts) {
+        public MainPart(TankData mainData, TankPart[] parts)
+        {
             this.mainData = mainData;
             this.parts = parts;
         }
     }
 
     [Serializable]
-    public class TankPart {
-
+    public class TankPart
+    {
         public TankData partData;
 
-        public TankPart() {
+        public TankPart()
+        {
         }
 
-        public TankPart(TankData partData) {
+        public TankPart(TankData partData)
+        {
             this.partData = partData;
         }
     }
 
     [Obsolete("Default testing preset")]
-    public static Preset CreateDefaultPresat() {
+    public static Preset CreateDefaultPreset()
+    {
         TankPart[] parts = new TankPart[] {
             new TankPart(new TankData(1, "cannon", "cannon_1", TankPositions.GUNNER, new Vector3(0, -1.2f, -1.33f))),
             new TankPart(new TankData(2, "cannon", "cannon_2", TankPositions.GUNNER, new Vector3(0, -1.2f, -1.33f)))
@@ -93,5 +106,4 @@ public class Preset {
 
         return preset;
     }
-
 }

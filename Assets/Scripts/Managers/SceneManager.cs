@@ -8,6 +8,7 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.SceneManagement;
+using static UnityEngine.Rendering.VirtualTexturing.Debugging;
 
 namespace UTW
 {
@@ -28,7 +29,18 @@ namespace UTW
         {
             if (Instance == null)
                 Instance = this;
-            InstanceFinder.NetworkManager.ServerManager.OnRemoteConnectionState += MoveClientToShardScene;
+
+            InstanceFinder.NetworkManager.ServerManager.OnAuthenticationResult += MoveClientToShardScene;
+        }
+
+        private void MoveClientToShardScene(NetworkConnection conn, bool arg2)
+        {
+            if (!arg2) return;
+
+            SceneLoadData data = new SceneLoadData(GameSceneUtils.SHARD_SCENE);
+            data.ReplaceScenes = ReplaceOption.All;
+
+            InstanceFinder.SceneManager.LoadConnectionScenes(conn, data);
         }
 
         #region Lobby scene
@@ -46,6 +58,12 @@ namespace UTW
 
             if (lobbyData.TryGetValue(handle, out SceneData sceneData))
             {
+                if (sceneData.lobbyState == LobbyState.ONGOING)
+                {
+                    LogResponse(conn, "This lobby is ongoing!");
+                    return;
+                }
+
                 LoadScene(conn, new SceneLookupData(handle), false);
             }
             else
@@ -106,6 +124,15 @@ namespace UTW
             }
         }
 
+        [Server]
+        public void DespawnChatManager(List<NetworkConnection> conns)
+        {
+            foreach (var c in conns)
+            {
+                DespawnChatManager(c);
+            }
+        }
+
         [ServerRpc(RequireOwnership = false)]
         public void Connected(NetworkConnection conn)
         {
@@ -114,29 +141,19 @@ namespace UTW
         }
 
         [ServerRpc(RequireOwnership = false)]
-        public void StartGame(NetworkConnection conn) {
+        public void StartGame(NetworkConnection conn)
+        {
             SceneData data = GetData(conn);
+            DespawnChatManager(data.clients);
             data.lobbyManager.StartGame();
-            RemoveLobbyData(conn, data);
+            HideLobbyData(data);
+            //RemoveLobbyData(conn, data);
         }
 
         [TargetRpc]
         private void ActivateStartButtonForLobbyOwner(NetworkConnection conn)
         {
             FindObjectOfType<LobbyController>().ActivateStartButton();
-        }
-        #endregion
-
-        #region Shard scene
-        //Called on SERVER
-        private void MoveClientToShardScene(NetworkConnection conn, RemoteConnectionStateArgs args)
-        {
-            if (args.ConnectionState != RemoteConnectionState.Started) return;
-
-            SceneLoadData data = new SceneLoadData(GameSceneUtils.SHARD_SCENE);
-            data.ReplaceScenes = ReplaceOption.All;
-
-            InstanceFinder.SceneManager.LoadConnectionScenes(conn, data);
         }
         #endregion
 
@@ -163,10 +180,19 @@ namespace UTW
             return false;
         }
 
-        private void AddClientData(NetworkConnection conn) {
+        private void HideLobbyData(SceneData data)
+        {
+            if (data == null) return;
+
+            Debug.Log($"Hiding lobby");
+            lobbyData[data.handle].lobbyState = LobbyState.ONGOING;
+        }
+
+        private void AddClientData(NetworkConnection conn)
+        {
             var data = GetData(conn);
             if (data == null) return;
-            data.playerCount += 1;
+            data.playerCount++;
             data.clients.Add(conn);
         }
 
@@ -174,7 +200,7 @@ namespace UTW
         {
             var data = GetData(conn);
             if (data == null) return;
-            data.playerCount -= 1;
+            data.playerCount--;
             data.clients.Remove(conn);
         }
 
@@ -280,8 +306,7 @@ namespace UTW
 
         private void OnDestroy()
         {
-            InstanceFinder.NetworkManager.ServerManager.OnRemoteConnectionState -= MoveClientToShardScene;
+            InstanceFinder.NetworkManager.ServerManager.OnAuthenticationResult -= MoveClientToShardScene;
         }
-
     }
 }

@@ -5,25 +5,30 @@ using FishNet.Connection;
 using FishNet.Object;
 using UnityEngine;
 
-public class PresetManager : NetworkBehaviour {
-
+public class PresetManager : NetworkBehaviour
+{
     [SerializeField]
     private Database assetDatabase;
 
-    private void Start() {
+    private void Start()
+    {
         assetDatabase = FindObjectOfType<Database>();
 
-        if (IsServer) {
-            TestPreset(Preset.CreateDefaultPresat());
+        if (IsServer)
+        {
+            TestPreset(Preset.CreateDefaultPreset());
         }
     }
 
-    public override void OnStartClient() {
-        if (LocalConnection.IsLocalClient) {
+    public override void OnStartClient()
+    {
+        if (LocalConnection.IsLocalClient)
+        {
             Debug.Log($"Client ID: {LocalConnection.ClientId} connected... Loading asset.");
             LoadPreset(LocalConnection);
         }
-        else {
+        else
+        {
             Debug.LogWarning($"Client ID: {Owner.ClientId} is owner of this object... Cannot load asset.");
         }
     }
@@ -33,7 +38,8 @@ public class PresetManager : NetworkBehaviour {
     /// </summary>
     /// <param name="networkConnection"></param>
     [ServerRpc(RequireOwnership = false)]
-    public void LoadPreset(NetworkConnection networkConnection) {
+    public void LoadPreset(NetworkConnection networkConnection)
+    {
         Debug.Log($"Loading assets for player ID: {networkConnection.ClientId}");
 
         var files = Directory.GetFiles(Application.streamingAssetsPath + "/Presets/", "*.json");
@@ -44,13 +50,15 @@ public class PresetManager : NetworkBehaviour {
 
     //Call this to load all presets for faction to Database.
     [ObserversRpc]
-    private void LoadPresetOnClient(NetworkConnection networkConnection, Preset[] presetList) {
+    private void LoadPresetOnClient(NetworkConnection networkConnection, Preset[] presetList)
+    {
         if (!networkConnection.IsLocalClient) return;
         assetDatabase.AddAll(presetList);
     }
 
     [Obsolete("Generate testing preset on server start")]
-    public void TestPreset(Preset preset) {
+    public void TestPreset(Preset preset)
+    {
         string json = JsonUtility.ToJson(preset);
         if (!Directory.Exists(Application.streamingAssetsPath + "/Presets/"))
             Directory.CreateDirectory(Application.streamingAssetsPath + "/Presets/");
@@ -60,7 +68,8 @@ public class PresetManager : NetworkBehaviour {
 
     //YIRO-TODO add faction
     [ServerRpc(RequireOwnership = false)]
-    public void SavePreset(NetworkConnection networkConnection, Preset tankPreset) {
+    public void SavePreset(NetworkConnection networkConnection, Preset tankPreset)
+    {
         string json = JsonUtility.ToJson(tankPreset);
         if (!Directory.Exists(Application.streamingAssetsPath + "/Presets/"))
             Directory.CreateDirectory(Application.streamingAssetsPath + "/Presets/");
@@ -72,20 +81,23 @@ public class PresetManager : NetworkBehaviour {
     }
 
     [TargetRpc]
-    public void SavePresetResponse(NetworkConnection networkConnection = default) {
+    public void SavePresetResponse(NetworkConnection networkConnection = default)
+    {
         Debug.Log($"Preset successfully saved on SERVER.");
     }
 
-    private static Preset Deserialize(string path) {
-        if (File.Exists(path)) {
+    private static Preset Deserialize(string path)
+    {
+        if (File.Exists(path))
+        {
             string json = File.ReadAllText(path);
             Preset deserialized = JsonUtility.FromJson<Preset>(json);
             return deserialized;
         }
-        else {
+        else
+        {
             Debug.LogError("File not found: " + path);
             return null;
         }
     }
-
 }

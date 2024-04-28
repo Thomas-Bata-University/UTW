@@ -2504,6 +2504,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   lobbyManagerPrefab: {fileID: 40524906591757916, guid: c7d03b1f2fd3ef6429dce1f1518a7786, type: 3}
   menuPanel: {fileID: 797713424}
+  chatPrefab: {fileID: 5344936800218783517, guid: ad17646e4b7574849852e0e2e49a647c, type: 3}
+  chatManagerPrefab: {fileID: 502480274050441957, guid: 84fd24e2c84b20b47ae4200f1fc825f9, type: 3}
   presetDropdown: {fileID: 1828645551}
   readyButton: {fileID: 1944220986}
   swapRequestPanel: {fileID: 1119762332}
@@ -2717,7 +2719,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   <IsNested>k__BackingField: 1
-  <ComponentIndex>k__BackingField: 2
+  <ComponentIndex>k__BackingField: 1
   <PredictedSpawn>k__BackingField: {fileID: 0}
   _networkBehaviours: []
   <ParentNetworkObject>k__BackingField: {fileID: 1919925786}
@@ -4811,7 +4813,6 @@ MonoBehaviour:
   - {fileID: 1919925787}
   <ParentNetworkObject>k__BackingField: {fileID: 0}
   <ChildNetworkObjects>k__BackingField:
-  - {fileID: 0}
   - {fileID: 984413202}
   SerializedTransformProperties:
     Position: {x: 960, y: 540, z: 0}
@@ -4842,7 +4843,6 @@ MonoBehaviour:
   _componentIndexCache: 0
   _addedNetworkObject: {fileID: 1919925786}
   _networkObjectCache: {fileID: 1919925786}
-  username: 
 --- !u!1 &1929879484
 GameObject:
   m_ObjectHideFlags: 0

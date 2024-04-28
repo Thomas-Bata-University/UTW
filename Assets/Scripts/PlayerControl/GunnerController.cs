@@ -1,6 +1,12 @@
+using FishNet;
+using FishNet.Connection;
 using UnityEngine;
 
-public class GunnerController : PlayerController {
+public class GunnerController : PlayerController
+{
+    private UTW.SceneManager sceneManager;
+    private NetworkConnection conn;
+
     //Add comment to a script
     [TextArea(1, 5)]
     public string Notes = "Comment";
@@ -9,8 +15,8 @@ public class GunnerController : PlayerController {
 
     public float rotationSpeed = 20f;
 
-    public float rightMaxRotation = 45f;
-    public float leftMaxRotation = -45f;
+    public float rightMaxRotation = 90f;
+    public float leftMaxRotation = -90f;
 
     public float downMaxRotation = 5f;
     public float upMaxRotation = -10f;
@@ -18,17 +24,28 @@ public class GunnerController : PlayerController {
     private float xRotation;
     private float yRotation;
 
-    protected override void Start() {
+    protected override void Start()
+    {
+        sceneManager = UTW.SceneManager.Instance;
+        conn = InstanceFinder.ClientManager.Connection;
+
         tankPosition = TankPositions.GUNNER;
         Debug.Log($"Active position {tankPosition} | owner {Owner.ClientId}");
     }
 
-    private void Update() {
+    private void Update()
+    {
         MouseLook(100f, 100f, 80f);
         Move();
+
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            Exit();
+        }
     }
 
-    protected override void Move() {
+    protected override void Move()
+    {
         float horizontalInput = Input.GetAxisRaw("Horizontal") * Time.deltaTime * rotationSpeed;
         float verticalInput = Input.GetAxisRaw("Vertical") * Time.deltaTime * rotationSpeed;
 
@@ -41,4 +58,9 @@ public class GunnerController : PlayerController {
         tankPart.transform.rotation = Quaternion.Euler(xRotation, yRotation, 0);
     }
 
-}//END
+    private void Exit()
+    {
+        FindObjectOfType<LobbyManager>().LeaveSpawnpoint(conn);
+        sceneManager.Disconnect(conn);
+    }
+}
