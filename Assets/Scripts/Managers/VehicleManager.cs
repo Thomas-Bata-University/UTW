@@ -233,7 +233,7 @@ public class VehicleManager : NetworkBehaviour
 
     public string GetName(CrewData data)
     {
-        return data.empty ? "EMPTY" : "Client_" + data.conn.ClientId;
+        return data.empty ? "EMPTY" : GameManager.Instance.GetPlayerByConnection(data.conn.ClientId).PlayerName;
     }
 
     [TargetRpc]

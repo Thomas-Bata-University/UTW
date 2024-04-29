@@ -3,14 +3,11 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class ShardController : MonoBehaviour
 {
-
-    [SerializeField]
-    private UTW.SceneManager sceneManager;
-
     [Header("UI")]
     public Button buttonPrefab;
     public GridLayoutGroup layoutGroup;
@@ -93,9 +90,15 @@ public class ShardController : MonoBehaviour
         statusText.text = text;
     }
 
+    private void Disconnect()
+    {
+        UTW.SceneManager.Instance.DisconnectFromShard(InstanceFinder.ClientManager.Connection);
+
+        SceneManager.LoadScene(GameSceneUtils.MAIN_MENU_SCENE);
+    }
+
     public void ExitGame()
     {
         Application.Quit();
     }
-
 }

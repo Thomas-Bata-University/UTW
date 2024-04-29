@@ -1,8 +1,8 @@
 using FishNet.Connection;
 using FishNet.Object;
 
-public class CrewData {
-
+public class CrewData
+{
     public NetworkConnection conn;
     public TankPositions tankPosition;
     public bool empty;
@@ -10,15 +10,16 @@ public class CrewData {
     public NetworkObject tankPart;
     public int childIndex;
 
-    public CrewData() {
+    public CrewData()
+    {
 
     }
 
-    public CrewData(TankPositions tankPosition, NetworkObject tankPart, int childIndex) {
+    public CrewData(TankPositions tankPosition, NetworkObject tankPart, int childIndex)
+    {
         this.tankPosition = tankPosition;
         this.tankPart = tankPart;
         this.childIndex = childIndex;
         empty = true;
     }
-
 }

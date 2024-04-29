@@ -245,6 +245,12 @@ namespace UTW
         }
 
         [ServerRpc(RequireOwnership = false)]
+        public void DisconnectFromShard(NetworkConnection conn)
+        {
+            conn.Disconnect(true);
+        }
+
+        [ServerRpc(RequireOwnership = false)]
         public void GetLobbyData(NetworkConnection conn)
         {
             GetLobbyDataResponse(conn, lobbyData);
