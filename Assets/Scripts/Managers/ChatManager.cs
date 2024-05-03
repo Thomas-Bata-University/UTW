@@ -70,9 +70,4 @@ public class ChatManager : NetworkBehaviour
 
         GUILayout.EndArea();
     }
-
-    private void SetUsername(string newUsername)
-    {
-        username = newUsername;
-    }
 }

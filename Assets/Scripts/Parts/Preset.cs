@@ -93,8 +93,8 @@ public class Preset
     public static Preset CreateDefaultPreset()
     {
         TankPart[] parts = new TankPart[] {
-            new TankPart(new TankData(1, "cannon", "cannon_1", TankPositions.GUNNER, new Vector3(0, -1.2f, -1.33f))),
-            new TankPart(new TankData(2, "cannon", "cannon_2", TankPositions.GUNNER, new Vector3(0, -1.2f, -1.33f)))
+            new TankPart(new TankData(1, "cannon", "cannon", TankPositions.GUNNER, new Vector3(0, -0.069f, 0.117f))),
+            new TankPart(new TankData(2, "visor", "visor", TankPositions.OBSERVER, new Vector3(0, -0.091f, 0.11f)))
         };
 
         Preset preset = new Preset();

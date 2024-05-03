@@ -9,6 +9,7 @@ using Utils;
 using FishNet;
 using FishNet.Connection;
 using FishNet.Transporting;
+using System;
 
 public sealed class GameManager : NetworkBehaviour
 {
@@ -51,19 +52,6 @@ public sealed class GameManager : NetworkBehaviour
         }
     }
 
-    private void Update()
-    {
-        if (!IsServer) return;
-    }
-
-    public void ListAllUsers()
-    {
-        foreach (var p in _playersData.Values)
-        {
-            Debug.Log($"Name: {p.PlayerName} | Conn: {p.ClientConnectionId}");
-        }
-    }
-
     [Server]
     public void UpdateDictionary(string name)
     {
@@ -72,6 +60,8 @@ public sealed class GameManager : NetworkBehaviour
 
     private void LoadUsers()
     {
+        if (!IsServer) return;
+
         var files = Directory.GetFiles(Application.streamingAssetsPath + "/Users/", "*.json");
 
         foreach (var fi in files)
@@ -86,6 +76,8 @@ public sealed class GameManager : NetworkBehaviour
 
     public PlayerData CreateOrSelectPlayer(string playerName)
     {
+        if (!IsServer) return null;
+
         if (_playersData.TryGetValue(playerName, out var existingPlayerData))
         {
             return existingPlayerData;
@@ -97,6 +89,8 @@ public sealed class GameManager : NetworkBehaviour
 
     private PlayerData CreatePlayerData(string playerName)
     {
+        if (!IsServer) return null;
+
         var player = new PlayerData(playerName, string.Empty);
         var json = JsonUtility.ToJson(player);
         var writer = new StreamWriter(Application.streamingAssetsPath + "/Users/" + $"/{player.PlayerName}.json");
@@ -107,6 +101,8 @@ public sealed class GameManager : NetworkBehaviour
 
     private void LoadFactionsFromJson()
     {
+        if (!IsServer) return;
+
         var files = Directory.GetFiles(Application.streamingAssetsPath + "/Factions/", "*.json");
         var reader = new StreamReader(files.First());
         var jsonString = reader.ReadToEnd();
@@ -120,6 +116,8 @@ public sealed class GameManager : NetworkBehaviour
 
     private void LoadFactionPresets()
     {
+        if (!IsServer) return;
+
         var files = Directory.GetFiles(Application.streamingAssetsPath + "/Presets/", "*.xml");
 
         var presets = files.Select(SerializationUtils.DeserializeXml<Preset>).ToList();

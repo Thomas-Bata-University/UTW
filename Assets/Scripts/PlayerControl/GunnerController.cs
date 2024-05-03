@@ -13,6 +13,8 @@ public class GunnerController : PlayerController
 
     //--------------------------------------------------------------------------------------------------------------------------
 
+    [SerializeField]
+    [Range(0, 30)]
     public float rotationSpeed = 20f;
 
     public float rightMaxRotation = 90f;
@@ -40,7 +42,7 @@ public class GunnerController : PlayerController
 
         if (Input.GetKeyDown(KeyCode.Escape))
         {
-            Exit();
+            Exit(conn, sceneManager);
         }
     }
 
@@ -56,11 +58,5 @@ public class GunnerController : PlayerController
         xRotation = Mathf.Clamp(xRotation, upMaxRotation, downMaxRotation);
 
         tankPart.transform.rotation = Quaternion.Euler(xRotation, yRotation, 0);
-    }
-
-    private void Exit()
-    {
-        FindObjectOfType<LobbyManager>().LeaveSpawnpoint(conn);
-        sceneManager.Disconnect(conn);
     }
 }

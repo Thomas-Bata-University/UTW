@@ -2,13 +2,11 @@ using FishNet;
 using FishNet.Connection;
 using FishNet.Managing.Scened;
 using FishNet.Object;
-using FishNet.Transporting;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.SceneManagement;
-using static UnityEngine.Rendering.VirtualTexturing.Debugging;
 
 namespace UTW
 {
@@ -33,9 +31,9 @@ namespace UTW
             InstanceFinder.NetworkManager.ServerManager.OnAuthenticationResult += MoveClientToShardScene;
         }
 
-        private void MoveClientToShardScene(NetworkConnection conn, bool arg2)
+        private void MoveClientToShardScene(NetworkConnection conn, bool passed)
         {
-            if (!arg2) return;
+            if (!passed) return;
 
             SceneLoadData data = new SceneLoadData(GameSceneUtils.SHARD_SCENE);
             data.ReplaceScenes = ReplaceOption.All;
@@ -147,7 +145,6 @@ namespace UTW
             DespawnChatManager(data.clients);
             data.lobbyManager.StartGame();
             HideLobbyData(data);
-            //RemoveLobbyData(conn, data);
         }
 
         [TargetRpc]
@@ -184,7 +181,6 @@ namespace UTW
         {
             if (data == null) return;
 
-            Debug.Log($"Hiding lobby");
             lobbyData[data.handle].lobbyState = LobbyState.ONGOING;
         }
 

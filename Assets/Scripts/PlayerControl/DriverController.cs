@@ -13,7 +13,12 @@ public class DriverController : PlayerController
 
     //--------------------------------------------------------------------------------------------------------------------------
 
-    private float moveSpeed = 10f;
+    [SerializeField]
+    [Range(0, 20)]
+    private float moveSpeed = 5f;
+    [SerializeField]
+    [Range(0, 30)]
+    private float rotationSpeed = 15f;
 
     private bool autoDrive = false;
 
@@ -33,7 +38,7 @@ public class DriverController : PlayerController
 
         if (Input.GetKeyDown(KeyCode.Escape))
         {
-            Exit();
+            Exit(conn, sceneManager);
         }
 
         if (Input.GetKeyDown(KeyCode.K))
@@ -52,15 +57,10 @@ public class DriverController : PlayerController
         float horizontalInput = Input.GetAxis("Horizontal");
         float verticalInput = Input.GetAxis("Vertical");
 
-        Vector3 moveDirection = new Vector3(horizontalInput, 0, verticalInput).normalized;
+        Vector3 moveDirection = transform.forward * verticalInput;
+        tankPart.transform.Translate(moveDirection * moveSpeed * Time.deltaTime, Space.World);
 
-        tankPart.transform.Translate(moveDirection * moveSpeed * Time.deltaTime);
+        float rotationAmount = horizontalInput * rotationSpeed * Time.deltaTime;
+        tankPart.transform.Rotate(0, rotationAmount, 0, Space.World);
     }
-
-    private void Exit()
-    {
-        FindObjectOfType<LobbyManager>().LeaveSpawnpoint(conn);
-        sceneManager.Disconnect(conn);
-    }
-
-}//END
+}

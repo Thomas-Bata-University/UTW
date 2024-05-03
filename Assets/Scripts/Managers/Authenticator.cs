@@ -47,10 +47,6 @@ public class Authenticator : HostAuthenticator
         if (args.ConnectionState != LocalConnectionState.Started)
             return;
 
-        //Authentication was sent as host, no need to authenticate normally.
-        if (AuthenticateAsHost())
-            return;
-
         var input = GameObject.Find("UsernameInputText").GetComponent<TMP_Text>().text;
 
         UserBroadcast ub = new UserBroadcast()

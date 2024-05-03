@@ -1,8 +1,9 @@
+using FishNet.Connection;
 using FishNet.Object;
 using UnityEngine;
 
-public abstract class PlayerController : NetworkBehaviour {
-
+public abstract class PlayerController : NetworkBehaviour
+{
     private bool isRotating = false;
 
     protected TankPositions tankPosition;
@@ -11,28 +12,34 @@ public abstract class PlayerController : NetworkBehaviour {
     public GameObject object2Rotate;
     public Vector3 seatPosition;
 
-    protected void Awake() {
+    protected void Awake()
+    {
         enabled = false;
     }
 
     protected abstract void Start();
 
-    public void SetPosition() {
+    public void SetPosition()
+    {
         tankPart.transform.position = seatPosition;
     }
 
-    protected virtual void MouseLook(float mouseSpeed, float viewAngleX, float viewAngleY) {
-        if (Input.GetMouseButtonDown(1)) {
+    protected virtual void MouseLook(float mouseSpeed, float viewAngleX, float viewAngleY)
+    {
+        if (Input.GetMouseButtonDown(1))
+        {
             isRotating = true;
         }
 
-        if (Input.GetMouseButtonUp(1)) {
+        if (Input.GetMouseButtonUp(1))
+        {
             isRotating = false;
             Cursor.lockState = CursorLockMode.None;
             Cursor.visible = true;
         }
 
-        if (isRotating) {
+        if (isRotating)
+        {
             float rotationX = Input.GetAxis("Mouse X") * mouseSpeed * Time.deltaTime;
             float rotationY = Input.GetAxis("Mouse Y") * mouseSpeed * Time.deltaTime;
 
@@ -47,6 +54,11 @@ public abstract class PlayerController : NetworkBehaviour {
         }
     }
 
-    protected abstract void Move();
+    protected void Exit(NetworkConnection conn, UTW.SceneManager sceneManager)
+    {
+        FindObjectOfType<LobbyManager>().LeaveSpawnpoint(conn);
+        sceneManager.Disconnect(conn);
+    }
 
-}//END
+    protected abstract void Move();
+}

@@ -17,6 +17,7 @@ public class VehicleManager : NetworkBehaviour
     [Header("Tank")]
     public GameObject tankPrefab;
     public GameObject cannonPrefab;
+    public GameObject visorPrefab;
     [SyncVar] private GameObject actualTank;
     [SyncVar, HideInInspector] public string tankName;
 
@@ -25,7 +26,7 @@ public class VehicleManager : NetworkBehaviour
 
     [Header("Crew")]
     //KEY - index | VALUE - CrewData
-    [SyncObject, HideInInspector] public readonly SyncDictionary<int, CrewData> tankCrew = new SyncDictionary<int, CrewData>();
+    [SyncObject, HideInInspector] public readonly SyncDictionary<int, CrewData> _tankCrew = new SyncDictionary<int, CrewData>();
     private List<GameObject> crewButtons = new List<GameObject>();
     private int maxCrewCount;
 
@@ -46,15 +47,15 @@ public class VehicleManager : NetworkBehaviour
 
     public bool JoinCrew(NetworkConnection joiningClientConn)
     {
-        if (tankCrew.Any(x => x.Value.empty))
+        if (_tankCrew.Any(x => x.Value.empty))
         {
             RegisterOnChange(joiningClientConn, true);
-            CrewData data = tankCrew.First(x => x.Value.conn is null).Value;
+            CrewData data = _tankCrew.First(x => x.Value.conn is null).Value;
             data.conn = joiningClientConn;
             data.empty = false;
             data.tankPart.GiveOwnership(joiningClientConn);
-            tankCrew.Dirty(data);
-            return !tankCrew.Any(x => x.Value.empty);
+            _tankCrew.Dirty(data);
+            return !_tankCrew.Any(x => x.Value.empty);
         }
         return true;
     }
@@ -62,23 +63,23 @@ public class VehicleManager : NetworkBehaviour
     public bool LeaveCrew(NetworkConnection leavingClientConn)
     {
         RegisterOnChange(leavingClientConn, false);
-        CrewData data = tankCrew.First(x => x.Value.conn == leavingClientConn).Value;
+        CrewData data = _tankCrew.First(x => x.Value.conn == leavingClientConn).Value;
         data.conn = null;
         data.empty = true;
         data.swapRequest = false;
         data.tankPart.RemoveOwnership();
-        tankCrew.Dirty(data);
+        _tankCrew.Dirty(data);
         return CrewIsEmpty();
     }
 
     public bool CrewIsEmpty()
     {
-        return tankCrew.Count(x => x.Value.empty) == maxCrewCount;
+        return _tankCrew.Count(x => x.Value.empty) == maxCrewCount;
     }
 
     public bool IsInCrew(NetworkConnection conn)
     {
-        return tankCrew.Any(client => client.Value.conn == conn);
+        return _tankCrew.Any(client => client.Value.conn == conn);
     }
 
     #region Swap
@@ -86,8 +87,8 @@ public class VehicleManager : NetworkBehaviour
     {
         int oldKey = GetKey(requestConn);
         if (oldKey == -1) return;
-        CrewData oldData = tankCrew[oldKey];
-        CrewData requestedData = tankCrew[key];
+        CrewData oldData = _tankCrew[oldKey];
+        CrewData requestedData = _tankCrew[key];
 
         var conn = requestedData.conn;
         oldData.conn = conn;
@@ -98,8 +99,8 @@ public class VehicleManager : NetworkBehaviour
         requestedData.empty = false;
         requestedData.tankPart.GiveOwnership(requestConn);
 
-        tankCrew.Dirty(key);
-        tankCrew.Dirty(oldKey);
+        _tankCrew.Dirty(key);
+        _tankCrew.Dirty(oldKey);
 
         SetSwapping(key, oldKey, false);
         Debug.Log($"Client ID: {requestConn.ClientId} swapped position to {requestedData.tankPosition}");
@@ -109,9 +110,9 @@ public class VehicleManager : NetworkBehaviour
     [ServerRpc(RequireOwnership = false)]
     public void SwapRequest(NetworkConnection requestConn, int key)
     {
-        CrewData data = tankCrew[key];
+        CrewData data = _tankCrew[key];
         int oldKey = GetKey(requestConn);
-        if (tankCrew[oldKey].swapRequest)
+        if (_tankCrew[oldKey].swapRequest)
         {
             LogResponse(requestConn, "Cannot swap while requesting another position.");
             return;
@@ -137,15 +138,31 @@ public class VehicleManager : NetworkBehaviour
     }
 
     [ServerRpc(RequireOwnership = false)]
-    public void InGameSwap(NetworkConnection requestConn)
+    public void InGameSwap(NetworkConnection requestConn, TankPositions tankPosition)
     {
         try
         {
             int oldKey = GetKey(requestConn);
-            int key = tankCrew.First(x => x.Value.empty).Key;
-            Swap(requestConn, key);
-            ActivateController(requestConn, tankCrew[oldKey], tankCrew[key]);
+            int key = 0;
 
+            switch (tankPosition)
+            {
+                case TankPositions.DRIVER:
+                    key = _tankCrew.First(x => x.Value.empty && x.Value.tankPosition == TankPositions.DRIVER).Key;
+                    break;
+                case TankPositions.GUNNER:
+                    key = _tankCrew.First(x => x.Value.empty && x.Value.tankPosition == TankPositions.GUNNER).Key;
+                    break;
+                case TankPositions.OBSERVER:
+                    key = _tankCrew.First(x => x.Value.empty && x.Value.tankPosition == TankPositions.OBSERVER).Key;
+                    break;
+                default:
+                    break;
+            }
+
+            //int key = _tankCrew.First(x => x.Value.empty).Key;
+            Swap(requestConn, key);
+            ActivateController(requestConn, _tankCrew[oldKey], _tankCrew[key]);
         }
         catch
         {
@@ -167,10 +184,10 @@ public class VehicleManager : NetworkBehaviour
 
     private void SetSwapping(int key, int oldKey, bool isSwapping)
     {
-        tankCrew[key].swapRequest = isSwapping;
-        tankCrew[oldKey].swapRequest = isSwapping;
-        tankCrew.Dirty(key);
-        tankCrew.Dirty(oldKey);
+        _tankCrew[key].swapRequest = isSwapping;
+        _tankCrew[oldKey].swapRequest = isSwapping;
+        _tankCrew.Dirty(key);
+        _tankCrew.Dirty(oldKey);
     }
     #endregion Swap
     #endregion Server-Crew
@@ -216,7 +233,7 @@ public class VehicleManager : NetworkBehaviour
 
     private void CreateCrewButtonOnJoin()
     {
-        foreach (var pair in tankCrew)
+        foreach (var pair in _tankCrew)
         {
             CreateCrewButton(pair.Key, pair.Value);
         }
@@ -243,11 +260,11 @@ public class VehicleManager : NetworkBehaviour
         if (register)
         {
             CreateCrewButtonOnJoin();
-            tankCrew.OnChange += OnChange;
+            _tankCrew.OnChange += OnChange;
         }
         else
         {
-            tankCrew.OnChange -= OnChange;
+            _tankCrew.OnChange -= OnChange;
             DestroyCrewButton();
         }
     }
@@ -261,7 +278,7 @@ public class VehicleManager : NetworkBehaviour
 
     public KeyValuePair<int, CrewData> GetActualTankPosition()
     {
-        foreach (var pair in tankCrew)
+        foreach (var pair in _tankCrew)
         {
             if (pair.Value.conn == LocalConnection)
             {
@@ -280,7 +297,7 @@ public class VehicleManager : NetworkBehaviour
     {
         //TODO Refactor this shit
         LeaveCrew(conn);
-        tankCrew.Clear();
+        _tankCrew.Clear();
         SpawnTank(preset);
         JoinCrew(conn);
     }
@@ -301,7 +318,7 @@ public class VehicleManager : NetworkBehaviour
         tankNo.SetParent(networkObject);
         Spawn(tankNo);
 
-        tankCrew.Add(mainPart.mainData.key, new CrewData(mainPart.mainData.tankPosition, tankNo, 0));
+        _tankCrew.Add(mainPart.mainData.key, new CrewData(mainPart.mainData.tankPosition, tankNo, 0));
 
         int childIndex = 1; // child index 0 is camera
 
@@ -315,11 +332,11 @@ public class VehicleManager : NetworkBehaviour
             partNo.SetParent(tankNo);
             Spawn(partNo);
 
-            tankCrew.Add(data.key, new CrewData(data.tankPosition, partNo, childIndex));
+            _tankCrew.Add(data.key, new CrewData(data.tankPosition, partNo, childIndex));
             childIndex++;
         }
 
-        maxCrewCount = tankCrew.Count;
+        maxCrewCount = _tankCrew.Count;
     }
 
     [Obsolete("Just for testing purpose. Will be deleted after Database prefab implementation.")]
@@ -327,6 +344,9 @@ public class VehicleManager : NetworkBehaviour
     {
         if (prefabName.Equals("cannon"))
             return cannonPrefab;
+        else if (prefabName.Equals("visor"))
+            return visorPrefab;
+
         throw new Exception("Prefab not found!");
     }
     #endregion Server-Tank
@@ -336,11 +356,11 @@ public class VehicleManager : NetworkBehaviour
     private void BuildTank(Preset preset, GameObject actualTank)
     {
         //TODO Just for testing purpose, delete in future
-        Color color = Color.grey;
-        if (preset.color != 0)
-            color = preset.color == 1 ? Color.green : Color.yellow;
+        //Color color = Color.grey;
+        //if (preset.color != 0)
+        //    color = preset.color == 1 ? Color.green : Color.yellow;
 
-        actualTank.GetComponentInChildren<MeshRenderer>().material.color = color;
+        //actualTank.GetComponentInChildren<MeshRenderer>().material.color = color;
         actualTank.name = preset.tankName;
     }
 
@@ -365,13 +385,13 @@ public class VehicleManager : NetworkBehaviour
     }
     private void ActivateController(CrewData data, bool active)
     {
-        Transform part = actualTank.transform;
+        Transform tankPart = actualTank.transform;
         Debug.Log($"Index {data.childIndex}");
 
         if (!data.tankPosition.Equals(TankPositions.DRIVER))
-            part = part.GetChild(data.childIndex);
+            tankPart = tankPart.GetChild(data.childIndex);
 
-        EnableController(part, active);
+        EnableController(tankPart, active);
     }
 
     private void EnableController(Transform tankPart, bool active)
@@ -388,7 +408,7 @@ public class VehicleManager : NetworkBehaviour
     {
         try
         {
-            return tankCrew.First(key => key.Value.conn == conn).Key;
+            return _tankCrew.First(key => key.Value.conn == conn).Key;
         }
         catch
         {

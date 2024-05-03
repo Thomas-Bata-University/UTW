@@ -75,7 +75,6 @@ public class Database : MonoBehaviour
         foreach (var preset in presetList)
         {
             this.presetList.Add(preset);
-            Debug.Log($"Loaded preset: {preset}");
         }
     }
 }

@@ -5,7 +5,6 @@ using UnityEngine;
 
 public class MapController : MonoBehaviour
 {
-
     [SerializeField] private LayerMask mapLayerMask, spawnpointLayerMask;
     [SerializeField] private float zoomSpeed, minSize;
     [SerializeField] private Canvas mapCanvas;
@@ -101,7 +100,7 @@ public class MapController : MonoBehaviour
     {
         popupPanel.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = $"Tank: {vehicleManager.tankName}";
         StringBuilder info = new StringBuilder();
-        foreach (CrewData data in vehicleManager.tankCrew.Values)
+        foreach (CrewData data in vehicleManager._tankCrew.Values)
         {
             info.AppendLine($"{data.tankPosition}: {vehicleManager.GetName(data)}");
         }
@@ -116,5 +115,4 @@ public class MapController : MonoBehaviour
             mapCamera.orthographicSize = maxSize;
         }
     }
-
 }
