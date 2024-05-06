@@ -23,6 +23,8 @@ namespace UTW
         //KEY - NetworkConnection | value - Spawned ChatManager
         private Dictionary<NetworkConnection, GameObject> chatManagers = new Dictionary<NetworkConnection, GameObject>();
 
+        private int lastLobbyIndex = 0;
+
         private void Awake()
         {
             if (Instance == null)
@@ -162,8 +164,14 @@ namespace UTW
         #region Lobby data
         public void CreateNewLobbyData(NetworkConnection owner, Scene scene)
         {
-            SceneData data = new SceneData(scene.handle, scene.name, null, owner);
+            SceneData data = new SceneData(scene.handle, scene.name, GenerateNewLobbyName(), owner);
             lobbyData.Add(scene.handle, data);
+        }
+
+        private string GenerateNewLobbyName()
+        {
+            lastLobbyIndex++;
+            return $"Lobby #{lastLobbyIndex}";
         }
 
         /// <summary>

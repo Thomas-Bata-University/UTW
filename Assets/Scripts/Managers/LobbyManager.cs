@@ -2,15 +2,12 @@ using FishNet;
 using FishNet.Connection;
 using FishNet.Object;
 using FishNet.Object.Synchronizing;
-using FishNet.Transporting;
 using System;
 using System.Linq;
 using UnityEngine;
 
 public class LobbyManager : NetworkBehaviour
 {
-    NetworkConnection connection;
-
     [Header("UI")]
     public GameObject defaultMap;
     private GameObject tankLobbyCameraRender;
@@ -32,26 +29,10 @@ public class LobbyManager : NetworkBehaviour
         {
             UTW.SceneManager.OnClientJoinLobby += ClientJoin;
             UTW.SceneManager.OnClientDisconnectLobby += ClientDisconnect;
-
-            InstanceFinder.ServerManager.OnRemoteConnectionState += ServerManager_OnRemoteConnectionState;
         }
         else
         {
-            connection = InstanceFinder.ClientManager.Connection;
-
             _spawnpoints.OnChange += OnChange;
-        }
-    }
-
-    // TODO Not getting the conn at this point
-    private void ServerManager_OnRemoteConnectionState(NetworkConnection conn, RemoteConnectionStateArgs args)
-    {
-        if (args.ConnectionState == RemoteConnectionState.Stopped)
-        {
-            Debug.Log($"The user with id: {conn.ClientId} has disconnected from the lobby!");
-
-            LeaveSpawnpointRpc(conn, activeSpawnpointKey);
-            UTW.SceneManager.Instance.Disconnect(conn);
         }
     }
 
@@ -390,9 +371,6 @@ public class LobbyManager : NetworkBehaviour
         }
         else
         {
-            Debug.Log($"C: {connection}, K: {activeSpawnpointKey}");
-            LeaveSpawnpointRpc(connection, activeSpawnpointKey);
-
             _spawnpoints.OnChange -= OnChange;
         }
     }

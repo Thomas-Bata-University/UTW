@@ -81,7 +81,7 @@ public class ShardController : MonoBehaviour
     private void CreateButton(SceneData sceneData)
     {
         Button button = Instantiate(buttonPrefab, layoutGroup.transform);
-        button.GetComponentInChildren<TextMeshProUGUI>().text = $"{sceneData.sceneName} - players: {sceneData.playerCount}";
+        button.GetComponentInChildren<TextMeshProUGUI>().text = $"{sceneData.lobbyName} - players: {sceneData.playerCount}";
         button.onClick.AddListener(() => ConnectToLobby(sceneData.handle));
     }
 
