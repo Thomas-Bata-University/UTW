@@ -23,10 +23,12 @@ namespace UTW
         //KEY - NetworkConnection | value - Spawned ChatManager
         private Dictionary<NetworkConnection, GameObject> chatManagers = new Dictionary<NetworkConnection, GameObject>();
 
-        private void Start()
+        private void Awake()
         {
             if (Instance == null)
                 Instance = this;
+            else
+                Destroy(this);
 
             InstanceFinder.NetworkManager.ServerManager.OnAuthenticationResult += MoveClientToShardScene;
         }
@@ -134,6 +136,8 @@ namespace UTW
         [ServerRpc(RequireOwnership = false)]
         public void Connected(NetworkConnection conn)
         {
+            LogResponse(conn, "Connected to lobby");
+
             AddClientData(conn);
             OnClientJoinLobby?.Invoke(conn);
         }
@@ -142,6 +146,7 @@ namespace UTW
         public void StartGame(NetworkConnection conn)
         {
             SceneData data = GetData(conn);
+            SendMessageToAllInLobby(data, "The game is starting!");
             DespawnChatManager(data.clients);
             data.lobbyManager.StartGame();
             HideLobbyData(data);
@@ -224,6 +229,9 @@ namespace UTW
             if (RemoveLobbyData(conn, data))
             {
                 Debug.Log($"Disconnecting all clients from lobby...");
+
+                SendMessageToAllInLobby(data, "The lobby was closed by it's owner");
+
                 LoadScene(data.clients.ToArray(), new SceneLookupData(GameSceneUtils.SHARD_SCENE), false);
                 return;
             }
@@ -298,6 +306,14 @@ namespace UTW
         public Scene GetSceneForClient(NetworkConnection conn, string sceneName)
         {
             return conn.Scenes.First(x => x.name.Equals(sceneName));
+        }
+
+        private void SendMessageToAllInLobby(SceneData data, string text)
+        {
+            foreach (var c in data.clients)
+            {
+                LogResponse(c, text);
+            }
         }
 
         [TargetRpc]

@@ -43,6 +43,7 @@ public class LobbyManager : NetworkBehaviour
         }
     }
 
+    // TODO Not getting the conn at this point
     private void ServerManager_OnRemoteConnectionState(NetworkConnection conn, RemoteConnectionStateArgs args)
     {
         if (args.ConnectionState == RemoteConnectionState.Stopped)

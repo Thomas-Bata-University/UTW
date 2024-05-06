@@ -9,7 +9,6 @@ using Utils;
 using FishNet;
 using FishNet.Connection;
 using FishNet.Transporting;
-using System;
 
 public sealed class GameManager : NetworkBehaviour
 {
@@ -24,7 +23,11 @@ public sealed class GameManager : NetworkBehaviour
 
     private void Awake()
     {
-        Instance = this;
+        if (Instance == null)
+            Instance = this;
+        else
+            Destroy(this);
+
         LoadUsers();
         LoadFactionsFromJson();
         LoadFactionPresets();
