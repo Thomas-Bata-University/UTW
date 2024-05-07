@@ -3,6 +3,9 @@ using UnityEngine.UI;
 using TMPro;
 using UnityEngine.EventSystems;
 using System;
+using System.Runtime.CompilerServices;
+using FishNet.Component.Utility;
+using System.Net.NetworkInformation;
 
 public enum LogPosition { Top, Bottom }
 
@@ -24,7 +27,15 @@ public class Logger : MonoBehaviour
     private RectTransform uiScrollRectTransform;
     private Image uiToggleButtonImage;
 
+    private KeyCode consoleKey = KeyCode.C;
+    private KeyCode pingKey = KeyCode.R;
+    private KeyCode fishUiKey = KeyCode.F;
+
+    GameObject uiNetworkHudCanvas;
+
     private bool isOpen = false;
+    private bool isPing = true;
+    private bool isFish = true;
 
     private string[] colors = new string[3]{
             "#aaaaaa", // White
@@ -47,8 +58,33 @@ public class Logger : MonoBehaviour
         uiScrollRectTransform = uiScrollRect.GetComponent<RectTransform>();
         uiToggleButtonImage = uiToggleButton.GetComponent<Image>();
 
+        uiNetworkHudCanvas = GameObject.Find("NetworkHudCanvas");
+        ToggleFishUi();
+        TogglePingDisplay();
+
         isOpen = true;
         ToggleLogUI();
+    }
+
+    private void Update()
+    {
+        if (Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl))
+        {
+            if (Input.GetKeyDown(consoleKey))
+            {
+                ToggleLogUI();
+            }
+
+            if (Input.GetKeyDown(pingKey))
+            {
+                TogglePingDisplay();
+            }
+
+            if (Input.GetKeyDown(fishUiKey))
+            {
+                ToggleFishUi();
+            }
+        }
     }
 
     private void ScrollDown()
@@ -68,13 +104,29 @@ public class Logger : MonoBehaviour
         ScrollDown();
     }
 
+    private void ToggleFishUi()
+    {
+        isFish = !isFish;
+
+        uiNetworkHudCanvas.SetActive(isFish);
+    }
+
+    private void TogglePingDisplay()
+    {
+        isPing = !isPing;
+        gameObject.GetComponent<PingDisplay>().enabled = isPing;
+    }
+
     private void ToggleLogUI()
     {
         isOpen = !isOpen;
         if (isOpen)
             SetupUI(new Vector2(1f, height), spriteCloseIcon);
         else
+        {
             SetupUI(Vector2.one * 43f, spriteOpenIcon);
+            ScrollDown();
+        }
     }
 
     private void SetupUI(Vector2 size, Sprite icon)

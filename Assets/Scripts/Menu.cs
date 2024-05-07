@@ -1,6 +1,8 @@
 using FishNet;
 using FishNet.Transporting.Tugboat;
+using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class Menu : MonoBehaviour
 {
@@ -16,6 +18,9 @@ public class Menu : MonoBehaviour
     private const ushort sPort = 7770;
     public void JoinOfficialShard()
     {
+        if (!HasUsername())
+            return;
+
         var tugboat = GetTugboat();
 
         if (tugboat == null)
@@ -32,6 +37,9 @@ public class Menu : MonoBehaviour
 
     public void DirectConnect()
     {
+        if (!HasUsername())
+            return;
+
         var tugboat = GetTugboat();
 
         if (tugboat == null)
@@ -43,6 +51,27 @@ public class Menu : MonoBehaviour
         tugboat.SetClientAddress("127.0.0.1");
 
         tugboat.StartConnection(false);
+    }
+
+    private bool HasUsername()
+    {
+        if ((GameObject.Find("UsernameInputText").GetComponent<TMP_Text>().text.Length - 1) == 0)
+        {
+            Debug.Log("Please provide a username before joining a server");
+            return false;
+        }
+
+        return true;
+    }
+
+    public void SwitchToMainMenu()
+    {
+        SceneManager.LoadScene(GameSceneUtils.MAIN_MENU_SCENE);
+    }
+
+    public void SwitchToHelpScene()
+    {
+        SceneManager.LoadScene(GameSceneUtils.HELP_SCENE);
     }
 
     public void ExitGame()
