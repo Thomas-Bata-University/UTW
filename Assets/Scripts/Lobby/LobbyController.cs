@@ -10,6 +10,7 @@ using static UnityEngine.UI.Button;
 public class LobbyController : MonoBehaviour
 {
     public GameObject lobbyManagerPrefab;
+    public GameObject menuPanel;
     public GameObject chatPrefab;
     public GameObject chatManagerPrefab;
 
@@ -49,8 +50,8 @@ public class LobbyController : MonoBehaviour
     public void SetSwapData(VehicleManager vehicleManager, NetworkConnection requestConn, int key, int oldKey)
     {
         swapRequestPanel.SetActive(true);
-        swapRequestPanel.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = $"Request from client ID: {requestConn.ClientId}";
-        swapRequestPanel.transform.GetChild(1).GetComponent<TextMeshProUGUI>().text = $"Swap from {vehicleManager.tankCrew[key].tankPosition} to {vehicleManager.tankCrew[oldKey].tankPosition}?";
+        swapRequestPanel.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = $"Request from {GameManager.Instance.GetPlayerByConnection(requestConn.ClientId).PlayerName}";
+        swapRequestPanel.transform.GetChild(1).GetComponent<TextMeshProUGUI>().text = $"Swap from {vehicleManager._tankCrew[key].tankPosition} to {vehicleManager._tankCrew[oldKey].tankPosition}?";
         swapCoroutine = StartCoroutine(StartCountdown(vehicleManager, requestConn, key, oldKey));
         OnClick(2).RemoveAllListeners();
         OnClick(3).RemoveAllListeners();

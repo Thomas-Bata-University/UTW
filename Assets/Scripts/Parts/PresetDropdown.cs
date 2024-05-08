@@ -4,10 +4,9 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
-using UnityEngine.UI;
 
-public class PresetDropdown : MonoBehaviour {
-
+public class PresetDropdown : MonoBehaviour
+{
     public static UnityAction<NetworkConnection, Preset> OnPresetChange;
 
     [Header("UI")]
@@ -17,18 +16,21 @@ public class PresetDropdown : MonoBehaviour {
     private Preset selectedPreset;
     private Database assetDatabase;
 
-    private void Start() {
+    private void Start()
+    {
         if (InstanceFinder.IsServer) return;
         assetDatabase = FindObjectOfType<Database>();
 
         _presetDropdown.options.Clear();
 
         presets = assetDatabase.presetList;
-        foreach (var preset in presets) {
+        foreach (var preset in presets)
+        {
             _presetDropdown.options.Add(new TMP_Dropdown.OptionData() { text = preset.presetName });
         }
 
-        if (presets.Count == 0) {
+        if (presets.Count == 0)
+        {
             Debug.Log("No preset found.");
             return;
         }
@@ -37,12 +39,13 @@ public class PresetDropdown : MonoBehaviour {
         _presetDropdown.captionText.text = presets[0].presetName;
         assetDatabase.SelectedPreset = selectedPreset;
     }
-    public void OnPresetSelected() {
+    public void OnPresetSelected()
+    {
         selectedPreset = presets.Find(x => x.presetName == _presetDropdown.options[_presetDropdown.value].text);
         _presetDropdown.captionText.text = selectedPreset.presetName;
 
         assetDatabase.SelectedPreset = selectedPreset;
         OnPresetChange?.Invoke(InstanceFinder.ClientManager.Connection, selectedPreset);
+        Debug.Log($"Changin preset {InstanceFinder.ClientManager.Connection}");
     }
-
 }

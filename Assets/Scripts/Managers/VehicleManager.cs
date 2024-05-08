@@ -1,20 +1,24 @@
 using FishNet.Connection;
 using FishNet.Object;
 using FishNet.Object.Synchronizing;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using static Preset;
 
-public class VehicleManager : NetworkBehaviour {
-
+public class VehicleManager : NetworkBehaviour
+{
     [Header("UI")]
     public GameObject crewInfoPrefab;
 
     [Header("Tank")]
     public GameObject tankPrefab;
-    private GameObject actualTank;
+    public GameObject cannonPrefab;
+    public GameObject visorPrefab;
+    [SyncVar] private GameObject actualTank;
     [SyncVar, HideInInspector] public string tankName;
 
     private NetworkObject networkObject;
@@ -22,78 +26,81 @@ public class VehicleManager : NetworkBehaviour {
 
     [Header("Crew")]
     //KEY - index | VALUE - CrewData
-    [SyncObject, HideInInspector] public readonly SyncDictionary<int, CrewData> tankCrew = new SyncDictionary<int, CrewData>();
+    [SyncObject, HideInInspector] public readonly SyncDictionary<int, CrewData> _tankCrew = new SyncDictionary<int, CrewData>();
     private List<GameObject> crewButtons = new List<GameObject>();
     private int maxCrewCount;
 
-    private void Awake() {
-        PresetDropdown.OnPresetChange += ChangePreset;
+    private void Awake()
+    {
+        PresetDropdown.OnPresetChange += ChangePreset; //Client side - use this after joining crew
         UTW.SceneManager.OnClientDisconnectLobby += Destroy;
     }
 
     #region Crew
     #region Server-Crew
-    public void SetCrewData(Preset preset, NetworkConnection conn, Vector3 spawnpoint) {
+    public void SetCrewData(Preset preset, NetworkConnection conn, Vector3 spawnpoint)
+    {
         networkObject = GetComponent<NetworkObject>();
-        this.spawnpointPosition = spawnpoint;
-
-        //TODO Set this data from preset on VM creation
-        tankCrew.Add(0, new CrewData(TankPositions.DRIVER));
-        tankCrew.Add(1, new CrewData(TankPositions.GUNNER));
-        //tankCrew.Add(2, new CrewData(TankPositions.GUNNER));
-        //tankCrew.Add(3, new CrewData(TankPositions.OBSERVER));
-        //tankCrew.Add(4, new CrewData(TankPositions.GUNNER));
-        maxCrewCount = tankCrew.Count;
-
+        spawnpointPosition = spawnpoint;
         SpawnTank(preset);
     }
 
-    public bool JoinCrew(NetworkConnection joiningClientConn) {
-        if (tankCrew.Any(x => x.Value.empty)) {
+    public bool JoinCrew(NetworkConnection joiningClientConn)
+    {
+        if (_tankCrew.Any(x => x.Value.empty))
+        {
             RegisterOnChange(joiningClientConn, true);
-            CrewData data = tankCrew.First(x => x.Value.conn is null).Value;
+            CrewData data = _tankCrew.First(x => x.Value.conn is null).Value;
             data.conn = joiningClientConn;
             data.empty = false;
-            tankCrew.Dirty(data);
-            return !tankCrew.Any(x => x.Value.empty);
+            data.tankPart.GiveOwnership(joiningClientConn);
+            _tankCrew.Dirty(data);
+            return !_tankCrew.Any(x => x.Value.empty);
         }
         return true;
     }
 
-    public bool LeaveCrew(NetworkConnection leavingClientConn) {
+    public bool LeaveCrew(NetworkConnection leavingClientConn)
+    {
         RegisterOnChange(leavingClientConn, false);
-        CrewData data = tankCrew.First(x => x.Value.conn == leavingClientConn).Value;
+        CrewData data = _tankCrew.First(x => x.Value.conn == leavingClientConn).Value;
         data.conn = null;
         data.empty = true;
         data.swapRequest = false;
-        tankCrew.Dirty(data);
+        data.tankPart.RemoveOwnership();
+        _tankCrew.Dirty(data);
         return CrewIsEmpty();
     }
 
-    public bool CrewIsEmpty() {
-        return tankCrew.Count(x => x.Value.empty) == maxCrewCount;
+    public bool CrewIsEmpty()
+    {
+        return _tankCrew.Count(x => x.Value.empty) == maxCrewCount;
     }
 
-    public bool IsInCrew(NetworkConnection conn) {
-        return tankCrew.Any(client => client.Value.conn == conn);
+    public bool IsInCrew(NetworkConnection conn)
+    {
+        return _tankCrew.Any(client => client.Value.conn == conn);
     }
 
     #region Swap
-    private void Swap(NetworkConnection requestConn, int key) {
+    private void Swap(NetworkConnection requestConn, int key)
+    {
         int oldKey = GetKey(requestConn);
         if (oldKey == -1) return;
-        CrewData oldData = tankCrew[oldKey];
-        CrewData requestedData = tankCrew[key];
+        CrewData oldData = _tankCrew[oldKey];
+        CrewData requestedData = _tankCrew[key];
 
         var conn = requestedData.conn;
         oldData.conn = conn;
         oldData.empty = conn is null;
+        oldData.tankPart.GiveOwnership(conn);
 
         requestedData.conn = requestConn;
         requestedData.empty = false;
+        requestedData.tankPart.GiveOwnership(requestConn);
 
-        tankCrew.Dirty(key);
-        tankCrew.Dirty(oldKey);
+        _tankCrew.Dirty(key);
+        _tankCrew.Dirty(oldKey);
 
         SetSwapping(key, oldKey, false);
         Debug.Log($"Client ID: {requestConn.ClientId} swapped position to {requestedData.tankPosition}");
@@ -101,22 +108,27 @@ public class VehicleManager : NetworkBehaviour {
     }
 
     [ServerRpc(RequireOwnership = false)]
-    private void SwapRequest(NetworkConnection requestConn, int key) {
-        CrewData data = tankCrew[key];
+    public void SwapRequest(NetworkConnection requestConn, int key)
+    {
+        CrewData data = _tankCrew[key];
         int oldKey = GetKey(requestConn);
-        if (tankCrew[oldKey].swapRequest) {
+        if (_tankCrew[oldKey].swapRequest)
+        {
             LogResponse(requestConn, "Cannot swap while requesting another position.");
             return;
         }
-        if (data.conn == requestConn) {
+        if (data.conn == requestConn)
+        {
             LogResponse(requestConn, "Already in this position.");
             return;
         }
-        if (data.empty) {
+        if (data.empty)
+        {
             Swap(requestConn, key);
             return;
         }
-        if (data.swapRequest) {
+        if (data.swapRequest)
+        {
             LogResponse(requestConn, "Another client is requesting this position.");
             return;
         }
@@ -126,8 +138,43 @@ public class VehicleManager : NetworkBehaviour {
     }
 
     [ServerRpc(RequireOwnership = false)]
-    public void SwapRequestResponse(NetworkConnection requestConn, int key, int oldKey, bool swap) {
-        if (swap) {
+    public void InGameSwap(NetworkConnection requestConn, TankPositions tankPosition)
+    {
+        try
+        {
+            int oldKey = GetKey(requestConn);
+            int key = 0;
+
+            switch (tankPosition)
+            {
+                case TankPositions.DRIVER:
+                    key = _tankCrew.First(x => x.Value.empty && x.Value.tankPosition == TankPositions.DRIVER).Key;
+                    break;
+                case TankPositions.GUNNER:
+                    key = _tankCrew.First(x => x.Value.empty && x.Value.tankPosition == TankPositions.GUNNER).Key;
+                    break;
+                case TankPositions.OBSERVER:
+                    key = _tankCrew.First(x => x.Value.empty && x.Value.tankPosition == TankPositions.OBSERVER).Key;
+                    break;
+                default:
+                    break;
+            }
+
+            //int key = _tankCrew.First(x => x.Value.empty).Key;
+            Swap(requestConn, key);
+            ActivateController(requestConn, _tankCrew[oldKey], _tankCrew[key]);
+        }
+        catch
+        {
+            LogResponse(requestConn, "No position to swap.");
+        }
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    public void SwapRequestResponse(NetworkConnection requestConn, int key, int oldKey, bool swap)
+    {
+        if (swap)
+        {
             Swap(requestConn, key);
             return;
         }
@@ -135,39 +182,48 @@ public class VehicleManager : NetworkBehaviour {
         LogResponse(requestConn, "Client declined swap");
     }
 
-    private void SetSwapping(int key, int oldKey, bool isSwapping) {
-        tankCrew[key].swapRequest = isSwapping;
-        tankCrew[oldKey].swapRequest = isSwapping;
-        tankCrew.Dirty(key);
-        tankCrew.Dirty(oldKey);
+    private void SetSwapping(int key, int oldKey, bool isSwapping)
+    {
+        _tankCrew[key].swapRequest = isSwapping;
+        _tankCrew[oldKey].swapRequest = isSwapping;
+        _tankCrew.Dirty(key);
+        _tankCrew.Dirty(oldKey);
     }
     #endregion Swap
     #endregion Server-Crew
 
     #region Client-Crew
-    private void OnChange(SyncDictionaryOperation op, int key, CrewData value, bool asServer) {
-        switch (op) {
-            case SyncDictionaryOperation.Add: { //This event catch only client that created this VM.
+    private void OnChange(SyncDictionaryOperation op, int key, CrewData value, bool asServer)
+    {
+        switch (op)
+        {
+            case SyncDictionaryOperation.Add:
+                { //This event catch only client that created this VM.
                     FindObjectOfType<LobbyController>().HideObjects(false);
                     CreateCrewButton(key, value);
                 }
                 break;
-            case SyncDictionaryOperation.Set: {
+            case SyncDictionaryOperation.Set:
+                {
                     crewButtons[key].GetComponentInChildren<TextMeshProUGUI>().text = GetName(value);
                 }
                 break;
-            case SyncDictionaryOperation.Remove: {
+            case SyncDictionaryOperation.Remove:
+                {
                     crewButtons[key].GetComponentInChildren<TextMeshProUGUI>().text = GetName(value);
                 }
                 break;
-            case SyncDictionaryOperation.Clear: {
-
+            case SyncDictionaryOperation.Clear:
+                {
+                    Debug.Log("Destroying buttons");
+                    DestroyCrewButton();
                 }
                 break;
         }
     }
 
-    private void CreateCrewButton(int key, CrewData data) {
+    private void CreateCrewButton(int key, CrewData data)
+    {
         GameObject parent = GameObject.FindGameObjectWithTag(GameTagsUtils.CREW_GRID);
         GameObject go = Instantiate(crewInfoPrefab, parent.transform);
         go.GetComponentInChildren<TextMeshProUGUI>().text = GetName(data);
@@ -175,39 +231,61 @@ public class VehicleManager : NetworkBehaviour {
         crewButtons.Insert(key, go);
     }
 
-    private void CreateCrewButtonOnJoin() {
-        foreach (var pair in tankCrew) {
+    private void CreateCrewButtonOnJoin()
+    {
+        foreach (var pair in _tankCrew)
+        {
             CreateCrewButton(pair.Key, pair.Value);
         }
     }
 
-    private void DestroyCrewButton() {
-        for (int i = 0; i < crewButtons.Count; i++) {
+    private void DestroyCrewButton()
+    {
+        for (int i = 0; i < crewButtons.Count; i++)
+        {
             Destroy(crewButtons[i]);
         }
         crewButtons.Clear();
     }
 
-    public string GetName(CrewData data) {
-        return data.empty ? "EMPTY" : "Client_" + data.conn.ClientId;
+    public string GetName(CrewData data)
+    {
+        return data.empty ? "EMPTY" : GameManager.Instance.GetPlayerByConnection(data.conn.ClientId).PlayerName;
     }
 
     [TargetRpc]
-    private void RegisterOnChange(NetworkConnection conn, bool register) {
+    private void RegisterOnChange(NetworkConnection conn, bool register)
+    {
         if (LocalConnection != conn) return;
-        if (register) {
+        if (register)
+        {
             CreateCrewButtonOnJoin();
-            tankCrew.OnChange += OnChange;
-        } else {
-            tankCrew.OnChange -= OnChange;
+            _tankCrew.OnChange += OnChange;
+        }
+        else
+        {
+            _tankCrew.OnChange -= OnChange;
             DestroyCrewButton();
         }
     }
 
     [TargetRpc]
-    private void SwapRequestPopup(NetworkConnection targetConn, NetworkConnection requestConn, int key, int oldKey) {
+    private void SwapRequestPopup(NetworkConnection targetConn, NetworkConnection requestConn, int key, int oldKey)
+    {
         //TODO Fix client leaving during swap request
         FindObjectOfType<LobbyController>().SetSwapData(this, requestConn, key, oldKey);
+    }
+
+    public KeyValuePair<int, CrewData> GetActualTankPosition()
+    {
+        foreach (var pair in _tankCrew)
+        {
+            if (pair.Value.conn == LocalConnection)
+            {
+                return pair;
+            }
+        }
+        throw new System.Exception("Player position not found.");
     }
     #endregion Client-Crew
     #endregion Crew
@@ -215,63 +293,144 @@ public class VehicleManager : NetworkBehaviour {
     #region Tank
     #region Server-Tank
     [ServerRpc(RequireOwnership = false)]
-    private void SpawntankServer(Preset preset) {
+    private void ChangePresetServer(NetworkConnection conn, Preset preset)
+    {
+        //TODO Refactor this shit
+        LeaveCrew(conn);
+        _tankCrew.Clear();
         SpawnTank(preset);
+        JoinCrew(conn);
     }
 
-    private void SpawnTank(Preset preset) {
+    private void SpawnTank(Preset preset)
+    {
         if (actualTank is not null) Despawn(actualTank);
         tankName = preset.tankName;
-        actualTank = Instantiate(tankPrefab, spawnpointPosition, Quaternion.identity);
-        NetworkObject no = actualTank.GetComponent<NetworkObject>();
-        no.SetParent(networkObject);
-        Spawn(no);
+        SpawnTankParts(preset.mainPart);
         BuildTank(preset, actualTank);
+    }
+
+    private void SpawnTankParts(MainPart mainPart)
+    {
+        actualTank = Instantiate(tankPrefab, spawnpointPosition, Quaternion.identity);
+        NetworkObject tankNo = actualTank.GetComponent<NetworkObject>();
+        actualTank.name = mainPart.mainData.partName;
+        tankNo.SetParent(networkObject);
+        Spawn(tankNo);
+
+        _tankCrew.Add(mainPart.mainData.key, new CrewData(mainPart.mainData.tankPosition, tankNo, 0));
+
+        int childIndex = 1; // child index 0 is camera
+
+        foreach (var part in mainPart.parts)
+        {
+            TankData data = part.partData;
+            Debug.Log($"Spawning part {data.partName}");
+            GameObject tankPart = Instantiate(SelectPrefab(data.prefabName), data.partPosition + transform.position, Quaternion.identity, actualTank.transform); //TODO select prefab
+            tankPart.name = data.partName;
+            NetworkObject partNo = tankPart.GetComponent<NetworkObject>();
+            partNo.SetParent(tankNo);
+            Spawn(partNo);
+
+            _tankCrew.Add(data.key, new CrewData(data.tankPosition, partNo, childIndex));
+            childIndex++;
+        }
+
+        maxCrewCount = _tankCrew.Count;
+    }
+
+    [Obsolete("Just for testing purpose. Will be deleted after Database prefab implementation.")]
+    private GameObject SelectPrefab(string prefabName)
+    {
+        if (prefabName.Equals("cannon"))
+            return cannonPrefab;
+        else if (prefabName.Equals("visor"))
+            return visorPrefab;
+
+        throw new Exception("Prefab not found!");
     }
     #endregion Server-Tank
 
     #region Client-Tank
     [ObserversRpc(BufferLast = true)]
-    private void BuildTank(Preset preset, GameObject actualTank) {
-        //TODO Build tank
-
+    private void BuildTank(Preset preset, GameObject actualTank)
+    {
         //TODO Just for testing purpose, delete in future
-        Color color = Color.grey;
-        if (preset.color != 0)
-            color = preset.color == 1 ? Color.green : Color.yellow;
-        //
+        //Color color = Color.grey;
+        //if (preset.color != 0)
+        //    color = preset.color == 1 ? Color.green : Color.yellow;
 
-        actualTank.GetComponentInChildren<MeshRenderer>().material.color = color;
+        //actualTank.GetComponentInChildren<MeshRenderer>().material.color = color;
         actualTank.name = preset.tankName;
     }
 
-    public void ChangePreset(NetworkConnection conn, Preset preset) {
-        SpawntankServer(preset);
+    public void ChangePreset(NetworkConnection conn, Preset preset)
+    { //TODO cannot swap preset if there are more clients
+        Debug.Log($"Calling for server to change preset {conn}");
+        ChangePresetServer(conn, preset);
+    }
+
+    public void StartGame()
+    {
+        FindObjectOfType<LobbyController>().menuPanel.SetActive(false);
+        ActivateController(GetActualTankPosition().Value, true);
+    }
+
+    [TargetRpc]
+    private void ActivateController(NetworkConnection conn, CrewData oldData, CrewData newData)
+    {
+        //TODO Can we do it better?
+        ActivateController(oldData, false);
+        ActivateController(newData, true);
+    }
+    private void ActivateController(CrewData data, bool active)
+    {
+        Transform tankPart = actualTank.transform;
+        Debug.Log($"Index {data.childIndex}");
+
+        if (!data.tankPosition.Equals(TankPositions.DRIVER))
+            tankPart = tankPart.GetChild(data.childIndex);
+
+        EnableController(tankPart, active);
+    }
+
+    private void EnableController(Transform tankPart, bool active)
+    {
+        tankPart.GetComponentInChildren<Camera>().enabled = active;
+        tankPart.GetComponentInChildren<AudioListener>().enabled = active;
+        tankPart.GetComponent<PlayerController>().enabled = active;
+        GetComponent<ControlSwitch>().enabled = active;
     }
     #endregion Client-Tank
     #endregion Tank
 
-    private int GetKey(NetworkConnection conn) {
-        try {
-            return tankCrew.First(key => key.Value.conn == conn).Key;
-        } catch {
+    private int GetKey(NetworkConnection conn)
+    {
+        try
+        {
+            return _tankCrew.First(key => key.Value.conn == conn).Key;
+        }
+        catch
+        {
             return -1;
         }
     }
 
-    private void Destroy(NetworkConnection conn) {
+    private void Destroy(NetworkConnection conn)
+    {
         if (Owner != conn) return;
         Despawn(gameObject);
     }
 
     [TargetRpc]
-    public void LogResponse(NetworkConnection conn, string text) {
+    public void LogResponse(NetworkConnection conn, string text)
+    {
         Debug.Log(text);
     }
 
-    private void OnDestroy() {
+    private void OnDestroy()
+    {
         PresetDropdown.OnPresetChange -= ChangePreset;
         UTW.SceneManager.OnClientDisconnectLobby -= Destroy;
     }
-
 }

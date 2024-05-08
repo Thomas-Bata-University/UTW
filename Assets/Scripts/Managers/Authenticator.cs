@@ -28,16 +28,11 @@ public class Authenticator : HostAuthenticator
     /// </summary>
     public override event Action<NetworkConnection, bool> OnAuthenticationResult;
 
-    TMP_Text input;
-
     [SerializeField] private string userNameInput = "HelloWorld";
 
     public override void InitializeOnce(NetworkManager networkManager)
     {
         base.InitializeOnce(networkManager);
-
-        var inputGO = GameObject.Find("UsernameInputText");
-        input = inputGO.GetComponent<TMP_Text>();
 
         NetworkManager.ClientManager.OnClientConnectionState += ClientManager_OnClientConnectionState;
         NetworkManager.ServerManager.RegisterBroadcast<UserBroadcast>(OnUserBroadcast, false);
@@ -52,13 +47,11 @@ public class Authenticator : HostAuthenticator
         if (args.ConnectionState != LocalConnectionState.Started)
             return;
 
-        //Authentication was sent as host, no need to authenticate normally.
-        if (AuthenticateAsHost())
-            return;
+        var input = GameObject.Find("UsernameInputText").GetComponent<TMP_Text>().text;
 
         UserBroadcast ub = new UserBroadcast()
         {
-            Username = input.text,
+            Username = input,
             Hashes = Database.hashes
         };
 
@@ -74,6 +67,8 @@ public class Authenticator : HostAuthenticator
     {
         var player = GameManager.Instance.CreateOrSelectPlayer(ub.Username);
 
+        Debug.Log($"Player {player.PlayerName} is connecting...");
+
         if (IsAlreadyConnected(player))
         {
             Debug.Log($"Player {player.PlayerName} is already connected!");
@@ -83,8 +78,6 @@ public class Authenticator : HostAuthenticator
 
             return;
         }
-
-        Debug.Log($"Checking hashes for {player.PlayerName}");
 
         if (!UserHasRequiredHashes(ub.Hashes))
         {
@@ -130,7 +123,7 @@ public class Authenticator : HostAuthenticator
     private void OnResponseBroadcast(ResponseBroadcast rb)
     {
         string result = rb.Message;
-        NetworkManager.Log(result);
+        Debug.Log(result);
     }
 
     /// <summary>

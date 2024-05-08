@@ -2,7 +2,6 @@ using FishNet;
 using FishNet.Connection;
 using FishNet.Managing.Scened;
 using FishNet.Object;
-using FishNet.Transporting;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -24,11 +23,26 @@ namespace UTW
         //KEY - NetworkConnection | value - Spawned ChatManager
         private Dictionary<NetworkConnection, GameObject> chatManagers = new Dictionary<NetworkConnection, GameObject>();
 
-        private void Start()
+        private int lastLobbyIndex = 0;
+
+        private void Awake()
         {
             if (Instance == null)
                 Instance = this;
-            InstanceFinder.NetworkManager.ServerManager.OnRemoteConnectionState += MoveClientToShardScene;
+            else
+                Destroy(this);
+
+            InstanceFinder.NetworkManager.ServerManager.OnAuthenticationResult += MoveClientToShardScene;
+        }
+
+        private void MoveClientToShardScene(NetworkConnection conn, bool passed)
+        {
+            if (!passed) return;
+
+            SceneLoadData data = new SceneLoadData(GameSceneUtils.SHARD_SCENE);
+            data.ReplaceScenes = ReplaceOption.All;
+
+            InstanceFinder.SceneManager.LoadConnectionScenes(conn, data);
         }
 
         #region Lobby scene
@@ -46,6 +60,12 @@ namespace UTW
 
             if (lobbyData.TryGetValue(handle, out SceneData sceneData))
             {
+                if (sceneData.lobbyState == LobbyState.ONGOING)
+                {
+                    LogResponse(conn, "This lobby is ongoing!");
+                    return;
+                }
+
                 LoadScene(conn, new SceneLookupData(handle), false);
             }
             else
@@ -65,6 +85,7 @@ namespace UTW
 
             GameObject go = Instantiate(lobbyManagerPrefab);
             go.name = lobbyManagerPrefab.name;
+            lobbyData[scene.handle].lobbyManager = go.GetComponent<LobbyManager>();
             InstanceFinder.ServerManager.Spawn(go, conn, scene);
             Debug.Log($"{go.name} successfully initialized.");
 
@@ -105,9 +126,20 @@ namespace UTW
             }
         }
 
+        [Server]
+        public void DespawnChatManager(List<NetworkConnection> conns)
+        {
+            foreach (var c in conns)
+            {
+                DespawnChatManager(c);
+            }
+        }
+
         [ServerRpc(RequireOwnership = false)]
         public void Connected(NetworkConnection conn)
         {
+            LogResponse(conn, "Connected to lobby");
+
             AddClientData(conn);
             OnClientJoinLobby?.Invoke(conn);
         }
@@ -115,7 +147,11 @@ namespace UTW
         [ServerRpc(RequireOwnership = false)]
         public void StartGame(NetworkConnection conn)
         {
-            RemoveLobbyData(conn);
+            SceneData data = GetData(conn);
+            SendMessageToAllInLobby(data, "The game is starting!");
+            DespawnChatManager(data.clients);
+            data.lobbyManager.StartGame();
+            HideLobbyData(data);
         }
 
         [TargetRpc]
@@ -125,24 +161,17 @@ namespace UTW
         }
         #endregion
 
-        #region Shard scene
-        //Called on SERVER
-        private void MoveClientToShardScene(NetworkConnection conn, RemoteConnectionStateArgs args)
-        {
-            if (args.ConnectionState != RemoteConnectionState.Started) return;
-
-            SceneLoadData data = new SceneLoadData(GameSceneUtils.SHARD_SCENE);
-            data.ReplaceScenes = ReplaceOption.All;
-
-            InstanceFinder.SceneManager.LoadConnectionScenes(conn, data);
-        }
-        #endregion
-
         #region Lobby data
         public void CreateNewLobbyData(NetworkConnection owner, Scene scene)
         {
-            SceneData data = new SceneData(scene.handle, scene.name, null, owner);
+            SceneData data = new SceneData(scene.handle, scene.name, GenerateNewLobbyName(), owner);
             lobbyData.Add(scene.handle, data);
+        }
+
+        private string GenerateNewLobbyName()
+        {
+            lastLobbyIndex++;
+            return $"Lobby #{lastLobbyIndex}";
         }
 
         /// <summary>
@@ -155,22 +184,24 @@ namespace UTW
             if (data != null && data.lobbyOwner == conn)
             {
                 Debug.Log($"Removing data for owner: {conn.ClientId}");
-                lobbyData.Remove(GetSceneForClient(conn, GameSceneUtils.LOBBY_SCENE).handle);
+                lobbyData.Remove(data.handle);
                 return true;
             }
             return false;
         }
 
-        private bool RemoveLobbyData(NetworkConnection conn)
+        private void HideLobbyData(SceneData data)
         {
-            return RemoveLobbyData(conn, GetData(conn));
+            if (data == null) return;
+
+            lobbyData[data.handle].lobbyState = LobbyState.ONGOING;
         }
 
         private void AddClientData(NetworkConnection conn)
         {
             var data = GetData(conn);
             if (data == null) return;
-            data.playerCount += 1;
+            data.playerCount++;
             data.clients.Add(conn);
         }
 
@@ -178,7 +209,7 @@ namespace UTW
         {
             var data = GetData(conn);
             if (data == null) return;
-            data.playerCount -= 1;
+            data.playerCount--;
             data.clients.Remove(conn);
         }
 
@@ -206,6 +237,9 @@ namespace UTW
             if (RemoveLobbyData(conn, data))
             {
                 Debug.Log($"Disconnecting all clients from lobby...");
+
+                SendMessageToAllInLobby(data, "The lobby was closed by it's owner");
+
                 LoadScene(data.clients.ToArray(), new SceneLookupData(GameSceneUtils.SHARD_SCENE), false);
                 return;
             }
@@ -220,6 +254,12 @@ namespace UTW
             LoadScene(conn, new SceneLookupData(GameSceneUtils.SHARD_SCENE), false);
 
             OnClientDisconnectLobby?.Invoke(conn);
+        }
+
+        [ServerRpc(RequireOwnership = false)]
+        public void DisconnectFromShard(NetworkConnection conn)
+        {
+            conn.Disconnect(true);
         }
 
         [ServerRpc(RequireOwnership = false)]
@@ -276,6 +316,14 @@ namespace UTW
             return conn.Scenes.First(x => x.name.Equals(sceneName));
         }
 
+        private void SendMessageToAllInLobby(SceneData data, string text)
+        {
+            foreach (var c in data.clients)
+            {
+                LogResponse(c, text);
+            }
+        }
+
         [TargetRpc]
         public void LogResponse(NetworkConnection conn, string text)
         {
@@ -284,8 +332,7 @@ namespace UTW
 
         private void OnDestroy()
         {
-            InstanceFinder.NetworkManager.ServerManager.OnRemoteConnectionState -= MoveClientToShardScene;
+            InstanceFinder.NetworkManager.ServerManager.OnAuthenticationResult -= MoveClientToShardScene;
         }
-
     }
 }

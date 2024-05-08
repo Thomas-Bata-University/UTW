@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 5518481256344637915}
   - component: {fileID: 8582286189715555194}
   - component: {fileID: 5408540398499684965}
+  - component: {fileID: -6813214729680784144}
   m_Layer: 0
   m_Name: VehicleManager
   m_TagString: Untagged
@@ -49,8 +50,12 @@ MonoBehaviour:
   _addedNetworkObject: {fileID: 5408540398499684965}
   _networkObjectCache: {fileID: 5408540398499684965}
   crewInfoPrefab: {fileID: 6763079097263408496, guid: fcd5d54ff2b1ac8479f14dfe6bf3a1f2, type: 3}
-  tankPrefab: {fileID: 1039825573889524845, guid: e869115d3e2a649ab8689204e5b899e5, type: 3}
-  spawnpoint: {fileID: 0}
+  tankPrefab: {fileID: 407754499406819417, guid: 55f29380fb4c0ca48ad3b884e602ef68, type: 3}
+  cannonPrefab: {fileID: 7227865418640596963, guid: dae830db4f4ddfb4f921bdac95ca12b8, type: 3}
+  visorPrefab: {fileID: 7227865418640596963, guid: 0a60ef693730a634a98b4f8bb96ca2e8, type: 3}
+  actualTank: {fileID: 0}
+  tankName: 
+  spawnpointPosition: {x: 0, y: 0, z: 0}
 --- !u!114 &5408540398499684965
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -71,16 +76,29 @@ MonoBehaviour:
   <ParentNetworkObject>k__BackingField: {fileID: 0}
   <ChildNetworkObjects>k__BackingField: []
   SerializedTransformProperties:
-    Position: {x: 1057.6052, y: 487.6056, z: 322.63895}
-    Rotation: {x: -0, y: -0, z: -0, w: 1}
+    Position: {x: 0, y: 0, z: 0}
+    Rotation: {x: 0, y: 0, z: 0, w: 1}
     LocalScale: {x: 1, y: 1, z: 1}
   _isNetworked: 1
   _isGlobal: 0
   _initializeOrder: 0
   _defaultDespawnType: 0
   NetworkObserver: {fileID: 0}
-  <PrefabId>k__BackingField: 26
+  <PrefabId>k__BackingField: 30
   <SpawnableCollectionId>k__BackingField: 0
   _scenePathHash: 0
   <SceneId>k__BackingField: 0
   <AssetPathHash>k__BackingField: 12375179032024147450
+--- !u!114 &-6813214729680784144
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 40524906591757916}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a72cc36f15e3306439863f152c756ef0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Notes: Comment

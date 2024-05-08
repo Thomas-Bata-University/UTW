@@ -533,6 +533,7 @@ GameObject:
   m_Component:
   - component: {fileID: 530505009}
   - component: {fileID: 530505008}
+  - component: {fileID: 530505010}
   m_Layer: 0
   m_Name: ShardController
   m_TagString: Untagged
@@ -552,6 +553,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 90bb9559e92810046b3f35ba97f57610, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _componentIndexCache: 0
+  _addedNetworkObject: {fileID: 530505010}
+  _networkObjectCache: {fileID: 530505010}
   sceneManager: {fileID: 0}
   buttonPrefab: {fileID: 8481180817171038478, guid: e6affdeaa03bf114a9b80b407822b37c, type: 3}
   layoutGroup: {fileID: 2031073938}
@@ -571,6 +575,39 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &530505010
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 530505007}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 26b716c41e9b56b4baafaf13a523ba2e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  <IsNested>k__BackingField: 0
+  <ComponentIndex>k__BackingField: 0
+  <PredictedSpawn>k__BackingField: {fileID: 0}
+  _networkBehaviours:
+  - {fileID: 530505008}
+  <ParentNetworkObject>k__BackingField: {fileID: 0}
+  <ChildNetworkObjects>k__BackingField: []
+  SerializedTransformProperties:
+    Position: {x: 0, y: 0, z: 0}
+    Rotation: {x: 0, y: 0, z: 0, w: 1}
+    LocalScale: {x: 1, y: 1, z: 1}
+  _isNetworked: 1
+  _isGlobal: 0
+  _initializeOrder: 0
+  _defaultDespawnType: 0
+  NetworkObserver: {fileID: 0}
+  <PrefabId>k__BackingField: 0
+  <SpawnableCollectionId>k__BackingField: 0
+  _scenePathHash: 45180764
+  <SceneId>k__BackingField: 194049907855967398
+  <AssetPathHash>k__BackingField: 0
 --- !u!1 &653260035
 GameObject:
   m_ObjectHideFlags: 0
@@ -1618,7 +1655,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &2003160921
 RectTransform:
   m_ObjectHideFlags: 0
