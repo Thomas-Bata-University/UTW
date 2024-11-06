@@ -59,7 +59,7 @@ public class Logger : MonoBehaviour
         uiToggleButtonImage = uiToggleButton.GetComponent<Image>();
 
         uiNetworkHudCanvas = GameObject.Find("NetworkHudCanvas");
-        ToggleFishUi();
+        // ToggleFishUi();
         TogglePingDisplay();
 
         isOpen = true;

@@ -14,12 +14,8 @@ public sealed class GameManager : NetworkBehaviour
 {
     public static GameManager Instance { get; private set; }
 
-    [SyncObject]
-    private readonly SyncDictionary<string, PlayerData> _playersData = new();
-    [SyncObject]
-    private readonly SyncDictionary<int, Faction> _factions = new();
-
-    public int CountOfFactions => _factions.Count;
+    [SyncObject] private readonly SyncDictionary<string, PlayerData> _playersData = new();
+    [SyncObject] private readonly SyncDictionary<int, Faction> _factions = new();
 
     private void Awake()
     {
@@ -28,9 +24,9 @@ public sealed class GameManager : NetworkBehaviour
         else
             Destroy(this);
 
-        LoadUsers();
         LoadFactionsFromJson();
         LoadFactionPresets();
+        LoadUsers();
 
         InstanceFinder.NetworkManager.ServerManager.OnRemoteConnectionState += ServerManager_OnRemoteConnectionState;
     }
@@ -44,7 +40,7 @@ public sealed class GameManager : NetworkBehaviour
             try
             {
                 PlayerData p = GetPlayerByConnection(conn.ClientId);
-                p.ClientConnectionId = -2;
+                p.ClientConnectionId = ConnectionCodes.OFFLINE_CODE;
 
                 UpdateDictionary(p.PlayerName);
             }
@@ -59,11 +55,18 @@ public sealed class GameManager : NetworkBehaviour
     public void UpdateDictionary(string name)
     {
         _playersData.Dirty(name);
+
+        Debug.Log("DIC UPDATED:");
+        foreach (var v in _playersData.Values)
+        {
+            if (v.Faction != null) Debug.Log(v.PlayerName + ": " + v.ClientConnectionId + ", " + v.Faction.Name);
+            else Debug.Log(v.PlayerName + ": " + v.ClientConnectionId + ", Faction is null");
+        }
     }
 
     private void LoadUsers()
     {
-        if (!IsServer) return;
+        // if (!IsServer) return;
 
         var files = Directory.GetFiles(Application.streamingAssetsPath + "/Users/", "*.json");
 
@@ -74,12 +77,20 @@ public sealed class GameManager : NetworkBehaviour
             var jsonString = reader.ReadToEnd();
             var data = JsonUtility.FromJson<PlayerData>(jsonString);
             _playersData[data.PlayerName] = data;
+            AssignFactionToPlayer(data);
+        }
+
+        Debug.Log("LOADED USERS:");
+        foreach (var v in _playersData.Values)
+        {
+            if (v.Faction != null) Debug.Log(v.PlayerName + ": " + v.ClientConnectionId + ", " + v.Faction.Name);
+            else Debug.Log(v.PlayerName + ": " + v.ClientConnectionId + ", Faction is null");
         }
     }
 
     public PlayerData CreateOrSelectPlayer(string playerName)
     {
-        if (!IsServer) return null;
+        // if (!IsServer) return null;
 
         if (_playersData.TryGetValue(playerName, out var existingPlayerData))
         {
@@ -87,14 +98,15 @@ public sealed class GameManager : NetworkBehaviour
         }
 
         var data = _playersData[playerName] = CreatePlayerData(playerName);
+        AssignFactionToPlayer(data);
         return data;
     }
 
     private PlayerData CreatePlayerData(string playerName)
     {
-        if (!IsServer) return null;
+        // if (!IsServer) return null;
 
-        var player = new PlayerData(playerName, string.Empty);
+        var player = new PlayerData(playerName, 1);
         var json = JsonUtility.ToJson(player);
         var writer = new StreamWriter(Application.streamingAssetsPath + "/Users/" + $"/{player.PlayerName}.json");
         writer.Write(json);
@@ -104,7 +116,7 @@ public sealed class GameManager : NetworkBehaviour
 
     private void LoadFactionsFromJson()
     {
-        if (!IsServer) return;
+        // if (!IsServer) return;
 
         var files = Directory.GetFiles(Application.streamingAssetsPath + "/Factions/", "*.json");
         var reader = new StreamReader(files.First());
@@ -119,7 +131,7 @@ public sealed class GameManager : NetworkBehaviour
 
     private void LoadFactionPresets()
     {
-        if (!IsServer) return;
+        // if (!IsServer) return;
 
         var files = Directory.GetFiles(Application.streamingAssetsPath + "/Presets/", "*.xml");
 
@@ -132,6 +144,9 @@ public sealed class GameManager : NetworkBehaviour
                 presets.Where(preset => preset.faction.Equals(faction.Id)));
         }
     }
+
+    private void AssignFactionToPlayer(PlayerData player) =>
+        _playersData[player.PlayerName].Faction = _factions[player.FactionId];
 
     public PlayerData GetPlayerByConnection(int clientId) =>
         _playersData.Values.First(playerData => playerData.ClientConnectionId.Equals(clientId));

@@ -6,26 +6,19 @@ using JetBrains.Annotations;
 public class PlayerData
 {
     public string PlayerName;
-
+    public int FactionId;
     public int ClientConnectionId;
-
-    public string Preset;
-    public int FactionId = 0;
-
-    [CanBeNull]
-    public Faction Faction { get; set; }
-
-    [NonSerialized]
-    public string sceneName;
+    [CanBeNull] public Faction Faction { get; set; }
+    [NonSerialized] public string SceneName;
 
     public PlayerData()
     {
     }
 
-    public PlayerData(string playerName, string preset)
+    public PlayerData(string playerName, int factionId)
     {
         PlayerName = playerName;
-        ClientConnectionId = -2;
-        Preset = preset;
+        FactionId = factionId;
+        ClientConnectionId = ConnectionCodes.OFFLINE_CODE;
     }
 }
