@@ -70,11 +70,16 @@ public class Database : MonoBehaviour
         }
     }
 
-    public void AddAll(Preset[] presetList)
+    public void AddAllPresets(List<Preset> presets)
     {
-        foreach (var preset in presetList)
+        foreach (var preset in presets)
         {
-            this.presetList.Add(preset);
+            presetList.Add(preset);
         }
+    }
+
+    public void RemoveAllPresets()
+    {
+        presetList.Clear();
     }
 }

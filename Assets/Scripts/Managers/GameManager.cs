@@ -5,7 +5,6 @@ using FishNet.Object.Synchronizing;
 using System.Linq;
 using Factions;
 using UnityEngine;
-using Utils;
 using FishNet;
 using FishNet.Connection;
 using FishNet.Transporting;
@@ -41,6 +40,7 @@ public sealed class GameManager : NetworkBehaviour
             {
                 PlayerData p = GetPlayerByConnection(conn.ClientId);
                 p.ClientConnectionId = ConnectionCodes.OFFLINE_CODE;
+                // ClearPresetsForClient(conn);
 
                 UpdateDictionary(p.PlayerName);
             }
@@ -51,23 +51,24 @@ public sealed class GameManager : NetworkBehaviour
         }
     }
 
+    // TODO
+    // This will work once we catch the disconnecting player while he's still on the server
+    // As of now this will be called once he's already disconnected which is "k prdu"
+    [TargetRpc]
+    private void ClearPresetsForClient(NetworkConnection conn)
+    {
+        FindObjectOfType<Database>().RemoveAllPresets();
+        Debug.Log("Clearing presets!");
+    }
+
     [Server]
     public void UpdateDictionary(string name)
     {
         _playersData.Dirty(name);
-
-        Debug.Log("DIC UPDATED:");
-        foreach (var v in _playersData.Values)
-        {
-            if (v.Faction != null) Debug.Log(v.PlayerName + ": " + v.ClientConnectionId + ", " + v.Faction.Name);
-            else Debug.Log(v.PlayerName + ": " + v.ClientConnectionId + ", Faction is null");
-        }
     }
 
     private void LoadUsers()
     {
-        // if (!IsServer) return;
-
         var files = Directory.GetFiles(Application.streamingAssetsPath + "/Users/", "*.json");
 
         foreach (var fi in files)
@@ -79,19 +80,10 @@ public sealed class GameManager : NetworkBehaviour
             _playersData[data.PlayerName] = data;
             AssignFactionToPlayer(data);
         }
-
-        Debug.Log("LOADED USERS:");
-        foreach (var v in _playersData.Values)
-        {
-            if (v.Faction != null) Debug.Log(v.PlayerName + ": " + v.ClientConnectionId + ", " + v.Faction.Name);
-            else Debug.Log(v.PlayerName + ": " + v.ClientConnectionId + ", Faction is null");
-        }
     }
 
     public PlayerData CreateOrSelectPlayer(string playerName)
     {
-        // if (!IsServer) return null;
-
         if (_playersData.TryGetValue(playerName, out var existingPlayerData))
         {
             return existingPlayerData;
@@ -104,8 +96,6 @@ public sealed class GameManager : NetworkBehaviour
 
     private PlayerData CreatePlayerData(string playerName)
     {
-        // if (!IsServer) return null;
-
         var player = new PlayerData(playerName, 1);
         var json = JsonUtility.ToJson(player);
         var writer = new StreamWriter(Application.streamingAssetsPath + "/Users/" + $"/{player.PlayerName}.json");
@@ -116,8 +106,6 @@ public sealed class GameManager : NetworkBehaviour
 
     private void LoadFactionsFromJson()
     {
-        // if (!IsServer) return;
-
         var files = Directory.GetFiles(Application.streamingAssetsPath + "/Factions/", "*.json");
         var reader = new StreamReader(files.First());
         var jsonString = reader.ReadToEnd();
@@ -131,17 +119,42 @@ public sealed class GameManager : NetworkBehaviour
 
     private void LoadFactionPresets()
     {
-        // if (!IsServer) return;
-
-        var files = Directory.GetFiles(Application.streamingAssetsPath + "/Presets/", "*.xml");
-
-        var presets = files.Select(SerializationUtils.DeserializeXml<Preset>).ToList();
-
-        foreach (var faction in _factions.Values)
+        try
         {
-            faction.Presets ??= new List<Preset>();
-            faction.Presets.AddRange(
-                presets.Where(preset => preset.faction.Equals(faction.Id)));
+            var files = Directory.GetFiles(Application.streamingAssetsPath + "/Presets/", "*.json");
+            var presets = new List<Preset>();
+
+            foreach (var file in files)
+            {
+                try
+                {
+                    var jsonString = File.ReadAllText(file);
+                    var preset = JsonUtility.FromJson<Preset>(jsonString);
+
+                    if (preset != null)
+                        presets.Add(preset);
+                    else
+                        Debug.LogWarning($"Failed to deserialize preset from file: {file}");
+                }
+                catch (System.Exception ex)
+                {
+                    Debug.LogError($"Error processing preset file {file}: {ex.Message}");
+                }
+            }
+
+            foreach (var faction in _factions.Values)
+            {
+                faction.Presets ??= new List<Preset>();
+
+                var factionPresets = presets.Where(preset => preset.faction == faction.Id).ToList();
+                faction.Presets.AddRange(factionPresets);
+
+                Debug.Log($"Loaded {factionPresets.Count} presets for faction {faction.Name} (ID: {faction.Id})");
+            }
+        }
+        catch (System.Exception ex)
+        {
+            Debug.LogError($"Error loading faction presets: {ex.Message}");
         }
     }
 
