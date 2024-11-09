@@ -89,10 +89,11 @@ namespace ChobiAssets.PTM
         public void MuzzleFlashClientRpc()
         {
             Instantiate(MuzzleFire_Object, thisTransform.position, thisTransform.rotation, thisTransform);
+            GetComponentInParent<Recoil_Brake_CS>().Fire_Linkage(1);
         }
 
         [ServerRpc]
-        public void FireServerRpc(ulong callerID)
+        public void FireServerRpc()
         {
             // Generate the muzzle fire.
             if (MuzzleFire_Object)
@@ -113,7 +114,7 @@ namespace ChobiAssets.PTM
                         break;
                     }
                     bulletObject = Instantiate(AP_Bullet_Prefab, thisTransform.position + (thisTransform.forward * Offset), thisTransform.rotation);
-                   // bulletObject.GetComponent<NetworkObject>().Spawn();
+                    Spawn(bulletObject.GetComponent<NetworkObject>());
                    // if (bulletObject.GetComponent<NetworkObject>().IsNetworkVisibleTo(callerID)) Debug.Log("This object is visible to client: " + callerID);
 
                     attackPoint = Attack_Point;
@@ -126,43 +127,20 @@ namespace ChobiAssets.PTM
                         break;
                     }
                     bulletObject = Instantiate(HE_Bullet_Prefab, thisTransform.position + (thisTransform.forward * Offset), thisTransform.rotation);
-                   // bulletObject.GetComponent<NetworkObject>().Spawn();
+                   Spawn(bulletObject.GetComponent<NetworkObject>());
                     attackPoint = Attack_Point_HE;
                     break;
 
                 default:
                     break;
             }
-
-            Rigidbody rigidbody = bulletObject.GetComponent<Rigidbody>();
-            Vector3 currentVelocity = bulletObject.transform.forward * Current_Bullet_Velocity;
-            rigidbody.velocity = currentVelocity;
-            bulletObject.GetComponent<BulletScript>().AttackPoint = Attack_Point;
-
             Destroy(bulletObject, Life_Time);
-
-
-            /*
-            // Set values of "Bullet_Control_CS" in the bullet.
-            Bullet_Control_CS bulletScript = bulletObject.GetComponent<Bullet_Control_CS>();
-            bulletScript.Attack_Point = attackPoint;
-            bulletScript.Initial_Velocity = Current_Bullet_Velocity;
-            bulletScript.Life_Time = Life_Time;
-            bulletScript.Attack_Multiplier = Attack_Multiplier;
-            bulletScript.Debug_Flag = Debug_Flag;
-
-            // Set the tag.
-            bulletObject.tag = "Finish"; // (Note.) The ray cast for aiming does not hit any object with "Finish" tag.
-
-            // Set the layer.
-            bulletObject.layer = Layer_Settings_CS.Bullet_Layer;
-
-            // Shoot.
+            
             new WaitForFixedUpdate();
             Rigidbody rigidbody = bulletObject.GetComponent<Rigidbody>();
-            Vector3 currentVelocity = bulletObject.transform.forward * Current_Bullet_Velocity;
+            Vector3 currentVelocity = bulletObject.transform.forward * Initial_Velocity;
             rigidbody.velocity = currentVelocity;
-            */
+            
         }
 
 

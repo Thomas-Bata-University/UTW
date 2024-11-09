@@ -1,4 +1,6 @@
 using System;
+using System.Collections;
+using ChobiAssets.PTM;
 using FishNet;
 using FishNet.Connection;
 using UnityEngine;
@@ -8,6 +10,8 @@ public class GunnerController : PlayerController
 {
     private UTW.SceneManager sceneManager;
     private NetworkConnection conn;
+    [SerializeField] private GameObject gunCamera;
+    [SerializeField] private GameObject bulletGenerator;
     [SerializeField] private GameObject CannonBase;
 
     //Add comment to a script
@@ -25,9 +29,16 @@ public class GunnerController : PlayerController
 
     public float minElevation = -5f;
     public float maxElevation = 10f;
+    
+    public float Reload_Time = 2.0f;
+    public float Recoil_Force = 5000.0f;
 
     private float xRotation;
     private float yRotation;
+
+    private bool isInScope = false;
+    private float Loading_Count;
+    private bool Is_Loaded = true;
 
     protected override void Start()
     {
@@ -41,13 +52,22 @@ public class GunnerController : PlayerController
 
     private void Update()
     {
-        MouseLook(100f, 100f, 80f);
+        if(isInScope == false) MouseLook(100f, 100f, 80f);
         Move();
 
         if (Input.GetKeyDown(KeyCode.Escape))
         {
             Exit(conn, sceneManager);
         }
+        if (Input.GetKeyDown(KeyCode.V))
+        {
+            ChangeViewpoint();
+        }
+        if (Input.GetKeyDown(KeyCode.Space) && Is_Loaded)
+        {
+            Fire();
+        }
+        
     }
 
     protected override void Move()
@@ -67,4 +87,35 @@ public class GunnerController : PlayerController
             CannonBase.transform.Rotate(new Vector3(elevationDelta, 0,0 ));
         }
     }
+
+    protected void ChangeViewpoint()
+    {
+        isInScope = !isInScope;
+        gunCamera.SetActive(isInScope);
+        object2Rotate.SetActive(!isInScope);
+    }
+    
+    protected void Fire()
+    {
+        var bulletGeneratorScript = bulletGenerator.GetComponent<Bullet_Generator_CS>();
+        bulletGeneratorScript.FireServerRpc();
+        StartCoroutine(Reload());
+    }
+    
+    public IEnumerator Reload()
+    { // Called also from "Cannon_Fire_Input_##_###".
+        Is_Loaded = false;
+        Loading_Count = 0.0f;
+
+        while (Loading_Count < Reload_Time)
+        {
+            Loading_Count += Time.deltaTime;
+            yield return null;
+        }
+
+        Is_Loaded = true;
+        Loading_Count = Reload_Time;
+        
+    }
+    
 }
