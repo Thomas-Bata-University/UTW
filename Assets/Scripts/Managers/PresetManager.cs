@@ -1,6 +1,6 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using FishNet.Connection;
 using FishNet.Object;
 using UnityEngine;
@@ -42,18 +42,18 @@ public class PresetManager : NetworkBehaviour
     {
         Debug.Log($"Loading assets for player ID: {networkConnection.ClientId}");
 
-        var files = Directory.GetFiles(Application.streamingAssetsPath + "/Presets/", "*.json");
-        var presetList = files.Select(Deserialize).ToArray();
+        var player = GameManager.Instance.GetPlayerByConnection(networkConnection.ClientId);
+        if (player.Faction is null) return;
 
-        LoadPresetOnClient(networkConnection, presetList);
+        LoadPresetOnClient(networkConnection, player.Faction.Presets);
     }
 
-    //Call this to load all presets for faction to Database.
+    // Call this to load all presets for faction to Database.
     [ObserversRpc]
-    private void LoadPresetOnClient(NetworkConnection networkConnection, Preset[] presetList)
+    private void LoadPresetOnClient(NetworkConnection networkConnection, List<Preset> presetList)
     {
         if (!networkConnection.IsLocalClient) return;
-        assetDatabase.AddAll(presetList);
+        assetDatabase.AddAllPresets(presetList);
     }
 
     [Obsolete("Generate testing preset on server start")]

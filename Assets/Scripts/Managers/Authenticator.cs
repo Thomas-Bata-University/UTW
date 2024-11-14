@@ -102,16 +102,13 @@ public class Authenticator : HostAuthenticator
 
     private bool IsAlreadyConnected(PlayerData player)
     {
-        if (GameManager.Instance.GetPlayerByName(player.PlayerName).ClientConnectionId == -2)
-            return false;
-
-        return true;
+        return GameManager.Instance.GetPlayerByName(player.PlayerName).ClientConnectionId != ConnectionCodes.OFFLINE_CODE;
     }
 
     private bool UserHasRequiredHashes(List<string> hashes)
     {
-        HashSet<string> userHashes = new HashSet<string>(hashes);
-        HashSet<string> serverHashes = new HashSet<string>(Database.hashes);
+        var userHashes = new HashSet<string>(hashes);
+        var serverHashes = new HashSet<string>(Database.hashes);
 
         return userHashes.IsSupersetOf(serverHashes);
     }
