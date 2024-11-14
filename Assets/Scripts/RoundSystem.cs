@@ -1,100 +1,90 @@
+using System.Collections;
 using System.Collections.Generic;
+using ChobiAssets.PTM;
+using Factions;
+using FishNet;
 using FishNet.Connection;
 using FishNet.Object;
 using UnityEngine;
-using Random = UnityEngine.Random;
 
 public class RoundSystem : NetworkBehaviour
 {
-    public Transform[] spawnPoints;
-    public GameObject playerPrefab;
-    public GameObject OnGameEnd;
+    public GameObject onGameEnd;
+    public Animator winningScreenAnimator;
 
-    public int playersAlive;
-    
+    private Coroutine _gameEnding;
+    private Dictionary<Faction, int> _factions = new();
 
-    private List<Transform> remainingSpawnPoints;
-    //private List<ulong> loadingClients = new List<ulong>();
-/*
-    public override void OnNetworkSpawn()
-    {
-        
-        //if(IsServer)
-        {
-            foreach(NetworkClient networkClient in NetworkManager.Singleton.ConnectedClientsList)
-            {
-                loadingClients.Add(networkClient.ClientId);
-            }
-            remainingSpawnPoints = new List<Transform>(spawnPoints);
-        }
-        if(IsClient)
-        {
-            ClientIsReadyServerRpc();
-        }
-        
-    }
-    */
 
     public override void OnStartClient()
     {
         base.OnStartClient();
         Debug.Log("Called OnStartClient");
-        SpawnPlayer();
     }
 
-    /*
-    [ServerRpc(RequireOwnership = false)]
-        void ClientIsReadyServerRpc(ServerRpcParams serverRpcParams = default)
+    public void Awake()
+    {
+        if (InstanceFinder.IsServer)
         {
-            //if (!loadingClients.Contains(serverRpcParams.Receive.SenderClientId)) { return; }
-
-            SpawnPlayer(serverRpcParams.Receive.SenderClientId);
-            //loadingClients.Remove(serverRpcParams.Receive.SenderClientId);
+            UTW.SceneManager.OnClientJoinLobby += OnClientJoinLobby;
         }
-    */
-    /*
-    [ServerRpc(RequireOwnership = false)]
-    private void ClientIsReadyServerRpc()
-    {
-        Debug.Log("Called ClientIsReadyServerRpc");
-        SpawnPlayer(LocalConnection);
     }
-*/
-    [ServerRpc(RequireOwnership = false)]
-    private void SpawnPlayer(NetworkConnection netCon = null)
-    {
-        var spawnPointIndex = Random.Range(0, spawnPoints.Length);
-        var spawnPoint = spawnPoints[spawnPointIndex];
-        remainingSpawnPoints.RemoveAt(spawnPointIndex);
-        var playerInstance = Instantiate(playerPrefab, spawnPoint.position, spawnPoint.rotation);
-        //playerInstance.GetComponent<NetworkObject>().SpawnAsPlayerObject(clientId,  true);
-        Spawn(playerInstance, netCon);
-        Debug.Log("Player has been spawned");
 
-        playersAlive++;
+    private void OnClientJoinLobby(NetworkConnection conn)
+    {
+        if (InstanceFinder.IsServer)
+        {
+            Faction clientFaction = GetClientFaction(conn);
+
+            if (_factions.ContainsKey(clientFaction))
+            {
+                _factions[clientFaction]++;
+            }
+            else
+            {
+                _factions[clientFaction] = 1;
+            }
+
+            UTW.SceneManager.OnClientJoinLobby -= OnClientJoinLobby;
+        }
     }
 
     public void PlayerDied()
     {
-        playersAlive--;
-        if(playersAlive < 2)
+        Faction clientFaction = GetClientFaction(NetworkManager.ClientManager.LocalConnection);
+        if (InstanceFinder.IsServer)
         {
-            GameEndsClientRpc();
-            Debug.Log("Game ends!");
+            if (_factions.ContainsKey(clientFaction))
+            {
+                _factions[clientFaction]--;
+                if (_factions[clientFaction] == 0)
+                {
+                    _factions.Remove(clientFaction);
+                }
 
-            StartCoroutine("WaitBeforeEndRound");
+                if (_factions.Count == 1)
+                {
+                    _gameEnding = StartCoroutine(WaitBeforeEndRound());
+                }
+            }
         }
     }
+
+    private Faction GetClientFaction(NetworkConnection conn)
+    {
+        //return conn.clientFaction;
+    }
+
     [ObserversRpc]
     void GameEndsClientRpc()
     {
-        OnGameEnd.SetActive(true);
+        winningScreenAnimator
+        onGameEnd.SetActive(true);
     }
-/*
-    IEnumerator WaitBeforeEndRound()
+
+    private IEnumerator WaitBeforeEndRound()
     {
         yield return new WaitForSeconds(7);
-        ServerGameNetPortal.Instance.EndRound();
+        
     }
-    */
 }

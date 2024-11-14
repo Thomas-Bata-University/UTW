@@ -15,6 +15,8 @@ public class LobbyManager : NetworkBehaviour
     [SerializeField]
     private GameObject vehicleManagerPrefab;
 
+    
+    public static event Action OnServerStopped;
     private GameObject activeMap;
 
     private string activeSpawnpointKey; //Local client spawnpoint key
@@ -251,12 +253,12 @@ public class LobbyManager : NetworkBehaviour
 
     private void ClientJoin(NetworkConnection conn)
     {
-
+        
     }
 
     private void ClientDisconnect(NetworkConnection conn)
     {
-
+        
     }
     #endregion Server
 
@@ -364,6 +366,7 @@ public class LobbyManager : NetworkBehaviour
 
     private void OnDestroy()
     {
+        OnServerStopped?.Invoke();
         if (InstanceFinder.IsServer)
         {
             UTW.SceneManager.OnClientJoinLobby -= ClientJoin;
