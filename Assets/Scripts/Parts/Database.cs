@@ -2,12 +2,30 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Security.Cryptography;
+using FishNet.Managing;
+using FishNet.Object;
 using UnityEngine;
 
-public class Database : MonoBehaviour
-{
-    public List<GameObject> hulls;
-    public List<GameObject> turrets;
+public class Database : MonoBehaviour {
+
+    public NetworkManager networkManager;
+
+    [Serializable]
+    public struct Data {
+
+        public string key;
+        public GameObject prefab;
+
+        public Data(string key, GameObject prefab) {
+            this.key = key;
+            this.prefab = prefab;
+        }
+
+    }
+
+    //TODO Refactor to dictionary for better performance
+    public List<Data> hulls;
+    public List<Data> turrets;
     public List<Preset> presetList;
     public static List<string> hashes { get; private set; }
 
@@ -33,10 +51,14 @@ public class Database : MonoBehaviour
             }
 
             var assets = loadedBundle.LoadAllAssets<GameObject>();
-            foreach (var asset in assets)
-            {
-                if (asset.name.EndsWith("Hull")) hulls.Add(asset); //YIRO-TODO return MainBody
-                if (asset.name.EndsWith("Turret")) turrets.Add(asset);
+            foreach (var asset in assets) {
+                var data = new Data(asset.name, asset);
+                Debug.Log(asset.name);
+
+                if (asset.name.ToLower().EndsWith("hull")) hulls.Add(data);
+                if (asset.name.ToLower().EndsWith("turret")) turrets.Add(data);
+
+                networkManager.SpawnablePrefabs.AddObject(asset.GetComponent<NetworkObject>());
             }
         }
 
@@ -77,4 +99,17 @@ public class Database : MonoBehaviour
             this.presetList.Add(preset);
         }
     }
+
+    public GameObject FindHullByKey(string key) {
+        return FindByKey(hulls, key);
+    }
+
+    public GameObject FindTurretByKey(string key) {
+        return FindByKey(turrets, key);
+    }
+
+    private GameObject FindByKey(List<Data> list, string key) {
+        return list.Find(data => data.key.Equals(key)).prefab;
+    }
+
 }

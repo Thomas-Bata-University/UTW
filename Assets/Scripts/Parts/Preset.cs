@@ -1,5 +1,7 @@
 using System;
+using Enum;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 [Serializable]
 public class Preset
@@ -38,22 +40,23 @@ public class Preset
     public class TankData
     {
         public int key;
-        public string prefabName;
+        public string databaseKey;
         public string partName;
         public TankPositions tankPosition;
         public Vector3 partPosition;
+        public PartType partType;
 
-        public TankData()
-        {
+        public TankData() {
         }
 
-        public TankData(int key, string prefabName, string partName, TankPositions tankPosition, Vector3 partPosition)
+        public TankData(int key, string databaseKey, string partName, TankPositions tankPosition, Vector3 partPosition, PartType partType)
         {
             this.key = key;
-            this.prefabName = prefabName;
+            this.databaseKey = databaseKey;
             this.partName = partName;
             this.tankPosition = tankPosition;
             this.partPosition = partPosition;
+            this.partType = partType;
         }
     }
 
@@ -93,8 +96,8 @@ public class Preset
     public static Preset CreateDefaultPreset()
     {
         TankPart[] parts = new TankPart[] {
-            new TankPart(new TankData(1, "cannon", "cannon", TankPositions.GUNNER, new Vector3(0, -0.069f, 0.117f))),
-            new TankPart(new TankData(2, "visor", "visor", TankPositions.OBSERVER, new Vector3(0, -0.091f, 0.11f)))
+            new TankPart(new TankData(1, "TestTurret", "turret", TankPositions.GUNNER, new Vector3(0, -0.069f, 0.117f), PartType.TURRET)),
+            new TankPart(new TankData(2, "visor", "visor", TankPositions.OBSERVER, new Vector3(0, -0.091f, 0.11f), PartType.OTHER))
         };
 
         Preset preset = new Preset();
@@ -102,7 +105,7 @@ public class Preset
         preset.faction = 0;
         preset.color = 0;
         preset.tankName = "Default-tank";
-        preset.mainPart = new MainPart(new TankData(0, "hull", "main", TankPositions.DRIVER, Vector3.zero), parts);
+        preset.mainPart = new MainPart(new TankData(0, "TestHull", "main", TankPositions.DRIVER, Vector3.zero, PartType.HULL), parts);
 
         return preset;
     }
