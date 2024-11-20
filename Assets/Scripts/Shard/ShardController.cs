@@ -33,14 +33,11 @@ public class ShardController : MonoBehaviour
             "Select Faction",
             "Choose your faction to begin:",
             options,
-            (selectedValue) =>
+            selectedValue =>
             {
-                // TODO
-                // Pass only the Connection and the Faction
-                // We can use the GetPlayerByConnection inside of SetFactionForPlayer
                 GameManager.Instance.SetFactionForPlayer(
                     InstanceFinder.ClientManager.Connection,
-                    player, 
+                    player,
                     factions[options.IndexOf(selectedValue)]
                 );
             }

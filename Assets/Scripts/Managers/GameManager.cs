@@ -58,20 +58,18 @@ public sealed class GameManager : NetworkBehaviour
         }
     }
 
-    // TODO
-    // Refactor this shit
     [ServerRpc(RequireOwnership = false)]
     public void SetFactionForPlayer(NetworkConnection conn, PlayerData player, Faction faction)
     {
         _playersData[player.PlayerName].FactionId = faction.Id;
         AssignFactionToPlayer(_playersData[player.PlayerName]);
-        
+
         UpdateDictionary(_playersData[player.PlayerName].PlayerName);
-        
+
         CreatePlayerData(player.PlayerName, faction.Id);
         FindObjectOfType<PresetManager>().LoadPresetOnClient(conn, _playersData[player.PlayerName].Faction.Presets);
     }
-    
+
     [TargetRpc]
     public void ClearPresetsForClient(NetworkConnection conn)
     {
@@ -82,14 +80,6 @@ public sealed class GameManager : NetworkBehaviour
     public void UpdateDictionary(string name)
     {
         _playersData.Dirty(name);
-
-        // TODO
-        // Remove this log
-        Debug.Log("Player list");
-        foreach (var p in _playersData)
-        {
-            Debug.Log($"{p.Value.ClientConnectionId}, {p.Value.PlayerName}");
-        }
     }
 
     [Server]
@@ -202,26 +192,6 @@ public sealed class GameManager : NetworkBehaviour
         _playersData.Values.First(playerData => playerData.PlayerName.Equals(clientName));
 
     public List<Faction> GetAllFactions() => _factions.Values.ToList();
-
-    public Faction GetFactionForConnection(int clientId)
-    {
-        try
-        {
-            var playerData = GetPlayerByConnection(clientId);
-
-            if (playerData != null && playerData.Faction != null)
-            {
-                return playerData.Faction;
-            }
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine(e);
-            throw;
-        }
-
-        return null;
-    }
 
     public Faction GetFactionById(int id) => _factions[id];
 

@@ -74,9 +74,6 @@ public class Database : MonoBehaviour
     {
         foreach (var preset in presets)
         {
-            // TODO
-            // Remove this log
-            Debug.Log(preset.presetName);
             presetList.Add(preset);
         }
     }
