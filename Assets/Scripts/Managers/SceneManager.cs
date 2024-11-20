@@ -259,7 +259,9 @@ namespace UTW
         [ServerRpc(RequireOwnership = false)]
         public void DisconnectFromShard(NetworkConnection conn)
         {
-            conn.Disconnect(true);
+            GameManager.Instance.ClearPresetsForClient(conn);
+            
+            conn.Disconnect(false);
         }
 
         [ServerRpc(RequireOwnership = false)]

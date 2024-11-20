@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using FishNet.Object;
@@ -22,6 +23,13 @@ public sealed class GameManager : NetworkBehaviour
             Instance = this;
         else
             Destroy(this);
+    }
+
+    public override void OnStartServer()
+    {
+        base.OnStartServer();
+
+        if (!IsServer) return;
 
         LoadFactionsFromJson();
         LoadFactionPresets();
@@ -38,27 +46,34 @@ public sealed class GameManager : NetworkBehaviour
 
             try
             {
-                PlayerData p = GetPlayerByConnection(conn.ClientId);
+                var p = GetPlayerByConnection(conn.ClientId);
                 p.ClientConnectionId = ConnectionCodes.OFFLINE_CODE;
-                // ClearPresetsForClient(conn);
 
                 UpdateDictionary(p.PlayerName);
             }
-            catch (System.Exception)
+            catch (Exception)
             {
                 Debug.LogWarning("Couldn't find a matching connection.");
             }
         }
     }
 
-    // TODO
-    // This will work once we catch the disconnecting player while he's still on the server
-    // As of now this will be called once he's already disconnected which is "k prdu"
+    [ServerRpc(RequireOwnership = false)]
+    public void SetFactionForPlayer(NetworkConnection conn, PlayerData player, Faction faction)
+    {
+        _playersData[player.PlayerName].FactionId = faction.Id;
+        AssignFactionToPlayer(_playersData[player.PlayerName]);
+
+        UpdateDictionary(_playersData[player.PlayerName].PlayerName);
+
+        CreatePlayerData(player.PlayerName, faction.Id);
+        FindObjectOfType<PresetManager>().LoadPresetOnClient(conn, _playersData[player.PlayerName].Faction.Presets);
+    }
+
     [TargetRpc]
-    private void ClearPresetsForClient(NetworkConnection conn)
+    public void ClearPresetsForClient(NetworkConnection conn)
     {
         FindObjectOfType<Database>().RemoveAllPresets();
-        Debug.Log("Clearing presets!");
     }
 
     [Server]
@@ -67,6 +82,7 @@ public sealed class GameManager : NetworkBehaviour
         _playersData.Dirty(name);
     }
 
+    [Server]
     private void LoadUsers()
     {
         var files = Directory.GetFiles(Application.streamingAssetsPath + "/Users/", "*.json");
@@ -82,6 +98,7 @@ public sealed class GameManager : NetworkBehaviour
         }
     }
 
+    [Server]
     public PlayerData CreateOrSelectPlayer(string playerName)
     {
         if (_playersData.TryGetValue(playerName, out var existingPlayerData))
@@ -94,9 +111,10 @@ public sealed class GameManager : NetworkBehaviour
         return data;
     }
 
-    private PlayerData CreatePlayerData(string playerName)
+    [Server]
+    private PlayerData CreatePlayerData(string playerName, int factionId = 0)
     {
-        var player = new PlayerData(playerName, 1);
+        var player = new PlayerData(playerName, factionId);
         var json = JsonUtility.ToJson(player);
         var writer = new StreamWriter(Application.streamingAssetsPath + "/Users/" + $"/{player.PlayerName}.json");
         writer.Write(json);
@@ -104,6 +122,7 @@ public sealed class GameManager : NetworkBehaviour
         return player;
     }
 
+    [Server]
     private void LoadFactionsFromJson()
     {
         var files = Directory.GetFiles(Application.streamingAssetsPath + "/Factions/", "*.json");
@@ -117,6 +136,7 @@ public sealed class GameManager : NetworkBehaviour
         }
     }
 
+    [Server]
     private void LoadFactionPresets()
     {
         try
@@ -136,7 +156,7 @@ public sealed class GameManager : NetworkBehaviour
                     else
                         Debug.LogWarning($"Failed to deserialize preset from file: {file}");
                 }
-                catch (System.Exception ex)
+                catch (Exception ex)
                 {
                     Debug.LogError($"Error processing preset file {file}: {ex.Message}");
                 }
@@ -152,14 +172,18 @@ public sealed class GameManager : NetworkBehaviour
                 Debug.Log($"Loaded {factionPresets.Count} presets for faction {faction.Name} (ID: {faction.Id})");
             }
         }
-        catch (System.Exception ex)
+        catch (Exception ex)
         {
             Debug.LogError($"Error loading faction presets: {ex.Message}");
         }
     }
 
-    private void AssignFactionToPlayer(PlayerData player) =>
+    [Server]
+    private void AssignFactionToPlayer(PlayerData player)
+    {
+        if (player.FactionId == 0) return;
         _playersData[player.PlayerName].Faction = _factions[player.FactionId];
+    }
 
     public PlayerData GetPlayerByConnection(int clientId) =>
         _playersData.Values.First(playerData => playerData.ClientConnectionId.Equals(clientId));
@@ -170,7 +194,9 @@ public sealed class GameManager : NetworkBehaviour
     public PlayerData GetPlayerByName(string clientName) =>
         _playersData.Values.First(playerData => playerData.PlayerName.Equals(clientName));
 
-    public Faction GetFactionById(int guid) => _factions[guid];
+    public List<Faction> GetAllFactions() => _factions.Values.ToList();
+
+    public Faction GetFactionById(int id) => _factions[id];
 
     public Faction GetFactionByName(string factionName) =>
         _factions.FirstOrDefault(part => part.Value.Name.Equals(factionName)).Value;

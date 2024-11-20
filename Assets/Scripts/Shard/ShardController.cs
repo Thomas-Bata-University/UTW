@@ -1,6 +1,7 @@
 using FishNet;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -8,15 +9,39 @@ using UnityEngine.UI;
 
 public class ShardController : MonoBehaviour
 {
-    [Header("UI")]
-    public Button buttonPrefab;
+    [Header("UI")] public Button buttonPrefab;
     public GridLayoutGroup layoutGroup;
     public TextMeshProUGUI statusText;
 
+    [SerializeField] private PopupWindow popup;
+
     private void Start()
     {
+        var player = GameManager.Instance.GetPlayerByConnection(InstanceFinder.ClientManager.Connection.ClientId);
+        if (player.Faction == null) ChooseFaction(player);
+
         ChangeStatusText("Refreshing...");
         StartCoroutine(LateStart());
+    }
+
+    private void ChooseFaction(PlayerData player)
+    {
+        var factions = GameManager.Instance.GetAllFactions();
+        var options = factions.Select(faction => faction.Name).ToList();
+
+        popup.Show(
+            "Select Faction",
+            "Choose your faction to begin:",
+            options,
+            selectedValue =>
+            {
+                GameManager.Instance.SetFactionForPlayer(
+                    InstanceFinder.ClientManager.Connection,
+                    player,
+                    factions[options.IndexOf(selectedValue)]
+                );
+            }
+        );
     }
 
     //TODO add timer for client to prevent lobby creation

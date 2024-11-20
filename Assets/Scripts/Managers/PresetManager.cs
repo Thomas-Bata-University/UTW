@@ -49,8 +49,8 @@ public class PresetManager : NetworkBehaviour
     }
 
     // Call this to load all presets for faction to Database.
-    [ObserversRpc]
-    private void LoadPresetOnClient(NetworkConnection networkConnection, List<Preset> presetList)
+    [TargetRpc]
+    public void LoadPresetOnClient(NetworkConnection networkConnection, List<Preset> presetList)
     {
         if (!networkConnection.IsLocalClient) return;
         assetDatabase.AddAllPresets(presetList);
