@@ -163,6 +163,9 @@ public sealed class GameManager : NetworkBehaviour
 
     public PlayerData GetPlayerByConnection(int clientId) =>
         _playersData.Values.First(playerData => playerData.ClientConnectionId.Equals(clientId));
+    
+    public Faction GetFactionByConnection(NetworkConnection conn) =>
+        _playersData.Values.First(playerData => playerData.ClientConnectionId.Equals(conn.ClientId)).Faction;
 
     public PlayerData GetPlayerByName(string clientName) =>
         _playersData.Values.First(playerData => playerData.PlayerName.Equals(clientName));

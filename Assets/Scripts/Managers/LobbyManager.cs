@@ -253,7 +253,7 @@ public class LobbyManager : NetworkBehaviour
 
     private void ClientJoin(NetworkConnection conn)
     {
-        
+        Debug.Log("Client is in the lobby and ready to join the game.");
     }
 
     private void ClientDisconnect(NetworkConnection conn)

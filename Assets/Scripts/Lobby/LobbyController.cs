@@ -3,6 +3,7 @@ using FishNet.Connection;
 using FishNet.Managing.Scened;
 using System.Collections;
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 using static UnityEngine.UI.Button;
@@ -99,6 +100,7 @@ public class LobbyController : MonoBehaviour
     public void DisconnectFromLobby()
     {
         FindObjectOfType<LobbyManager>().LeaveSpawnpoint(conn);
+        FindObjectOfType<RoundSystem>().OnClientDisconnectFromLobby(conn);
         sceneManager.Disconnect(conn);
     }
 

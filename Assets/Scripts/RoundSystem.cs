@@ -1,26 +1,25 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
-using ChobiAssets.PTM;
 using Factions;
 using FishNet;
 using FishNet.Connection;
 using FishNet.Object;
+using TMPro;
 using UnityEngine;
 
 public class RoundSystem : NetworkBehaviour
 {
-    public GameObject onGameEnd;
-    public Animator winningScreenAnimator;
-
+    public GameObject deathScreen;
+    public GameObject winningScreen;
+    
     private Coroutine _gameEnding;
-    private Dictionary<Faction, int> _factions = new();
-
-
-    public override void OnStartClient()
-    {
-        base.OnStartClient();
-        Debug.Log("Called OnStartClient");
-    }
+    private Coroutine _playerDisconnecting;
+    public Dictionary<int, int> _playerParties = new();
+    
+    public TMP_Text _waitForEndText;
+    public TMP_Text _waitForWinText;
+    [SerializeField] private float remainingTime;
 
     public void Awake()
     {
@@ -30,61 +29,134 @@ public class RoundSystem : NetworkBehaviour
         }
     }
 
+    private void Update()
+    {
+        if (remainingTime > 0)
+        {
+            remainingTime -= Time.deltaTime;
+        }
+        else
+        {
+            remainingTime = 0;
+        }
+        int minutes = Mathf.FloorToInt(remainingTime / 60F);
+        int seconds = Mathf.FloorToInt(remainingTime - minutes * 60);
+        _waitForWinText.text = "Game will end in:" + string.Format("{0:0}:{1:00}", minutes, seconds);
+        _waitForEndText.text = "You will be returned to Main manu in:" + string.Format("{0:0}:{1:00}", minutes, seconds);
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    public void OnClientDisconnectFromLobby(NetworkConnection conn)
+    {
+        OnClientDisconnectLobby(conn);
+    }
+    public void OnClientDisconnectLobby(NetworkConnection conn)
+    {
+        if (InstanceFinder.IsServer)
+        {
+            Faction clientFaction = GameManager.Instance.GetFactionByConnection(conn);
+            if (_playerParties.ContainsKey(clientFaction.Id))
+            {
+                _playerParties[clientFaction.Id]--;
+                Debug.Log("Player parties count: " + _playerParties.Count);
+                if (_playerParties[clientFaction.Id] == 0)
+                {
+                    _playerParties.Remove(clientFaction.Id);
+                    Debug.Log("Player party removed from playerParties");
+                }
+            }
+            else
+            {
+                Debug.Log("Player not found in playerParties");
+            }
+        }
+    }
+
     private void OnClientJoinLobby(NetworkConnection conn)
     {
         if (InstanceFinder.IsServer)
         {
-            Faction clientFaction = GetClientFaction(conn);
-
-            if (_factions.ContainsKey(clientFaction))
+            Faction clientFaction = GameManager.Instance.GetFactionByConnection(conn);
+            if (_playerParties.ContainsKey(clientFaction.Id))
             {
-                _factions[clientFaction]++;
+                _playerParties[clientFaction.Id]++;
+                Debug.Log("Player found in playerParties");
             }
             else
             {
-                _factions[clientFaction] = 1;
+                _playerParties[clientFaction.Id] = 1;
+                Debug.Log("Player not found in playerParties and making new party");
             }
-
-            UTW.SceneManager.OnClientJoinLobby -= OnClientJoinLobby;
         }
     }
-
-    public void PlayerDied()
+    
+    public void OnTankDestroyed(NetworkConnection conn)
     {
-        Faction clientFaction = GetClientFaction(NetworkManager.ClientManager.LocalConnection);
+        Faction clientFaction = GameManager.Instance.GetFactionByConnection(conn);
         if (InstanceFinder.IsServer)
         {
-            if (_factions.ContainsKey(clientFaction))
+            if (_playerParties.ContainsKey(clientFaction.Id))
             {
-                _factions[clientFaction]--;
-                if (_factions[clientFaction] == 0)
+                _playerParties[clientFaction.Id]--;
+                _playerDisconnecting = StartCoroutine(WaitBeforeDisconnectPlayer(conn));
+                if (_playerParties[clientFaction.Id] == 0)
                 {
-                    _factions.Remove(clientFaction);
+                    _playerParties.Remove(clientFaction.Id);
+                    Debug.Log("Player party removed from playerParties");
                 }
-
-                if (_factions.Count == 1)
+                if (_playerParties.Count == 1)
                 {
+                    Debug.Log("Game ending");
                     _gameEnding = StartCoroutine(WaitBeforeEndRound());
+                }
+                else
+                {
+                    Debug.Log("Player cannot be removed from playerParties and or player party cannot be removed from playerParties");
                 }
             }
         }
     }
 
-    private Faction GetClientFaction(NetworkConnection conn)
+    [ServerRpc(RequireOwnership = false)]
+
+    public void OnTankDestroyed(NetworkConnection[] conns)
     {
-        //return conn.clientFaction;
+        foreach (var conn in conns)
+        {
+            OnTankDestroyed(conn);
+        }
     }
 
     [ObserversRpc]
     void GameEndsClientRpc()
     {
-        winningScreenAnimator
-        onGameEnd.SetActive(true);
+        UTW.SceneManager.Instance.Disconnect(LocalConnection);
+    }
+    
+    [TargetRpc]
+    void DisconnectDeadPleayer(NetworkConnection conn)
+    {
+        UTW.SceneManager.Instance.Disconnect(conn);
     }
 
+    private IEnumerator WaitBeforeDisconnectPlayer(NetworkConnection conn)
+    {
+        deathScreen.SetActive(true);
+        yield return new WaitForSeconds(5);
+        DisconnectDeadPleayer(conn);
+    }
     private IEnumerator WaitBeforeEndRound()
     {
-        yield return new WaitForSeconds(7);
-        
+        winningScreen.SetActive(true);
+        yield return new WaitForSeconds(5);
+        GameEndsClientRpc();
+    }
+    
+    public void OnDestroy()
+    {
+        if (InstanceFinder.IsServer)
+        {
+            UTW.SceneManager.OnClientJoinLobby -= OnClientJoinLobby;
+        }
     }
 }
