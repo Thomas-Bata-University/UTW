@@ -1,6 +1,6 @@
-﻿using UnityEngine;
-using System.Collections;
+﻿using System.Collections;
 using FishNet.Object;
+using UnityEngine;
 
 namespace ChobiAssets.PTM
 {
@@ -177,17 +177,35 @@ namespace ChobiAssets.PTM
             return new AnimationCurve(key1, key2);
         }
 
+        [ServerRpc(RequireOwnership = false)]
+        private void Sync(float vertical, float horizontal) {
+            SyncClient(vertical, horizontal);
+        }
+
+        [ObserversRpc]
+        private void SyncClient(float vertical, float horizontal) {
+            if (IsOwner || inputScript is null) return;
+            inputScript.vertical = vertical;
+            inputScript.horizontal = horizontal;
+        }
 
         void Update()
         {
+            inputScript.Drive_Input(IsOwner && isSelected);
+
             if (isSelected || inputType == 10)
             { // The tank is selected, or AI.
-                inputScript.Drive_Input();
+                // inputScript.Drive_Input(IsOwner);
+            }
+
+            if (IsClient) {
+                Sync(inputScript.vertical, inputScript.horizontal);
             }
 
             // Set the driving values, such as speed rate, brake drag and torque.
             Set_Driving_Values();
         }
+
 
 
         void FixedUpdate()
@@ -565,7 +583,7 @@ namespace ChobiAssets.PTM
         }
 
 
-        void Selected(bool isSelected)
+        public void Selected(bool isSelected)
         { // Called from "ID_Settings_CS".
             this.isSelected = isSelected;
 

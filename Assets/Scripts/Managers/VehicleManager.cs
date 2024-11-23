@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using ChobiAssets.PTM;
 using Enum;
 using FishNet.Connection;
 using FishNet.Object;
@@ -406,8 +407,10 @@ public class VehicleManager : NetworkBehaviour
     {
         tankPart.GetComponentInChildren<Camera>().enabled = active;
         tankPart.GetComponentInChildren<AudioListener>().enabled = active;
-        tankPart.GetComponent<PlayerController>().enabled = active;
+        // tankPart.GetComponent<PlayerController>().enabled = active;
+        tankPart.GetComponentInChildren<Drive_Control_CS>().Selected(true);
         GetComponent<ControlSwitch>().enabled = active;
+        tankPart.GetComponent<SoundControl>().EnableSound();
     }
     #endregion Client-Tank
     #endregion Tank

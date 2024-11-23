@@ -6,15 +6,12 @@ namespace ChobiAssets.PTM
     public class Drive_Control_Input_01_Keyboard_Stepwise_CS : Drive_Control_Input_00_Base_CS
     {
 
-        protected float vertical;
-        protected float horizontal;
-
         protected float brakingTime = 0.25f;
         protected int reverseStepCount = 2;
         protected int forwardStepCount = 4;
 
 
-        public override void Drive_Input()
+        public override void Drive_Input(bool isOwner)
         {
             // Set "vertical".
             if (Input.GetKeyDown(General_Settings_CS.Drive_Up_Key) && speedStep < forwardStepCount)
