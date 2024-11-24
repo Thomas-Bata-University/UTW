@@ -52,7 +52,7 @@ namespace ChobiAssets.PTM
             thisAudioSource.playOnAwake = false;
             thisAudioSource.loop = true;
             thisAudioSource.volume = 0.0f;
-            thisAudioSource.Play();
+            // thisAudioSource.Play(); Moved to SoundControl script
 
             // Find the reference rigidbodies.
             Transform bodyTransform = transform.parent;

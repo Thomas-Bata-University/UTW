@@ -19,7 +19,7 @@ public class HullDropdown : MonoBehaviour
             else Debug.Log("There are hulls!");
             foreach (var hull in dbComponent.hulls)
             {
-                dropdown.options.Add(new Dropdown.OptionData() { text = hull.name });
+                dropdown.options.Add(new Dropdown.OptionData() { text = hull.prefab.name });
             }
         }
     }

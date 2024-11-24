@@ -1,6 +1,7 @@
-﻿using UnityEngine;
-using System.Collections;
+﻿using System.Collections;
 using FishNet.Object;
+using UnityEngine;
+using Vector2 = System.Numerics.Vector2;
 
 namespace ChobiAssets.PTM
 {
@@ -89,6 +90,9 @@ namespace ChobiAssets.PTM
 
         protected Drive_Control_Input_00_Base_CS inputScript;
 
+        public Static_Wheel_Parent_CS sprocketWheel;
+        public Static_Wheel_Parent_CS idlerWheel;
+
 
         void Start()
         {
@@ -134,7 +138,10 @@ namespace ChobiAssets.PTM
             if (inputScript != null)
             {
                 inputScript.Prepare(this);
-            }           
+            }
+
+            sprocketWheel.isOwner = IsOwner;
+            idlerWheel.isOwner = IsOwner;
         }
 
 
@@ -177,17 +184,43 @@ namespace ChobiAssets.PTM
             return new AnimationCurve(key1, key2);
         }
 
+        [ServerRpc(RequireOwnership = false)]
+        private void Sync(float vertical, float horizontal, Vector2 sprocket, Vector2 idler) {
+            SyncClient(vertical, horizontal, sprocket, idler);
+        }
+
+        [ObserversRpc]
+        private void SyncClient(float vertical, float horizontal, Vector2 sprocket, Vector2 idler) {
+            if (IsOwner || inputScript is null) return;
+            inputScript.vertical = vertical;
+            inputScript.horizontal = horizontal;
+
+            sprocketWheel.Left_Angle_Y = sprocket.X;
+            sprocketWheel.Right_Angle_Y = sprocket.Y;
+            idlerWheel.Left_Angle_Y = idler.X;
+            idlerWheel.Right_Angle_Y = idler.Y;
+        }
 
         void Update()
         {
+            inputScript.Drive_Input(IsOwner && isSelected);
+
             if (isSelected || inputType == 10)
             { // The tank is selected, or AI.
-                inputScript.Drive_Input();
+                // inputScript.Drive_Input(IsOwner);
+            }
+
+            if (IsClient) {
+                Vector2 sprocket = new Vector2(sprocketWheel.Left_Angle_Y, sprocketWheel.Right_Angle_Y);
+                Vector2 idler = new Vector2(idlerWheel.Left_Angle_Y, idlerWheel.Right_Angle_Y);
+
+                Sync(inputScript.vertical, inputScript.horizontal, sprocket, idler);
             }
 
             // Set the driving values, such as speed rate, brake drag and torque.
             Set_Driving_Values();
         }
+
 
 
         void FixedUpdate()
@@ -565,7 +598,7 @@ namespace ChobiAssets.PTM
         }
 
 
-        void Selected(bool isSelected)
+        public void Selected(bool isSelected)
         { // Called from "ID_Settings_CS".
             this.isSelected = isSelected;
 
