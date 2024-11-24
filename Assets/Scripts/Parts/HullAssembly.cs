@@ -27,8 +27,8 @@ public class HullAssembly : NetworkBehaviour {
     private void AssemblyServerRpc(string hull, string turret, NetworkConnection netCon = null) {
         Database dbComponent = (Database)_assetDb.GetComponent(typeof(Database));
 
-        hullPrefab = dbComponent.hulls.Find(x => x.name == hull);
-        turretPrefab = dbComponent.turrets.Find(x => x.name == turret);
+        hullPrefab = dbComponent.hulls.Find(x => x.prefab.name == hull).prefab;
+        turretPrefab = dbComponent.turrets.Find(x => x.prefab.name == turret).prefab;
 
         GameObject hullInst = Instantiate(hullPrefab, transform.position, Quaternion.identity);
         Spawn(hullInst, netCon);

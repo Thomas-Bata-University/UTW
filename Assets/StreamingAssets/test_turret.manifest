@@ -1,0 +1,60 @@
+ManifestFileVersion: 0
+CRC: 3582708865
+Hashes:
+  AssetFileHash:
+    serializedVersion: 2
+    Hash: 2d9e30559db06d9917354b2a65031459
+  TypeTreeHash:
+    serializedVersion: 2
+    Hash: c8935bac664f90c10f055200e29fe9c1
+  IncrementalBuildHash:
+    serializedVersion: 2
+    Hash: 2d9e30559db06d9917354b2a65031459
+HashAppended: 0
+ClassTypes:
+- Class: 1
+  Script: {instanceID: 0}
+- Class: 4
+  Script: {instanceID: 0}
+- Class: 20
+  Script: {instanceID: 0}
+- Class: 21
+  Script: {instanceID: 0}
+- Class: 23
+  Script: {instanceID: 0}
+- Class: 28
+  Script: {instanceID: 0}
+- Class: 33
+  Script: {instanceID: 0}
+- Class: 43
+  Script: {instanceID: 0}
+- Class: 48
+  Script: {instanceID: 0}
+- Class: 65
+  Script: {instanceID: 0}
+- Class: 81
+  Script: {instanceID: 0}
+- Class: 114
+  Script: {fileID: 11500000, guid: 44b37783e7c4a8e4983a236458a16f95, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: a2836e36774ca1c4bbbee976e17b649c, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: 402926ef33e0a894d9fec352693988ac, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: 26b716c41e9b56b4baafaf13a523ba2e, type: 3}
+- Class: 115
+  Script: {instanceID: 0}
+SerializeReferenceClassIdentifiers:
+- AssemblyName: FishNet.Runtime
+  ClassName: FishNet.Component.Prediction.PredictedObject/SmoothingData
+- AssemblyName: FishNet.Runtime
+  ClassName: FishNet.Component.Transforming.NetworkTransform/ComponentConfigurationType
+- AssemblyName: FishNet.Runtime
+  ClassName: FishNet.Component.Transforming.NetworkTransform/SnappedAxes
+- AssemblyName: FishNet.Runtime
+  ClassName: FishNet.Object.TransformProperties
+- AssemblyName: FishNet.Runtime
+  ClassName: FishNet.Serializing.TransformPackingData
+Assets:
+- Assets/Prefabs/Tank/TestTurret.prefab
+Dependencies: []
