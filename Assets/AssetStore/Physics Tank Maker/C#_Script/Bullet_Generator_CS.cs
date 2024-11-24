@@ -92,7 +92,7 @@ namespace ChobiAssets.PTM
             GetComponentInParent<Recoil_Brake_CS>().Fire_Linkage(1);
         }
 
-        [ServerRpc]
+        [ServerRpc(RequireOwnership = false)]
         public void FireServerRpc()
         {
             // Generate the muzzle fire.

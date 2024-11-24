@@ -146,6 +146,8 @@ MonoBehaviour:
   leftMaxRotation: -180
   minElevation: -5
   maxElevation: 10
+  Reload_Time: 2
+  Recoil_Force: 5000
 --- !u!114 &3519839588854693469
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -407,7 +409,7 @@ MonoBehaviour:
   _componentIndexCache: 4
   _addedNetworkObject: {fileID: 1508802721123024897}
   _networkObjectCache: {fileID: 1508802721123024897}
-  AP_Bullet_Prefab: {fileID: 4374635635861981319, guid: c7e8a6139b5f1f44daa1eee3fe813b13, type: 3}
+  AP_Bullet_Prefab: {fileID: 1198614396222948, guid: 69b0613e8e606f043b60b5b5ebc17057, type: 3}
   HE_Bullet_Prefab: {fileID: 1198614396222948, guid: 21f85d6b6a2eb484ab44d360c9223fc6, type: 3}
   MuzzleFire_Object: {fileID: 100002, guid: 2cad716b060ca0c41989ce09cba4d956, type: 3}
   Attack_Point: 500

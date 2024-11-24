@@ -36,7 +36,7 @@ public class GunnerController : PlayerController
     private float xRotation;
     private float yRotation;
 
-    private bool isInScope = false;
+    public bool isInScope = false;
     private float Loading_Count;
     private bool Is_Loaded = true;
 
