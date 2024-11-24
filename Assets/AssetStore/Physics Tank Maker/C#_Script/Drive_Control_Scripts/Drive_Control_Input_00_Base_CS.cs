@@ -9,6 +9,8 @@ namespace ChobiAssets.PTM
 		protected Drive_Control_CS controlScript;
 
         protected int speedStep;
+        public float vertical;
+        public float horizontal;
 
 
         public virtual void Prepare(Drive_Control_CS controlScript)
@@ -17,7 +19,7 @@ namespace ChobiAssets.PTM
 		}
 
 
-		public virtual void Drive_Input()
+		public virtual void Drive_Input(bool isOwner)
 		{
 		}
 

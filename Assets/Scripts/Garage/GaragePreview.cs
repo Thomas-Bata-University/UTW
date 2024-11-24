@@ -21,7 +21,7 @@ public class GaragePreview : NetworkBehaviour {
         assetDatabase = FindObjectOfType<Database>();
         presetManager = FindObjectOfType<PresetManager>();
 
-        Preview(assetDatabase.hulls[0], assetDatabase.turrets[0]);
+        Preview(assetDatabase.hulls[0].prefab, assetDatabase.turrets[0].prefab);
     }
 
     public void Preview(GameObject hull, GameObject turret) {
@@ -53,8 +53,8 @@ public class GaragePreview : NetworkBehaviour {
 
     }
     public void Preview() {
-        GameObject selectedHull = assetDatabase.hulls.Find(x => x.name == hullDropdown.options[hullDropdown.value].text);
-        GameObject selectedTurret = assetDatabase.turrets.Find(x => x.name == turretDropdown.options[turretDropdown.value].text);
+        GameObject selectedHull = assetDatabase.hulls.Find(x => x.prefab.name == hullDropdown.options[hullDropdown.value].text).prefab;
+        GameObject selectedTurret = assetDatabase.turrets.Find(x => x.prefab.name == turretDropdown.options[turretDropdown.value].text).prefab;
         Preview(selectedHull, selectedTurret);
     }
 

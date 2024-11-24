@@ -42,6 +42,9 @@ namespace ChobiAssets.PTM
         SerializedProperty Support_TurningProp;
         SerializedProperty Support_Turning_ForceProp;
 
+        SerializedProperty sprocketWheelProp;
+        SerializedProperty idlerWheelProp;
+
 
 
         void OnEnable()
@@ -79,6 +82,9 @@ namespace ChobiAssets.PTM
 
             Support_TurningProp = serializedObject.FindProperty("Support_Turning");
             Support_Turning_ForceProp = serializedObject.FindProperty("Support_Turning_Force");
+
+            sprocketWheelProp = serializedObject.FindProperty("sprocketWheel");
+            idlerWheelProp = serializedObject.FindProperty("idlerWheel");
         }
 
 
@@ -174,7 +180,8 @@ namespace ChobiAssets.PTM
             EditorGUILayout.Space();
             EditorGUILayout.Space();
 
-
+            EditorGUILayout.PropertyField(sprocketWheelProp, new GUIContent("Sprocket script"));
+            EditorGUILayout.PropertyField(idlerWheelProp, new GUIContent("Idler script"));
 
             serializedObject.ApplyModifiedProperties();
         }

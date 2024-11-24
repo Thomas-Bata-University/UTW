@@ -1,9 +1,11 @@
-using FishNet.Connection;
-using FishNet.Object;
-using FishNet.Object.Synchronizing;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using ChobiAssets.PTM;
+using Enum;
+using FishNet.Connection;
+using FishNet.Object;
+using FishNet.Object.Synchronizing;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -15,8 +17,6 @@ public class VehicleManager : NetworkBehaviour
     public GameObject crewInfoPrefab;
 
     [Header("Tank")]
-    public GameObject tankPrefab;
-    public GameObject cannonPrefab;
     public GameObject visorPrefab;
     [SyncVar] private GameObject actualTank;
     [SyncVar, HideInInspector] public string tankName;
@@ -24,8 +24,7 @@ public class VehicleManager : NetworkBehaviour
     private NetworkObject networkObject;
     [SyncVar] private Vector3 spawnpointPosition;
 
-    [HideInInspector]
-    public LobbyManager lobbyManager;
+    private Database _assetDatabase;
 
     [Header("Crew")]
     //KEY - index | VALUE - CrewData
@@ -37,6 +36,8 @@ public class VehicleManager : NetworkBehaviour
     {
         PresetDropdown.OnPresetChange += ChangePreset; //Client side - use this after joining crew
         UTW.SceneManager.OnClientDisconnectLobby += Destroy;
+
+        _assetDatabase = FindObjectOfType<Database>();
     }
 
     #region Crew
@@ -288,7 +289,7 @@ public class VehicleManager : NetworkBehaviour
                 return pair;
             }
         }
-        throw new System.Exception("Player position not found.");
+        throw new Exception("Player position not found.");
     }
     #endregion Client-Crew
     #endregion Crew
@@ -313,8 +314,9 @@ public class VehicleManager : NetworkBehaviour
         BuildTank(preset, actualTank);
     }
 
-    private void SpawnTankParts(MainPart mainPart)
-    {
+    private void SpawnTankParts(MainPart mainPart) {
+        Debug.Log($"Spawning part {mainPart.mainData.partName}");
+        GameObject tankPrefab = _assetDatabase.FindHullByKey(mainPart.mainData.databaseKey);
         actualTank = Instantiate(tankPrefab, spawnpointPosition, Quaternion.identity);
         NetworkObject tankNo = actualTank.GetComponent<NetworkObject>();
         actualTank.name = mainPart.mainData.partName;
@@ -329,7 +331,7 @@ public class VehicleManager : NetworkBehaviour
         {
             TankData data = part.partData;
             Debug.Log($"Spawning part {data.partName}");
-            GameObject tankPart = Instantiate(SelectPrefab(data.prefabName), data.partPosition + transform.position, Quaternion.identity, actualTank.transform); //TODO select prefab
+            GameObject tankPart = Instantiate(SelectPrefab(data), data.partPosition + transform.position, Quaternion.identity, actualTank.transform);
             tankPart.name = data.partName;
             NetworkObject partNo = tankPart.GetComponent<NetworkObject>();
             partNo.SetParent(tankNo);
@@ -342,15 +344,19 @@ public class VehicleManager : NetworkBehaviour
         maxCrewCount = _tankCrew.Count;
     }
 
-    [Obsolete("Just for testing purpose. Will be deleted after Database prefab implementation.")]
-    private GameObject SelectPrefab(string prefabName)
-    {
-        if (prefabName.Equals("cannon"))
-            return cannonPrefab;
-        else if (prefabName.Equals("visor"))
-            return visorPrefab;
+    private GameObject SelectPrefab(TankData tankData) {
+        switch (tankData.partType) {
+            case PartType.TURRET:
+                return _assetDatabase.FindTurretByKey(tankData.databaseKey);
+            case PartType.WEAPONRY:
+                break;
+            case PartType.SUSPENSION:
+                break;
+            case PartType.OTHER:
+                return visorPrefab;
+        }
 
-        throw new Exception("Prefab not found!");
+        return null;
     }
     #endregion Server-Tank
 
@@ -401,8 +407,10 @@ public class VehicleManager : NetworkBehaviour
     {
         tankPart.GetComponentInChildren<Camera>().enabled = active;
         tankPart.GetComponentInChildren<AudioListener>().enabled = active;
-        tankPart.GetComponent<PlayerController>().enabled = active;
+        // tankPart.GetComponent<PlayerController>().enabled = active;
+        tankPart.GetComponentInChildren<Drive_Control_CS>().Selected(true);
         GetComponent<ControlSwitch>().enabled = active;
+        tankPart.GetComponent<SoundControl>().EnableSound();
     }
     #endregion Client-Tank
     #endregion Tank
