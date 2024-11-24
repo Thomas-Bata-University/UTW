@@ -13710,6 +13710,7 @@ MonoBehaviour:
   Left_Angle_Y: 0
   Right_Angle_Y: 0
   Is_Visible: 0
+  isOwner: 0
 --- !u!1 &8839477485597751168
 GameObject:
   m_ObjectHideFlags: 0
@@ -13826,6 +13827,7 @@ MonoBehaviour:
   Left_Angle_Y: 0
   Right_Angle_Y: 0
   Is_Visible: 0
+  isOwner: 0
 --- !u!1 &8839619658771349600
 GameObject:
   m_ObjectHideFlags: 0
@@ -13848,7 +13850,6 @@ GameObject:
   - component: {fileID: 1519915106430512982}
   - component: {fileID: 7726384753649599925}
   - component: {fileID: 6348892461281062755}
-  - component: {fileID: 192088830433147472}
   m_Layer: 11
   m_Name: CromwellHull
   m_TagString: Untagged
@@ -14062,6 +14063,8 @@ MonoBehaviour:
   Right_Torque: 0
   Parking_Brake: 0
   Current_Velocity: 0
+  sprocketWheel: {fileID: 8881017616505748702}
+  idlerWheel: {fileID: 8876660015599523582}
 --- !u!114 &8876685386808591044
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -14273,6 +14276,7 @@ MonoBehaviour:
   _networkBehaviours:
   - {fileID: 8880301620616156586}
   - {fileID: 6348892461281062755}
+  - {fileID: 0}
   <ParentNetworkObject>k__BackingField: {fileID: 0}
   <ChildNetworkObjects>k__BackingField: []
   SerializedTransformProperties:
@@ -14406,48 +14410,6 @@ MonoBehaviour:
     X: 0
     Y: 0
     Z: 0
---- !u!114 &192088830433147472
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8839619658771349600}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 402926ef33e0a894d9fec352693988ac, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _componentIndexCache: 255
-  _addedNetworkObject: {fileID: 4992245863044754327}
-  _networkObjectCache: {fileID: 0}
-  _implementsPredictionMethods: 1
-  _graphicalObject: {fileID: 8842904331515043308}
-  _enableTeleport: 0
-  _teleportThreshold: 1
-  _ownerSmoothPosition: 1
-  _ownerSmoothRotation: 1
-  _ownerInterpolation: 1
-  _predictionType: 0
-  _rigidbody: {fileID: 0}
-  _rigidbody2d: {fileID: 0}
-  _spectatorSmoothPosition: 1
-  _spectatorSmoothRotation: 1
-  _spectatorSmoothingType: 1
-  _customSmoothingData:
-    InterpolationPercent: 1
-    CollisionInterpolationPercent: 0.1
-    InterpolationDecreaseStep: 1
-    InterpolationIncreaseStep: 3
-  _preconfiguredSmoothingDataPreview:
-    InterpolationPercent: 1
-    CollisionInterpolationPercent: 0.1
-    InterpolationDecreaseStep: 1
-    InterpolationIncreaseStep: 3
-  _maintainedVelocity: 0
-  _resendType: 0
-  _resendInterval: 30
-  _networkTransform: {fileID: 0}
 --- !u!1 &8839661590785559910
 GameObject:
   m_ObjectHideFlags: 0

@@ -30,6 +30,8 @@ namespace ChobiAssets.PTM
         Track_Scroll_CS rightScrollTrackScript;
         MainBody_Setting_CS bodyScript;
 
+        public bool isOwner = false;
+
 
         void Start()
         {
@@ -79,7 +81,7 @@ namespace ChobiAssets.PTM
             // Check the tank is visible by any camera.
             Is_Visible = bodyScript.Visible_Flag;
 
-            if (Is_Visible)
+            if (Is_Visible && isOwner)
             {
                 if (staticTrackScript && staticTrackScript.isActiveAndEnabled)
                 { // (Note.) Static_Track is enabled and disbaled by "Track_LOD_Control_CS" in the runtime.
