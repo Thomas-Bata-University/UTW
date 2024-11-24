@@ -235,6 +235,7 @@ public class LobbyManager : NetworkBehaviour
 
         //Prepare CREW data
         VehicleManager vehicleManager = go.GetComponent<VehicleManager>();
+        vehicleManager.lobbyManager = this;
         vehicleManager.SetCrewData(Preset.CreateDefaultPreset(), conn, data.transform.position); //TODO add preset
         vehicleManager.JoinCrew(conn);
 

@@ -24,6 +24,9 @@ public class VehicleManager : NetworkBehaviour
     private NetworkObject networkObject;
     [SyncVar] private Vector3 spawnpointPosition;
 
+    [HideInInspector]
+    public LobbyManager lobbyManager;
+
     [Header("Crew")]
     //KEY - index | VALUE - CrewData
     [SyncObject, HideInInspector] public readonly SyncDictionary<int, CrewData> _tankCrew = new SyncDictionary<int, CrewData>();
@@ -432,5 +435,17 @@ public class VehicleManager : NetworkBehaviour
     {
         PresetDropdown.OnPresetChange -= ChangePreset;
         UTW.SceneManager.OnClientDisconnectLobby -= Destroy;
+    }
+
+    
+    // Temporary function for simplified damage handling
+    public void ShellHitsVehicle()
+    {
+        var connList = _tankCrew.Select(x => x.Value.conn).Where(x => x != null).ToArray();
+        var roundSystem = lobbyManager.gameObject.GetComponent<RoundSystem>();
+        if (roundSystem != null)
+        {
+            roundSystem.OnTankDestroyed(connList);
+        }
     }
 }
