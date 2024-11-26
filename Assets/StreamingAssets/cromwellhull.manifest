@@ -1,15 +1,15 @@
 ManifestFileVersion: 0
-CRC: 3867077216
+CRC: 899040018
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: a028d98d1cd0b98a77291c7dc4da9e82
+    Hash: 042ef8043039a373d7381af7453f2662
   TypeTreeHash:
     serializedVersion: 2
-    Hash: 9d2c38d264f639db180635fd51269d08
+    Hash: 37d0b41246deb0e1c826959f0b59a0f1
   IncrementalBuildHash:
     serializedVersion: 2
-    Hash: a028d98d1cd0b98a77291c7dc4da9e82
+    Hash: 042ef8043039a373d7381af7453f2662
 HashAppended: 0
 ClassTypes:
 - Class: 1
@@ -45,7 +45,15 @@ ClassTypes:
 - Class: 83
   Script: {instanceID: 0}
 - Class: 114
+  Script: {fileID: 11500000, guid: 6e79c93d62c86bc4a8de377a3276fe74, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: a95ed8a747df4224fa13e270fac0341e, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: 6954b577dd384f84a8a71e9a1e1c0100, type: 3}
+- Class: 114
   Script: {fileID: 11500000, guid: 1d9dce7088ddcf84f876aa921ea7f398, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: bb5f5426bbd430344b6a7f79c66965f6, type: 3}
 - Class: 114
   Script: {fileID: 11500000, guid: fb3676eff8c6e2e41b107dad6fbd66d0, type: 3}
 - Class: 114
@@ -56,14 +64,6 @@ ClassTypes:
   Script: {fileID: 11500000, guid: b922d0245dbb35f45aea8da5b71aaeea, type: 3}
 - Class: 114
   Script: {fileID: 11500000, guid: f260ad5241e30b14e9a46d5ca1cf0d57, type: 3}
-- Class: 114
-  Script: {fileID: 11500000, guid: 6e79c93d62c86bc4a8de377a3276fe74, type: 3}
-- Class: 114
-  Script: {fileID: 11500000, guid: a95ed8a747df4224fa13e270fac0341e, type: 3}
-- Class: 114
-  Script: {fileID: 11500000, guid: 6954b577dd384f84a8a71e9a1e1c0100, type: 3}
-- Class: 114
-  Script: {fileID: 11500000, guid: bb5f5426bbd430344b6a7f79c66965f6, type: 3}
 - Class: 114
   Script: {fileID: 11500000, guid: c4d2bd944c9ca2a4a97d90f43aa36348, type: 3}
 - Class: 114
@@ -106,5 +106,5 @@ SerializeReferenceClassIdentifiers:
 - AssemblyName: FishNet.Runtime
   ClassName: FishNet.Serializing.TransformPackingData
 Assets:
-- Assets/Prefabs/Tank/CromwellHull.prefab
+- Assets/Prefabs/Tank/Default/CromwellHull.prefab
 Dependencies: []
