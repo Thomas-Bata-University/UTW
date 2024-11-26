@@ -323,7 +323,8 @@ public class VehicleManager : NetworkBehaviour
     private void SpawnTankParts(MainPart mainPart) {
         Debug.Log($"Spawning part {mainPart.mainData.partName}");
         GameObject tankPrefab = _assetDatabase.FindHullByKey(mainPart.mainData.databaseKey);
-        actualTank = Instantiate(tankPrefab, spawnpointPosition, Quaternion.identity);
+        Vector3 spawnPosition = new Vector3(spawnpointPosition.x, mainPart.mainData.partPosition.y, spawnpointPosition.z);
+        actualTank = Instantiate(tankPrefab, spawnPosition, Quaternion.identity);
         NetworkObject tankNo = actualTank.GetComponent<NetworkObject>();
         actualTank.name = mainPart.mainData.partName;
         tankNo.SetParent(networkObject);
@@ -341,6 +342,7 @@ public class VehicleManager : NetworkBehaviour
             tankPart.name = data.partName;
             NetworkObject partNo = tankPart.GetComponent<NetworkObject>();
             partNo.SetParent(tankNo);
+            tankPart.transform.localPosition = data.partPosition;
             Spawn(partNo);
 
             _tankCrew.Add(data.key, new CrewData(data.tankPosition, partNo, childIndex));
