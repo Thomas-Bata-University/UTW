@@ -32,6 +32,8 @@ public class VehicleManager : NetworkBehaviour
     private List<GameObject> crewButtons = new List<GameObject>();
     private int maxCrewCount;
 
+    [HideInInspector] public LobbyManager lobbyManager;
+
     private void Awake()
     {
         PresetDropdown.OnPresetChange += ChangePreset; //Client side - use this after joining crew
@@ -325,7 +327,7 @@ public class VehicleManager : NetworkBehaviour
 
         _tankCrew.Add(mainPart.mainData.key, new CrewData(mainPart.mainData.tankPosition, tankNo, 0));
 
-        int childIndex = 1; // child index 0 is camera
+        int childIndex = 2; // child index 0 is camera and child index 1 is suspension
 
         foreach (var part in mainPart.parts)
         {
@@ -405,12 +407,20 @@ public class VehicleManager : NetworkBehaviour
 
     private void EnableController(Transform tankPart, bool active)
     {
-        tankPart.GetComponentInChildren<Camera>().enabled = active;
-        tankPart.GetComponentInChildren<AudioListener>().enabled = active;
-        // tankPart.GetComponent<PlayerController>().enabled = active;
-        tankPart.GetComponentInChildren<Drive_Control_CS>().Selected(true);
-        GetComponent<ControlSwitch>().enabled = active;
-        tankPart.GetComponent<SoundControl>().EnableSound();
+        if (tankPart.TryGetComponent(out PlayerController playerController)) playerController.enabled = active;
+        if(tankPart.GetComponentInChildren<Camera>() != null) tankPart.GetComponentInChildren<Camera>().enabled = active;
+        if(tankPart.GetComponentInChildren<AudioListener>() != null) tankPart.GetComponentInChildren<AudioListener>().enabled = active;
+        if(tankPart.GetComponentInChildren<Drive_Control_CS>() != null) tankPart.GetComponentInChildren<Drive_Control_CS>().Selected(true);
+        if (TryGetComponent(out ControlSwitch cswitch)) cswitch.enabled = active;
+        if (tankPart.TryGetComponent(out SoundControl soundControl)) soundControl.EnableSound();
+
+        if (tankPart.Find("Gun_Camera") != null)
+        {
+            tankPart.Find("Gun_Camera").gameObject.SetActive(false);
+            if (tankPart.TryGetComponent(out GunnerController gunnerController)) gunnerController.isInScope = false;
+        }
+        
+            // tankPart.GetComponent<PlayerController>().enabled = active;
     }
     #endregion Client-Tank
     #endregion Tank
@@ -443,5 +453,17 @@ public class VehicleManager : NetworkBehaviour
     {
         PresetDropdown.OnPresetChange -= ChangePreset;
         UTW.SceneManager.OnClientDisconnectLobby -= Destroy;
+    }
+
+    
+    // Temporary function for simplified damage handling
+    public void ShellHitsVehicle()
+    {
+        var connList = _tankCrew.Select(x => x.Value.conn).Where(x => x != null).ToArray();
+        var roundSystem = lobbyManager.gameObject.GetComponent<RoundSystem>();
+        if (roundSystem != null)
+        {
+            roundSystem.OnTankDestroyed(connList);
+        }
     }
 }
