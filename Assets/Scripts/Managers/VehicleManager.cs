@@ -10,7 +10,6 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using static Preset;
-using Random = UnityEngine.Random;
 
 public class VehicleManager : NetworkBehaviour
 {
@@ -34,7 +33,7 @@ public class VehicleManager : NetworkBehaviour
     private int maxCrewCount;
 
     [HideInInspector] public LobbyManager lobbyManager;
-    
+
     //TODO: Get this shit away after Den Rozglábených futer
     public GameObject Destroyed_Effect;
 
@@ -332,7 +331,7 @@ public class VehicleManager : NetworkBehaviour
 
         _tankCrew.Add(mainPart.mainData.key, new CrewData(mainPart.mainData.tankPosition, tankNo, 0));
 
-        int childIndex = 2; // child index 0 is camera and child index 1 is suspension
+        int childIndex = 1; // child index 0 is camera
 
         foreach (var part in mainPart.parts)
         {
@@ -425,7 +424,7 @@ public class VehicleManager : NetworkBehaviour
             tankPart.Find("Gun_Camera").gameObject.SetActive(false);
             if (tankPart.TryGetComponent(out GunnerController gunnerController)) gunnerController.isInScope = false;
         }
-        
+
             // tankPart.GetComponent<PlayerController>().enabled = active;
     }
     #endregion Client-Tank
@@ -461,12 +460,12 @@ public class VehicleManager : NetworkBehaviour
         UTW.SceneManager.OnClientDisconnectLobby -= Destroy;
     }
 
-    
+
     // Temporary function for simplified damage handling
     public void ShellHitsVehicle()
     {
         if (!IsServer) return;
-        
+
         var connList = _tankCrew.Select(x => x.Value.conn).Where(x => x != null).ToArray();
         var roundSystem = lobbyManager.gameObject.GetComponent<RoundSystem>();
         if (roundSystem != null)
@@ -475,7 +474,7 @@ public class VehicleManager : NetworkBehaviour
         }
         BlowUpHull();
     }
-    
+
     [ObserversRpc]
     void BlowUpHull()
     {
