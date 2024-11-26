@@ -15,6 +15,7 @@ public class LobbyManager : NetworkBehaviour
     [SerializeField]
     private GameObject vehicleManagerPrefab;
 
+    private Database _database;
     
     public static event Action OnServerStopped;
     private GameObject activeMap;
@@ -48,6 +49,8 @@ public class LobbyManager : NetworkBehaviour
         {
             tankLobbyCameraRender = GameObject.FindGameObjectWithTag(GameTagsUtils.TANK_LOBBY_RENDER);
         }
+
+        _database = FindObjectOfType<Database>();
     }
 
     #region Map
@@ -234,8 +237,9 @@ public class LobbyManager : NetworkBehaviour
         Debug.Log($"{go.name} successfully initialized.");
 
         //Prepare CREW data
+        int faction = GameManager.Instance.GetPlayerByConnection(conn.ClientId).FactionId;
         VehicleManager vehicleManager = go.GetComponent<VehicleManager>();
-        vehicleManager.SetCrewData(Preset.CreateDefaultPreset(), conn, data.transform.position); //TODO add preset
+        vehicleManager.SetCrewData(_database.presetList[faction][0], conn, data.transform.position);
         vehicleManager.JoinCrew(conn);
 
         //Set camera

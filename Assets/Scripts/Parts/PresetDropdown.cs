@@ -23,7 +23,8 @@ public class PresetDropdown : MonoBehaviour
 
         _presetDropdown.options.Clear();
 
-        presets = assetDatabase.presetList;
+        int faction = GameManager.Instance.GetPlayerByConnection(InstanceFinder.ClientManager.Connection.ClientId).FactionId;
+        presets = assetDatabase.presetList[faction];
         foreach (var preset in presets)
         {
             _presetDropdown.options.Add(new TMP_Dropdown.OptionData() { text = preset.presetName });

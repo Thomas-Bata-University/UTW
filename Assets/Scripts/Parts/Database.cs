@@ -1,9 +1,13 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Security.Cryptography;
+using Factions;
+using FishNet.Connection;
 using FishNet.Managing;
 using FishNet.Object;
+using FishNet.Object.Synchronizing;
 using UnityEngine;
 
 public class Database : MonoBehaviour {
@@ -26,7 +30,9 @@ public class Database : MonoBehaviour {
     //TODO Refactor to dictionary for better performance
     public List<Data> hulls;
     public List<Data> turrets;
-    public List<Preset> presetList;
+
+    //KEY - faction | VALUE - Preset
+    public Dictionary<int, List<Preset>> presetList = new();
     public static List<string> hashes { get; private set; }
 
     public Preset SelectedPreset = null;
@@ -55,8 +61,8 @@ public class Database : MonoBehaviour {
                 var data = new Data(asset.name, asset);
                 Debug.Log(asset.name);
 
-                if (asset.name.ToLower().EndsWith("hull")) hulls.Add(data);
-                if (asset.name.ToLower().EndsWith("turret")) turrets.Add(data);
+                if (asset.name.ToLower().Contains("hull")) hulls.Add(data);
+                if (asset.name.ToLower().Contains("turret")) turrets.Add(data);
 
                 networkManager.SpawnablePrefabs.AddObject(asset.GetComponent<NetworkObject>());
             }
@@ -92,11 +98,17 @@ public class Database : MonoBehaviour {
         }
     }
 
-    public void AddAllPresets(List<Preset> presets)
+    public void AddAllPresets(Faction faction)
     {
-        foreach (var preset in presets)
-        {
-            presetList.Add(preset);
+        Debug.Log($"Loaded {faction.Presets.Count} presets for fraction {faction.Id}");
+        presetList.Add(faction.Id, faction.Presets);
+    }
+
+    public void AddAllPresets(SyncDictionary<int, Faction> factions)
+    {
+        foreach (var kv in factions) {
+            presetList.Add(kv.Key, kv.Value.Presets);
+            Debug.Log($"Saved: {kv.Key} - {kv.Value.Presets.Count} presets to server Database");
         }
     }
 
