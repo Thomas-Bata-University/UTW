@@ -97,11 +97,11 @@ public class Preset {
 
         Preset preset = new Preset();
         preset.presetName = "Default";
-        preset.faction = 0;
+        preset.faction = 1;
         preset.color = 0;
         preset.tankName = "Default-tank";
         preset.mainPart = new MainPart(new TankData(0, "CromwellHull", "main", TankPositions.DRIVER,
-            Vector3.zero, PartType.HULL), parts);
+            new Vector3(0, 1.1f, 0), PartType.HULL), parts);
 
         return preset;
     }

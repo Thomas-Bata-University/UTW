@@ -17,8 +17,10 @@ public class ShardController : MonoBehaviour
 
     private void Start()
     {
-        var player = GameManager.Instance.GetPlayerByConnection(InstanceFinder.ClientManager.Connection.ClientId);
-        if (player.Faction == null) ChooseFaction(player);
+        if (InstanceFinder.NetworkManager.IsClient) {
+            var player = GameManager.Instance.GetPlayerByConnection(InstanceFinder.ClientManager.Connection.ClientId);
+            if (player.Faction == null) ChooseFaction(player);
+        }
 
         ChangeStatusText("Refreshing...");
         StartCoroutine(LateStart());

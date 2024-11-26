@@ -67,7 +67,7 @@ public sealed class GameManager : NetworkBehaviour
         UpdateDictionary(_playersData[player.PlayerName].PlayerName);
 
         CreatePlayerData(player.PlayerName, faction.Id);
-        FindObjectOfType<PresetManager>().LoadPresetOnClient(conn, _playersData[player.PlayerName].Faction.Presets);
+        FindObjectOfType<PresetManager>().LoadPresetOnClient(conn, _playersData[player.PlayerName].Faction);
     }
 
     [TargetRpc]
@@ -176,6 +176,8 @@ public sealed class GameManager : NetworkBehaviour
         {
             Debug.LogError($"Error loading faction presets: {ex.Message}");
         }
+
+        FindObjectOfType<Database>().AddAllPresets(_factions);
     }
 
     [Server]

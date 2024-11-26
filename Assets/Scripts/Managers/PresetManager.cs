@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using Factions;
 using FishNet.Connection;
 using FishNet.Object;
 using UnityEngine;
@@ -24,7 +25,7 @@ public class PresetManager : NetworkBehaviour
     {
         if (LocalConnection.IsLocalClient)
         {
-            Debug.Log($"Client ID: {LocalConnection.ClientId} connected... Loading asset.");
+            Debug.Log($"Client ID: {LocalConnection.ClientId} connected... Requesting preset.");
             LoadPreset(LocalConnection);
         }
         else
@@ -40,20 +41,21 @@ public class PresetManager : NetworkBehaviour
     [ServerRpc(RequireOwnership = false)]
     public void LoadPreset(NetworkConnection networkConnection)
     {
-        Debug.Log($"Loading assets for player ID: {networkConnection.ClientId}");
-
         var player = GameManager.Instance.GetPlayerByConnection(networkConnection.ClientId);
         if (player.Faction is null) return;
 
-        LoadPresetOnClient(networkConnection, player.Faction.Presets);
+        Debug.Log($"Loading assets for player ID: {networkConnection.ClientId}, " +
+                  $"preset count: {player.Faction.Presets.Count}");
+
+        LoadPresetOnClient(networkConnection, player.Faction);
     }
 
     // Call this to load all presets for faction to Database.
     [TargetRpc]
-    public void LoadPresetOnClient(NetworkConnection networkConnection, List<Preset> presetList)
+    public void LoadPresetOnClient(NetworkConnection networkConnection, Faction faction)
     {
         if (!networkConnection.IsLocalClient) return;
-        assetDatabase.AddAllPresets(presetList);
+        assetDatabase.AddAllPresets(faction);
     }
 
     [Obsolete("Generate testing preset on server start")]
