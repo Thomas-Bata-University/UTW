@@ -117,9 +117,7 @@ public class RoundSystem : NetworkBehaviour
             }
         }
     }
-
-    [ServerRpc(RequireOwnership = false)]
-
+    
     public void OnTankDestroyed(NetworkConnection[] conns)
     {
         foreach (var conn in conns)
