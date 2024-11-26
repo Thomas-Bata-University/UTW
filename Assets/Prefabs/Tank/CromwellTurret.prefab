@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 6866825087127709229}
   - component: {fileID: 171090709206343238}
   - component: {fileID: 4989983628016814632}
+  - component: {fileID: 4540768514811526297}
   m_Layer: 0
   m_Name: CromwellTurret
   m_TagString: Untagged
@@ -54,6 +55,7 @@ MonoBehaviour:
   _networkBehaviours:
   - {fileID: 171090709206343238}
   - {fileID: 4989983628016814632}
+  - {fileID: 4540768514811526297}
   - {fileID: 3587186829515403629}
   - {fileID: 8695110273633142408}
   <ParentNetworkObject>k__BackingField: {fileID: 0}
@@ -146,6 +148,49 @@ MonoBehaviour:
   maxElevation: 20
   Reload_Time: 2
   Recoil_Force: 5000
+  isInScope: 0
+--- !u!114 &4540768514811526297
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 732000071909235784}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 402926ef33e0a894d9fec352693988ac, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _componentIndexCache: 2
+  _addedNetworkObject: {fileID: 6866825087127709229}
+  _networkObjectCache: {fileID: 6866825087127709229}
+  _implementsPredictionMethods: 1
+  _graphicalObject: {fileID: 4054579208454662076}
+  _enableTeleport: 0
+  _teleportThreshold: 1
+  _ownerSmoothPosition: 1
+  _ownerSmoothRotation: 1
+  _ownerInterpolation: 1
+  _predictionType: 0
+  _rigidbody: {fileID: 0}
+  _rigidbody2d: {fileID: 0}
+  _spectatorSmoothPosition: 1
+  _spectatorSmoothRotation: 1
+  _spectatorSmoothingType: 1
+  _customSmoothingData:
+    InterpolationPercent: 1
+    CollisionInterpolationPercent: 0.1
+    InterpolationDecreaseStep: 1
+    InterpolationIncreaseStep: 3
+  _preconfiguredSmoothingDataPreview:
+    InterpolationPercent: 1
+    CollisionInterpolationPercent: 0.1
+    InterpolationDecreaseStep: 1
+    InterpolationIncreaseStep: 3
+  _maintainedVelocity: 0
+  _resendType: 0
+  _resendInterval: 30
+  _networkTransform: {fileID: 0}
 --- !u!1 &1723247114711470333
 GameObject:
   m_ObjectHideFlags: 0
@@ -903,7 +948,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a2836e36774ca1c4bbbee976e17b649c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 2
+  _componentIndexCache: 3
   _addedNetworkObject: {fileID: 6866825087127709229}
   _networkObjectCache: {fileID: 6866825087127709229}
   _componentConfiguration: 0
@@ -963,7 +1008,7 @@ Transform:
   m_GameObject: {fileID: 8734820120802752628}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.263, y: 0.061, z: -0.482}
+  m_LocalPosition: {x: 0.007, y: 0.061, z: 1.331}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -1009,7 +1054,7 @@ Camera:
   m_Depth: 0
   m_CullingMask:
     serializedVersion: 2
-    m_Bits: 4294967295
+    m_Bits: 32319
   m_RenderingPath: -1
   m_TargetTexture: {fileID: 0}
   m_TargetDisplay: 0
@@ -1073,7 +1118,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2399ce53242aa614eb32b66b9ebcfb53, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 3
+  _componentIndexCache: 4
   _addedNetworkObject: {fileID: 6866825087127709229}
   _networkObjectCache: {fileID: 6866825087127709229}
   AP_Bullet_Prefab: {fileID: 1198614396222948, guid: 69b0613e8e606f043b60b5b5ebc17057, type: 3}

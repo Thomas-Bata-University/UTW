@@ -1,15 +1,15 @@
 ManifestFileVersion: 0
-CRC: 3690218428
+CRC: 2917741074
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: 8226564ae9c412b6e4ce8be6bf0ecdad
+    Hash: 8160a9526e5b776b57898f414894f64d
   TypeTreeHash:
     serializedVersion: 2
-    Hash: 5bedc05d8014aba35d8d9cd8e9c7f4e7
+    Hash: 07225d29853ab037ab117ef88163aa01
   IncrementalBuildHash:
     serializedVersion: 2
-    Hash: 8226564ae9c412b6e4ce8be6bf0ecdad
+    Hash: 8160a9526e5b776b57898f414894f64d
 HashAppended: 0
 ClassTypes:
 - Class: 1
@@ -61,6 +61,8 @@ ClassTypes:
 - Class: 114
   Script: {fileID: 11500000, guid: a2836e36774ca1c4bbbee976e17b649c, type: 3}
 - Class: 114
+  Script: {fileID: 11500000, guid: 402926ef33e0a894d9fec352693988ac, type: 3}
+- Class: 114
   Script: {fileID: 11500000, guid: 43449734ade3ccd4292411b04b86a68a, type: 3}
 - Class: 114
   Script: {fileID: 11500000, guid: df86e564cba4b814a9743c135a6cf0a5, type: 3}
@@ -83,6 +85,8 @@ ClassTypes:
 - Class: 224
   Script: {instanceID: 0}
 SerializeReferenceClassIdentifiers:
+- AssemblyName: FishNet.Runtime
+  ClassName: FishNet.Component.Prediction.PredictedObject/SmoothingData
 - AssemblyName: FishNet.Runtime
   ClassName: FishNet.Component.Transforming.NetworkTransform/ComponentConfigurationType
 - AssemblyName: FishNet.Runtime

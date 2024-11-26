@@ -327,7 +327,7 @@ public class VehicleManager : NetworkBehaviour
 
         _tankCrew.Add(mainPart.mainData.key, new CrewData(mainPart.mainData.tankPosition, tankNo, 0));
 
-        int childIndex = 1; // child index 0 is camera
+        int childIndex = 2; // child index 0 is camera and child index 1 is suspension
 
         foreach (var part in mainPart.parts)
         {

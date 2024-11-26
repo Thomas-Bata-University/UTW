@@ -88,11 +88,13 @@ namespace ChobiAssets.PTM
         [ObserversRpc]
         public void MuzzleFlashClientRpc()
         {
-            Instantiate(MuzzleFire_Object, thisTransform.position, thisTransform.rotation, thisTransform);
+            var muzzleFlash = Instantiate(MuzzleFire_Object, thisTransform.position, thisTransform.rotation, thisTransform);
+            muzzleFlash.GetComponent<AudioSource>().Play();
+            Debug.Log(muzzleFlash.GetComponent<AudioSource>().clip.name);
             GetComponentInParent<Recoil_Brake_CS>().Fire_Linkage(1);
         }
 
-        [ServerRpc(RequireOwnership = false)]
+        [ServerRpc]
         public void FireServerRpc()
         {
             // Generate the muzzle fire.
@@ -114,7 +116,7 @@ namespace ChobiAssets.PTM
                         break;
                     }
                     bulletObject = Instantiate(AP_Bullet_Prefab, thisTransform.position + (thisTransform.forward * Offset), thisTransform.rotation);
-                    Spawn(bulletObject.GetComponent<NetworkObject>());
+                    Spawn(bulletObject);
                    // if (bulletObject.GetComponent<NetworkObject>().IsNetworkVisibleTo(callerID)) Debug.Log("This object is visible to client: " + callerID);
 
                     attackPoint = Attack_Point;
@@ -127,7 +129,7 @@ namespace ChobiAssets.PTM
                         break;
                     }
                     bulletObject = Instantiate(HE_Bullet_Prefab, thisTransform.position + (thisTransform.forward * Offset), thisTransform.rotation);
-                   Spawn(bulletObject.GetComponent<NetworkObject>());
+                   Spawn(bulletObject);
                     attackPoint = Attack_Point_HE;
                     break;
 
@@ -140,7 +142,6 @@ namespace ChobiAssets.PTM
             Rigidbody rigidbody = bulletObject.GetComponent<Rigidbody>();
             Vector3 currentVelocity = bulletObject.transform.forward * Initial_Velocity;
             rigidbody.velocity = currentVelocity;
-            
         }
 
 
