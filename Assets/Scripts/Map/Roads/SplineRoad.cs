@@ -158,7 +158,7 @@ public class SplineRoads : MonoBehaviour
         if (needsMeshRegeneration && !Application.isPlaying)
         {
             needsMeshRegeneration = false;
-            ClearMeshes(); // Přidáno vyčištění meshů
+            Start();
             GetVerts();
             DetectSplineConnections();
             GenerateMeshes();
@@ -346,6 +346,7 @@ public class SplineRoads : MonoBehaviour
             meshObj.transform.localRotation = Quaternion.identity;
             meshObj.AddComponent<MeshFilter>();
             meshObj.AddComponent<MeshRenderer>();
+            meshObj.AddComponent<MeshCollider>();
             splineMeshObjects.Add(meshObj);
         }
 
@@ -455,6 +456,7 @@ public class SplineRoads : MonoBehaviour
             meshObj.transform.localRotation = Quaternion.identity;
             meshObj.AddComponent<MeshFilter>();
             meshObj.AddComponent<MeshRenderer>();
+            meshObj.AddComponent<MeshCollider>();
             crossingMeshObjects.Add(meshObj);
         }
 
