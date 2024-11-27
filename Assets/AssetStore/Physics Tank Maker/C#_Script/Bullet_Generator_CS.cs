@@ -90,7 +90,6 @@ namespace ChobiAssets.PTM
         {
             var muzzleFlash = Instantiate(MuzzleFire_Object, thisTransform.position, thisTransform.rotation, thisTransform);
             muzzleFlash.GetComponent<AudioSource>().Play();
-            Debug.Log(muzzleFlash.GetComponent<AudioSource>().clip.name);
             GetComponentInParent<Recoil_Brake_CS>().Fire_Linkage(1);
         }
 

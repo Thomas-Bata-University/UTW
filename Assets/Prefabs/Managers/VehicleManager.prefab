@@ -50,12 +50,12 @@ MonoBehaviour:
   _addedNetworkObject: {fileID: 5408540398499684965}
   _networkObjectCache: {fileID: 5408540398499684965}
   crewInfoPrefab: {fileID: 6763079097263408496, guid: fcd5d54ff2b1ac8479f14dfe6bf3a1f2, type: 3}
-  tankPrefab: {fileID: 407754499406819417, guid: 55f29380fb4c0ca48ad3b884e602ef68, type: 3}
-  cannonPrefab: {fileID: 1089963624283660, guid: 80dca8c2be71cb346919cfd4084b445c, type: 3}
   visorPrefab: {fileID: 7227865418640596963, guid: 0a60ef693730a634a98b4f8bb96ca2e8, type: 3}
   actualTank: {fileID: 0}
   tankName: 
   spawnpointPosition: {x: 0, y: 0, z: 0}
+  lobbyManager: {fileID: 0}
+  Destroyed_Effect: {fileID: 100004, guid: d5cf1068eb9224446a79deb00e60a2e5, type: 3}
 --- !u!114 &5408540398499684965
 MonoBehaviour:
   m_ObjectHideFlags: 0
