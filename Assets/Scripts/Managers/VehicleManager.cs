@@ -10,6 +10,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using static Preset;
+using Random = UnityEngine.Random;
 
 public class VehicleManager : NetworkBehaviour
 {
@@ -33,6 +34,9 @@ public class VehicleManager : NetworkBehaviour
     private int maxCrewCount;
 
     [HideInInspector] public LobbyManager lobbyManager;
+    
+    //TODO: Get this shit away after Den Rozglábených futer
+    public GameObject Destroyed_Effect;
 
     private void Awake()
     {
@@ -459,11 +463,20 @@ public class VehicleManager : NetworkBehaviour
     // Temporary function for simplified damage handling
     public void ShellHitsVehicle()
     {
+        if (!IsServer) return;
+        
         var connList = _tankCrew.Select(x => x.Value.conn).Where(x => x != null).ToArray();
         var roundSystem = lobbyManager.gameObject.GetComponent<RoundSystem>();
         if (roundSystem != null)
         {
             roundSystem.OnTankDestroyed(connList);
         }
+        BlowUpHull();
+    }
+    
+    [ObserversRpc]
+    void BlowUpHull()
+    {
+        Instantiate(Destroyed_Effect, transform);
     }
 }
