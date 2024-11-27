@@ -1074,15 +1074,11 @@ MonoBehaviour:
   _componentIndexCache: 0
   _addedNetworkObject: {fileID: 633987599}
   _networkObjectCache: {fileID: 633987599}
-  spawnPoints:
-  - {fileID: 259715464}
-  - {fileID: 165585584}
-  - {fileID: 1577749884}
-  - {fileID: 1114040581}
-  - {fileID: 40919615}
-  playerPrefab: {fileID: 1089963624283660, guid: 89c7771a4a7908f40858a01d034dd99a, type: 3}
-  OnGameEnd: {fileID: 1985308836}
-  playersAlive: 0
+  deathScreen: {fileID: 0}
+  winningScreen: {fileID: 0}
+  _waitForEndText: {fileID: 0}
+  _waitForWinText: {fileID: 0}
+  remainingTime: 0
 --- !u!4 &633987596
 Transform:
   m_ObjectHideFlags: 0
@@ -2126,7 +2122,7 @@ TerrainCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_TerrainData: {fileID: 15600000, guid: 95d99ad111bddf84c966c6c12a249303, type: 2}
+  m_TerrainData: {fileID: 15600000, guid: eb358d0eb3bb1774482759da62c002a4, type: 2}
   m_EnableTreeColliders: 1
 --- !u!218 &1299400460
 Terrain:
@@ -2137,7 +2133,7 @@ Terrain:
   m_GameObject: {fileID: 1299400457}
   m_Enabled: 1
   serializedVersion: 6
-  m_TerrainData: {fileID: 15600000, guid: 95d99ad111bddf84c966c6c12a249303, type: 2}
+  m_TerrainData: {fileID: 15600000, guid: eb358d0eb3bb1774482759da62c002a4, type: 2}
   m_TreeDistance: 5000
   m_TreeBillboardDistance: 50
   m_TreeCrossFadeLength: 5
@@ -2159,11 +2155,11 @@ Terrain:
   m_PreserveTreePrototypeLayers: 0
   m_DeringLightProbesForTrees: 1
   m_ReceiveGI: 1
-  m_ScaleInLightmap: 0.0256
+  m_ScaleInLightmap: 1
   m_LightmapParameters: {fileID: 15203, guid: 0000000000000000f000000000000000, type: 0}
   m_GroupingID: 0
   m_RenderingLayerMask: 1
-  m_AllowAutoConnect: 1
+  m_AllowAutoConnect: 0
   m_EnableHeightmapRayTracing: 1
   m_EnableTreesAndDetailsRayTracing: 0
   m_TreeMotionVectorModeOverride: 3
