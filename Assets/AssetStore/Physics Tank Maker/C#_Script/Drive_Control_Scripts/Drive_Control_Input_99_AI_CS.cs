@@ -21,7 +21,7 @@ namespace ChobiAssets.PTM
         }
 
 
-        public override void Drive_Input()
+        public override void Drive_Input(bool isOwner)
         {
             vertical = aiScript.Speed_Order;
             horizontal = aiScript.Turn_Order;

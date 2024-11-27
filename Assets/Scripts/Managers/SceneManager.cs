@@ -8,7 +8,7 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.SceneManagement;
 
-namespace UTW
+namespace UTW 
 {
     public class SceneManager : NetworkBehaviour
     {

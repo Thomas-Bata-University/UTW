@@ -69,7 +69,7 @@ namespace ChobiAssets.PTM
         void Update()
         {
             // Check the tank is visible by any camera.
-            if (bodyScript.Visible_Flag)
+            if (true)
             {
                 Scroll();
             }

@@ -6,7 +6,7 @@ namespace ChobiAssets.PTM
     public class Drive_Control_Input_05_Triggers_CS : Drive_Control_Input_00_Base_CS
     {
 
-        public override void Drive_Input()
+        public override void Drive_Input(bool isOwner)
         {
             var leftTrigger = -Input.GetAxis("Trigger L");
             var rightTrigger = Input.GetAxis("Trigger R");

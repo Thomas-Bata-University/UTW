@@ -700,6 +700,10 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5017385224026066832, guid: d1ece20f6d085ff458629ea218f1aaf2, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 22.999958
+      objectReference: {fileID: 0}
     - target: {fileID: 5017385224150913172, guid: d1ece20f6d085ff458629ea218f1aaf2, type: 3}
       propertyPath: height
       value: 200
@@ -2180,6 +2184,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: faf711c5813dc044794d73731db3e249, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  networkManager: {fileID: 2737918088393768158}
   hulls: []
   turrets: []
   presetList: []
@@ -2193,10 +2198,11 @@ MonoBehaviour:
     mainPart:
       mainData:
         key: 0
-        prefabName: 
+        databaseKey: 
         partName: 
         tankPosition: 0
         partPosition: {x: 0, y: 0, z: 0}
+        partType: 0
       parts: []
 --- !u!1 &2104349524
 GameObject:
