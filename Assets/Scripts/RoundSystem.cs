@@ -6,6 +6,7 @@ using FishNet;
 using FishNet.Connection;
 using FishNet.Object;
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class RoundSystem : NetworkBehaviour
@@ -46,6 +47,8 @@ public class RoundSystem : NetworkBehaviour
         _waitForEndText.text = "You will be returned to Main manu in:" + string.Format("{0:0}:{1:00}", minutes, seconds);
     }
 
+    #region Connections
+
     [ServerRpc(RequireOwnership = false)]
     public void OnClientDisconnectFromLobby(NetworkConnection conn)
     {
@@ -74,7 +77,7 @@ public class RoundSystem : NetworkBehaviour
     }
 
     private void OnClientJoinLobby(NetworkConnection conn)
-    {
+    { 
         if (InstanceFinder.IsServer)
         {
             Faction clientFaction = GameManager.Instance.GetFactionByConnection(conn);
@@ -90,7 +93,11 @@ public class RoundSystem : NetworkBehaviour
             }
         }
     }
-    
+
+    #endregion
+
+    #region TankDestroyed
+
     public void OnTankDestroyed(NetworkConnection conn)
     {
         Faction clientFaction = GameManager.Instance.GetFactionByConnection(conn);
@@ -99,7 +106,7 @@ public class RoundSystem : NetworkBehaviour
             if (_playerParties.ContainsKey(clientFaction.Id))
             {
                 _playerParties[clientFaction.Id]--;
-                _playerDisconnecting = StartCoroutine(WaitBeforeDisconnectPlayer(conn));
+                ShowEndingScreen(conn);
                 if (_playerParties[clientFaction.Id] == 0)
                 {
                     _playerParties.Remove(clientFaction.Id);
@@ -108,7 +115,7 @@ public class RoundSystem : NetworkBehaviour
                 if (_playerParties.Count == 1)
                 {
                     Debug.Log("Game ending");
-                    _gameEnding = StartCoroutine(WaitBeforeEndRound());
+                    GameEndsClientRpc();
                 }
                 else
                 {
@@ -126,30 +133,41 @@ public class RoundSystem : NetworkBehaviour
         }
     }
 
-    [ObserversRpc]
-    void GameEndsClientRpc()
-    {
-        UTW.SceneManager.Instance.Disconnect(LocalConnection);
-    }
+    #endregion
+    
+
+    #region DisconnectDeadPlayer
     
     [TargetRpc]
-    void DisconnectDeadPleayer(NetworkConnection conn)
+    void ShowEndingScreen(NetworkConnection conn)
     {
-        UTW.SceneManager.Instance.Disconnect(conn);
+        StartCoroutine(WaitBeforeDisconnectPlayer(conn));
     }
 
     private IEnumerator WaitBeforeDisconnectPlayer(NetworkConnection conn)
     {
         deathScreen.SetActive(true);
         yield return new WaitForSeconds(5);
-        DisconnectDeadPleayer(conn);
+        UTW.SceneManager.Instance.Disconnect(conn);
+    }
+    
+    #endregion
+
+    #region DisconnectWinners
+
+    [ObserversRpc]
+    void GameEndsClientRpc()
+    {
+        StartCoroutine(WaitBeforeEndRound());
     }
     private IEnumerator WaitBeforeEndRound()
     {
         winningScreen.SetActive(true);
         yield return new WaitForSeconds(5);
-        GameEndsClientRpc();
+        UTW.SceneManager.Instance.Disconnect(LocalConnection);
     }
+
+    #endregion
     
     public void OnDestroy()
     {
