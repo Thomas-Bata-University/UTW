@@ -80,7 +80,6 @@ public class RoundSystem : NetworkBehaviour
     { 
         if (InstanceFinder.IsServer)
         {
-            GameEndsClientRpc();
             Faction clientFaction = GameManager.Instance.GetFactionByConnection(conn);
             if (_playerParties.ContainsKey(clientFaction.Id))
             {
