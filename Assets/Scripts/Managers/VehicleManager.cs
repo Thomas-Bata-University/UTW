@@ -162,9 +162,9 @@ public class VehicleManager : NetworkBehaviour
                 case TankPositions.GUNNER:
                     key = _tankCrew.First(x => x.Value.empty && x.Value.tankPosition == TankPositions.GUNNER).Key;
                     break;
-                case TankPositions.OBSERVER:
-                    key = _tankCrew.First(x => x.Value.empty && x.Value.tankPosition == TankPositions.OBSERVER).Key;
-                    break;
+                // case TankPositions.OBSERVER:
+                //     key = _tankCrew.First(x => x.Value.empty && x.Value.tankPosition == TankPositions.OBSERVER).Key;
+                //     break;
                 default:
                     break;
             }
@@ -331,7 +331,7 @@ public class VehicleManager : NetworkBehaviour
 
         _tankCrew.Add(mainPart.mainData.key, new CrewData(mainPart.mainData.tankPosition, tankNo, 0));
 
-        int childIndex = 1; // child index 0 is camera
+        int childIndex = 2; // child index 0 is camera
 
         foreach (var part in mainPart.parts)
         {
@@ -415,7 +415,7 @@ public class VehicleManager : NetworkBehaviour
         if (tankPart.TryGetComponent(out PlayerController playerController)) playerController.enabled = active;
         if(tankPart.GetComponentInChildren<Camera>() != null) tankPart.GetComponentInChildren<Camera>().enabled = active;
         if(tankPart.GetComponentInChildren<AudioListener>() != null) tankPart.GetComponentInChildren<AudioListener>().enabled = active;
-        if(tankPart.GetComponentInChildren<Drive_Control_CS>() != null) tankPart.GetComponentInChildren<Drive_Control_CS>().Selected(true);
+        if(tankPart.GetComponentInChildren<Drive_Control_CS>() != null) tankPart.GetComponentInChildren<Drive_Control_CS>().Selected(active);
         if (TryGetComponent(out ControlSwitch cswitch)) cswitch.enabled = active;
         if (tankPart.TryGetComponent(out SoundControl soundControl)) soundControl.EnableSound();
 

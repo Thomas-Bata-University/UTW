@@ -1,15 +1,15 @@
 ManifestFileVersion: 0
-CRC: 399788063
+CRC: 2025844024
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: e4a703f96f884df395fb4417765c96ff
+    Hash: f382ac27436a4d6fbec451041eb69631
   TypeTreeHash:
     serializedVersion: 2
-    Hash: fff7a35574e2dae9059ecbb8630f89a6
+    Hash: 36a2313720c27a93f285f288429b5e22
   IncrementalBuildHash:
     serializedVersion: 2
-    Hash: e4a703f96f884df395fb4417765c96ff
+    Hash: f382ac27436a4d6fbec451041eb69631
 HashAppended: 0
 ClassTypes:
 - Class: 1
@@ -47,9 +47,17 @@ ClassTypes:
 - Class: 108
   Script: {instanceID: 0}
 - Class: 114
+  Script: {fileID: 11500000, guid: 0cd44c1031e13a943bb63640046fad76, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+- Class: 114
   Script: {fileID: 11500000, guid: 6e79c93d62c86bc4a8de377a3276fe74, type: 3}
 - Class: 114
-  Script: {fileID: 11500000, guid: 71d45e66acb18d844a1b574e3da97997, type: 3}
+  Script: {fileID: 11500000, guid: 2399ce53242aa614eb32b66b9ebcfb53, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: fca37350f3bae5c4eb5ec8a3e549af5b, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: 44b37783e7c4a8e4983a236458a16f95, type: 3}
 - Class: 114
   Script: {fileID: 11500000, guid: 40509177ab196944099a3f884d992981, type: 3}
 - Class: 114
@@ -81,13 +89,13 @@ ClassTypes:
 - Class: 114
   Script: {fileID: 11500000, guid: f260ad5241e30b14e9a46d5ca1cf0d57, type: 3}
 - Class: 114
+  Script: {fileID: 11500000, guid: b898f2606a71a9047a82c92ed78b1fa0, type: 3}
+- Class: 114
   Script: {fileID: 11500000, guid: c4d2bd944c9ca2a4a97d90f43aa36348, type: 3}
 - Class: 114
   Script: {fileID: 11500000, guid: fbc7eaea127f04b40a27ea9ea6e28bf3, type: 3}
 - Class: 114
   Script: {fileID: 11500000, guid: a2836e36774ca1c4bbbee976e17b649c, type: 3}
-- Class: 114
-  Script: {fileID: 11500000, guid: 5b83ba0ff00ccf64e9e634fef872e248, type: 3}
 - Class: 114
   Script: {fileID: 11500000, guid: 3df342eeafe94784d83195a1563ee293, type: 3}
 - Class: 114
@@ -117,7 +125,7 @@ ClassTypes:
 - Class: 114
   Script: {fileID: 11500000, guid: 36e5525feff9a3340b849a3613dd51fd, type: 3}
 - Class: 114
-  Script: {fileID: 11500000, guid: ea41f34b8700d054080d9a10590a6075, type: 3}
+  Script: {fileID: 11500000, guid: df86e564cba4b814a9743c135a6cf0a5, type: 3}
 - Class: 114
   Script: {fileID: 11500000, guid: 26b716c41e9b56b4baafaf13a523ba2e, type: 3}
 - Class: 114
@@ -130,6 +138,8 @@ ClassTypes:
   Script: {instanceID: 0}
 - Class: 135
   Script: {instanceID: 0}
+- Class: 136
+  Script: {instanceID: 0}
 - Class: 195
   Script: {instanceID: 0}
 - Class: 198
@@ -137,6 +147,14 @@ ClassTypes:
 - Class: 199
   Script: {instanceID: 0}
 - Class: 208
+  Script: {instanceID: 0}
+- Class: 213
+  Script: {instanceID: 0}
+- Class: 222
+  Script: {instanceID: 0}
+- Class: 223
+  Script: {instanceID: 0}
+- Class: 224
   Script: {instanceID: 0}
 SerializeReferenceClassIdentifiers:
 - AssemblyName: Assembly-CSharp
@@ -155,6 +173,10 @@ SerializeReferenceClassIdentifiers:
   ClassName: FishNet.Object.TransformProperties
 - AssemblyName: FishNet.Runtime
   ClassName: FishNet.Serializing.TransformPackingData
+- AssemblyName: UnityEngine.CoreModule
+  ClassName: UnityEngine.Events.PersistentCallGroup
+- AssemblyName: UnityEngine.UI
+  ClassName: UnityEngine.UI.MaskableGraphic/CullStateChangedEvent
 Assets:
 - Assets/Prefabs/Tank/TestHull.prefab
 Dependencies: []

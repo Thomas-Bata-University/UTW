@@ -1,9 +1,9 @@
+using System;
+using System.Linq;
 using FishNet;
 using FishNet.Connection;
 using FishNet.Object;
 using FishNet.Object.Synchronizing;
-using System;
-using System.Linq;
 using UnityEngine;
 
 public class LobbyManager : NetworkBehaviour
@@ -366,6 +366,11 @@ public class LobbyManager : NetworkBehaviour
     [ObserversRpc]
     public void StartGame()
     {
+        if (activeSpawnpointKey is null) {
+            Debug.Log("You have been kicked from the lobby.");
+            FindObjectOfType<LobbyController>().DisconnectFromLobby();
+        }
+        else
         _spawnpoints[activeSpawnpointKey].vehicleManager.StartGame();
     }
 
