@@ -13847,9 +13847,11 @@ GameObject:
   - component: {fileID: 4992245863044754327}
   - component: {fileID: 4803545018964393421}
   - component: {fileID: 172155202266192025}
+  - component: {fileID: 1519915106430512982}
+  - component: {fileID: 7726384753649599925}
   - component: {fileID: 6348892461281062755}
-  - component: {fileID: 2476675788686466790}
-  - component: {fileID: 8393288891307568533}
+  - component: {fileID: -5667464170512222793}
+  - component: {fileID: -635399921370330292}
   m_Layer: 11
   m_Name: CromwellHull
   m_TagString: Untagged
@@ -14287,7 +14289,7 @@ MonoBehaviour:
   _initializeOrder: 0
   _defaultDespawnType: 0
   NetworkObserver: {fileID: 0}
-  <PrefabId>k__BackingField: 45
+  <PrefabId>k__BackingField: 5
   <SpawnableCollectionId>k__BackingField: 0
   _scenePathHash: 0
   <SceneId>k__BackingField: 0
@@ -14320,6 +14322,50 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e527b9bf83a259747b98847bb05eed53, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!64 &1519915106430512982
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8839619658771349600}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 5
+  m_Convex: 1
+  m_CookingOptions: 30
+  m_Mesh: {fileID: 4300020, guid: 9921e5d0d4c384d43b3ee9010b7e4926, type: 3}
+--- !u!64 &7726384753649599925
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8839619658771349600}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 5
+  m_Convex: 1
+  m_CookingOptions: 30
+  m_Mesh: {fileID: 4300018, guid: 9921e5d0d4c384d43b3ee9010b7e4926, type: 3}
 --- !u!114 &6348892461281062755
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -14365,7 +14411,7 @@ MonoBehaviour:
     X: 0
     Y: 0
     Z: 0
---- !u!64 &2476675788686466790
+--- !u!64 &-5667464170512222793
 MeshCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -14387,7 +14433,7 @@ MeshCollider:
   m_Convex: 1
   m_CookingOptions: 30
   m_Mesh: {fileID: 4300020, guid: 9921e5d0d4c384d43b3ee9010b7e4926, type: 3}
---- !u!64 &8393288891307568533
+--- !u!64 &-635399921370330292
 MeshCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
