@@ -29,10 +29,10 @@ public class ControlSwitch : MonoBehaviour
             ChangeSeat(TankPositions.GUNNER);
         }
         
-        if (Input.GetKeyDown(KeyCode.Alpha3))
-        {
-            ChangeSeat(TankPositions.OBSERVER);
-        }
+        // if (Input.GetKeyDown(KeyCode.Alpha3))
+        // {
+        //     ChangeSeat(TankPositions.OBSERVER);
+        // }
     }
 
     private void ChangeSeat(TankPositions tankPosition)
