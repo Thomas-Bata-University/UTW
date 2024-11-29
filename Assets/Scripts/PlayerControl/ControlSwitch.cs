@@ -19,15 +19,15 @@ public class ControlSwitch : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Alpha1))
-        {
-            ChangeSeat(TankPositions.DRIVER);
-        }
-
-        if (Input.GetKeyDown(KeyCode.Alpha2))
-        {
-            ChangeSeat(TankPositions.GUNNER);
-        }
+        // if (Input.GetKeyDown(KeyCode.Alpha1))
+        // {
+        //     ChangeSeat(TankPositions.DRIVER);
+        // }
+        //
+        // if (Input.GetKeyDown(KeyCode.Alpha2))
+        // {
+        //     ChangeSeat(TankPositions.GUNNER);
+        // }
         
         // if (Input.GetKeyDown(KeyCode.Alpha3))
         // {

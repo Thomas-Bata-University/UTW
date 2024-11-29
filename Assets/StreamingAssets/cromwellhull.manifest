@@ -1,15 +1,15 @@
 ManifestFileVersion: 0
-CRC: 210829013
+CRC: 448945142
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: d79ba17e92da8a290526ee1ae436d555
+    Hash: 669ba793d3286bc31a2dcf87cab66b18
   TypeTreeHash:
     serializedVersion: 2
-    Hash: 9d2c38d264f639db180635fd51269d08
+    Hash: e6467c074e130ca08a1ab2f49e9d8466
   IncrementalBuildHash:
     serializedVersion: 2
-    Hash: d79ba17e92da8a290526ee1ae436d555
+    Hash: 669ba793d3286bc31a2dcf87cab66b18
 HashAppended: 0
 ClassTypes:
 - Class: 1
@@ -63,6 +63,8 @@ ClassTypes:
 - Class: 114
   Script: {fileID: 11500000, guid: 6954b577dd384f84a8a71e9a1e1c0100, type: 3}
 - Class: 114
+  Script: {fileID: 11500000, guid: a79441f348de89743a2939f4d699eac1, type: 3}
+- Class: 114
   Script: {fileID: 11500000, guid: bb5f5426bbd430344b6a7f79c66965f6, type: 3}
 - Class: 114
   Script: {fileID: 11500000, guid: c4d2bd944c9ca2a4a97d90f43aa36348, type: 3}
@@ -105,6 +107,8 @@ SerializeReferenceClassIdentifiers:
   ClassName: FishNet.Object.TransformProperties
 - AssemblyName: FishNet.Runtime
   ClassName: FishNet.Serializing.TransformPackingData
+- AssemblyName: Unity.RenderPipelines.Universal.Runtime
+  ClassName: UnityEngine.Rendering.Universal.TemporalAA/Settings
 Assets:
 - Assets/Prefabs/Tank/Default/CromwellHull.prefab
 Dependencies: []
