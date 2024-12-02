@@ -18,7 +18,7 @@ public class TurretDropdown : MonoBehaviour
             Debug.Log(dbComponent.turrets.Count == 0 ? "No turrets!" : "There are turrets!");
             foreach (var turret in dbComponent.turrets)
             {
-                dropdown.options.Add(new Dropdown.OptionData() { text = turret.name });
+                dropdown.options.Add(new Dropdown.OptionData() { text = turret.prefab.name });
             }
         }
     }

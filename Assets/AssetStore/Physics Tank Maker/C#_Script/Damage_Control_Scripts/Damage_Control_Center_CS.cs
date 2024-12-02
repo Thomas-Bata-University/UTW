@@ -249,8 +249,6 @@ namespace ChobiAssets.PTM
             navMeshObstacle.carving = true;
             navMeshObstacle.carvingMoveThreshold = 1.0f;
 
-            if(IsServer) GameObject.Find("RoundSystem").GetComponent<RoundSystem>().PlayerDied();
-
             /// Release the parking brake, and Destroy this script.
             StartCoroutine("Disable_MainBody_Constraints");
         }

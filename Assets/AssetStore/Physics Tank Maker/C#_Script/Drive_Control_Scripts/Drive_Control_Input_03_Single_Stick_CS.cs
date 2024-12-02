@@ -6,7 +6,7 @@ namespace ChobiAssets.PTM
 	public class Drive_Control_Input_03_Single_Stick_CS : Drive_Control_Input_02_Keyboard_Pressing_CS
     {
 		
-		public override void Drive_Input()
+		public override void Drive_Input(bool isOwner)
 		{
             // Set "vertical".
             vertical = Input.GetAxis("Vertical");

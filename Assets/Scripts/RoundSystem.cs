@@ -1,100 +1,179 @@
+using System;
+using System.Collections;
 using System.Collections.Generic;
+using Factions;
+using FishNet;
 using FishNet.Connection;
 using FishNet.Object;
+using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
-using Random = UnityEngine.Random;
 
 public class RoundSystem : NetworkBehaviour
 {
-    public Transform[] spawnPoints;
-    public GameObject playerPrefab;
-    public GameObject OnGameEnd;
+    
+    public GameObject deathScreen;
+    public GameObject winningScreen;
+    
+    private Coroutine _gameEnding;
+    private Coroutine _playerDisconnecting;
+    public Dictionary<int, int> _playerParties = new();
+    
+    public TMP_Text _waitForEndText;
+    public TMP_Text _waitForWinText;
+    [SerializeField] private float remainingTime;
 
-    public int playersAlive;
+    public void Awake()
+    {
+        if (InstanceFinder.IsServer)
+        {
+            UTW.SceneManager.OnClientJoinLobby += OnClientJoinLobby;
+        }
+    }
+
+    private void Update()
+    {
+        if (remainingTime > 0)
+        {
+            remainingTime -= Time.deltaTime;
+        }
+        else
+        {
+            remainingTime = 0;
+        }
+        int minutes = Mathf.FloorToInt(remainingTime / 60F);
+        int seconds = Mathf.FloorToInt(remainingTime - minutes * 60);
+        _waitForWinText.text = "Game will end in:" + string.Format("{0:0}:{1:00}", minutes, seconds);
+        _waitForEndText.text = "You will be returned to Main manu in:" + string.Format("{0:0}:{1:00}", minutes, seconds);
+    }
+
+    #region Connections
+
+    [ServerRpc(RequireOwnership = false)]
+    public void OnClientDisconnectFromLobby(NetworkConnection conn)
+    {
+        OnClientDisconnectLobby(conn);
+    }
+    public void OnClientDisconnectLobby(NetworkConnection conn)
+    {
+        if (InstanceFinder.IsServer)
+        {
+            Faction clientFaction = GameManager.Instance.GetFactionByConnection(conn);
+            if (_playerParties.ContainsKey(clientFaction.Id))
+            {
+                _playerParties[clientFaction.Id]--;
+                Debug.Log("Player parties count: " + _playerParties.Count);
+                if (_playerParties[clientFaction.Id] == 0)
+                {
+                    _playerParties.Remove(clientFaction.Id);
+                    Debug.Log("Player party removed from playerParties");
+                }
+            }
+            else
+            {
+                Debug.Log("Player not found in playerParties");
+            }
+        }
+    }
+
+    private void OnClientJoinLobby(NetworkConnection conn)
+    { 
+        if (InstanceFinder.IsServer)
+        {
+            Faction clientFaction = GameManager.Instance.GetFactionByConnection(conn);
+            if (_playerParties.ContainsKey(clientFaction.Id))
+            {
+                _playerParties[clientFaction.Id]++;
+                Debug.Log("Player found in playerParties");
+            }
+            else
+            {
+                _playerParties[clientFaction.Id] = 1;
+                Debug.Log("Player not found in playerParties and making new party");
+            }
+        }
+    }
+
+    #endregion
+
+    #region TankDestroyed
+
+    public void OnTankDestroyed(NetworkConnection conn)
+    {
+        Faction clientFaction = GameManager.Instance.GetFactionByConnection(conn);
+        if (InstanceFinder.IsServer)
+        {
+            if (_playerParties.ContainsKey(clientFaction.Id))
+            {
+                _playerParties[clientFaction.Id]--;
+                ShowEndingScreen(conn);
+                if (_playerParties[clientFaction.Id] == 0)
+                {
+                    _playerParties.Remove(clientFaction.Id);
+                    Debug.Log("Player party removed from playerParties");
+                }
+                if (_playerParties.Count == 1)
+                {
+                    Debug.Log("Game ending");
+                    GameEndsClientRpc();
+                }
+                else
+                {
+                    Debug.Log("Player cannot be removed from playerParties and or player party cannot be removed from playerParties");
+                }
+            }
+        }
+    }
+    
+    public void OnTankDestroyed(NetworkConnection[] conns)
+    {
+        foreach (var conn in conns)
+        {
+            OnTankDestroyed(conn);
+        }
+    }
+
+    #endregion
     
 
-    private List<Transform> remainingSpawnPoints;
-    //private List<ulong> loadingClients = new List<ulong>();
-/*
-    public override void OnNetworkSpawn()
+    #region DisconnectDeadPlayer
+    
+    [TargetRpc]
+    void ShowEndingScreen(NetworkConnection conn)
     {
-        
-        //if(IsServer)
-        {
-            foreach(NetworkClient networkClient in NetworkManager.Singleton.ConnectedClientsList)
-            {
-                loadingClients.Add(networkClient.ClientId);
-            }
-            remainingSpawnPoints = new List<Transform>(spawnPoints);
-        }
-        if(IsClient)
-        {
-            ClientIsReadyServerRpc();
-        }
-        
-    }
-    */
-
-    public override void OnStartClient()
-    {
-        base.OnStartClient();
-        Debug.Log("Called OnStartClient");
-        SpawnPlayer();
+        StartCoroutine(WaitBeforeDisconnectPlayer(conn));
     }
 
-    /*
-    [ServerRpc(RequireOwnership = false)]
-        void ClientIsReadyServerRpc(ServerRpcParams serverRpcParams = default)
-        {
-            //if (!loadingClients.Contains(serverRpcParams.Receive.SenderClientId)) { return; }
-
-            SpawnPlayer(serverRpcParams.Receive.SenderClientId);
-            //loadingClients.Remove(serverRpcParams.Receive.SenderClientId);
-        }
-    */
-    /*
-    [ServerRpc(RequireOwnership = false)]
-    private void ClientIsReadyServerRpc()
+    private IEnumerator WaitBeforeDisconnectPlayer(NetworkConnection conn)
     {
-        Debug.Log("Called ClientIsReadyServerRpc");
-        SpawnPlayer(LocalConnection);
+        deathScreen.SetActive(true);
+        yield return new WaitForSeconds(5);
+        UTW.SceneManager.Instance.Disconnect(conn);
     }
-*/
-    [ServerRpc(RequireOwnership = false)]
-    private void SpawnPlayer(NetworkConnection netCon = null)
-    {
-        var spawnPointIndex = Random.Range(0, spawnPoints.Length);
-        var spawnPoint = spawnPoints[spawnPointIndex];
-        remainingSpawnPoints.RemoveAt(spawnPointIndex);
-        var playerInstance = Instantiate(playerPrefab, spawnPoint.position, spawnPoint.rotation);
-        //playerInstance.GetComponent<NetworkObject>().SpawnAsPlayerObject(clientId,  true);
-        Spawn(playerInstance, netCon);
-        Debug.Log("Player has been spawned");
+    
+    #endregion
 
-        playersAlive++;
-    }
+    #region DisconnectWinners
 
-    public void PlayerDied()
-    {
-        playersAlive--;
-        if(playersAlive < 2)
-        {
-            GameEndsClientRpc();
-            Debug.Log("Game ends!");
-
-            StartCoroutine("WaitBeforeEndRound");
-        }
-    }
     [ObserversRpc]
     void GameEndsClientRpc()
     {
-        OnGameEnd.SetActive(true);
+        StartCoroutine(WaitBeforeEndRound());
     }
-/*
-    IEnumerator WaitBeforeEndRound()
+    private IEnumerator WaitBeforeEndRound()
     {
-        yield return new WaitForSeconds(7);
-        ServerGameNetPortal.Instance.EndRound();
+        winningScreen.SetActive(true);
+        yield return new WaitForSeconds(5);
+        UTW.SceneManager.Instance.Disconnect(LocalConnection);
     }
-    */
+
+    #endregion
+    
+    public void OnDestroy()
+    {
+        if (InstanceFinder.IsServer)
+        {
+            UTW.SceneManager.OnClientJoinLobby -= OnClientJoinLobby;
+        }
+    }
 }
