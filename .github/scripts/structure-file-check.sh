@@ -1,13 +1,13 @@
 #!/bin/bash
 
 # File extensions
-SCRIPT_EXT="\.cs$|\.meta$|\.assets$"
-UNITY_ASSET_EXT="\.prefab$|\.unity$|\.asset$|\.meta$|\.assets$"
-MODEL_EXT="\.fbx$|\.obj$|\.3ds$|\.meta$|\.assets$"
-TEXTURE_EXT="\.png$|\.jpg$|\.jpeg$|\.tga$|\.psd$|\.meta$|\.assets$"
-MATERIAL_EXT="\.mat$|\.meta$|\.assets$"
-TERRAIN_EXT="\.asset$|\.meta$|\.assets$"
-SCENE_EXT="\.unity$|\.meta$|\.assets$"
+SCRIPT_EXT="\.cs$|\.meta$|\.asset$"
+UNITY_ASSET_EXT="\.prefab$|\.unity$|\.asset$|\.meta$|\.asset$"
+MODEL_EXT="\.fbx$|\.obj$|\.3ds$|\.meta$|\.asset$"
+TEXTURE_EXT="\.png$|\.jpg$|\.jpeg$|\.tga$|\.psd$|\.meta$|\.asset$"
+MATERIAL_EXT="\.mat$|\.meta$|\.asset$"
+TERRAIN_EXT="\.asset$|\.meta$|\.asset$"
+SCENE_EXT="\.unity$|\.meta$|\.asset$"
 
 check_directory() {
 
