@@ -4,6 +4,9 @@ using UnityEngine;
 using UnityEngine.Splines;
 using System.Linq;
 using UnityEditor;
+using UnityEditor.ProBuilder;
+using UnityEngine.ProBuilder;
+using UnityEngine.ProBuilder.MeshOperations;
 
 [ExecuteAlways]
 public class SplineRoads : MonoBehaviour
@@ -15,16 +18,6 @@ public class SplineRoads : MonoBehaviour
         public VertexGroup(List<(Vector3 position, int splineIndex)> vertices)
         {
             Vertices = new List<(Vector3 position, int splineIndex)>(vertices);
-        }
-
-        public void AddVertex(Vector3 position, int splineIndex)
-        {
-            Vertices.Add((position, splineIndex));
-        }
-
-        public bool ContainsSpline(int splineIndex)
-        {
-            return Vertices.Any(v => v.splineIndex == splineIndex);
         }
     }
 
@@ -38,7 +31,6 @@ public class SplineRoads : MonoBehaviour
             parent = new int[size];
             rank = new int[size];
 
-            // Initially, each node is its own parent (self-rooted tree)
             for (int i = 0; i < size; i++)
             {
                 parent[i] = i;
@@ -46,7 +38,6 @@ public class SplineRoads : MonoBehaviour
             }
         }
 
-        // Find the root parent of a node with path compression
         public int Find(int x)
         {
             if (parent[x] != x)
@@ -57,7 +48,6 @@ public class SplineRoads : MonoBehaviour
             return parent[x];
         }
 
-        // Union two sets by rank
         public void Union(int x, int y)
         {
             int xRoot = Find(x);
@@ -118,7 +108,7 @@ public class SplineRoads : MonoBehaviour
             return;
         }
 
-        ClearMeshes(); // Přidáno vyčištění meshů
+        ClearMeshes();
         GetVerts();
         DetectSplineConnections();
 
@@ -132,7 +122,6 @@ public class SplineRoads : MonoBehaviour
 
     private void ClearMeshes()
     {
-        // Destroy all child GameObjects
         List<Transform> childrenToRemove = new List<Transform>();
         foreach (Transform child in transform)
         {
@@ -147,7 +136,6 @@ public class SplineRoads : MonoBehaviour
             DestroyImmediate(child.gameObject);
         }
 
-        // Clear the lists
         splineMeshObjects.Clear();
         crossingMeshObjects.Clear();
     }
@@ -191,7 +179,6 @@ public class SplineRoads : MonoBehaviour
     
     private void OnDestroy()
     {
-        // Destroy all child GameObjects
         List<Transform> childrenToRemove = new List<Transform>();
         foreach (Transform child in transform)
         {
@@ -254,7 +241,6 @@ public class SplineRoads : MonoBehaviour
     {
         vertexGroups.Clear();
 
-        // Step 1: Collect all endpoint positions with unique identifiers
         List<(Vector3 position, int splineIndex, int pointIndex)> allPoints = new List<(Vector3, int, int)>();
 
         for (int j = 0; j < vertsP1List.Count; j++)
@@ -262,17 +248,14 @@ public class SplineRoads : MonoBehaviour
             List<Vector3> vertsP1 = vertsP1List[j];
             List<Vector3> vertsP2 = vertsP2List[j];
 
-            // Add start and end points of each spline edge
-            allPoints.Add((vertsP1[0], j, 0)); // Start point P1
-            allPoints.Add((vertsP2[0], j, 1)); // Start point P2
-            allPoints.Add((vertsP1[^1], j, 2)); // End point P1
-            allPoints.Add((vertsP2[^1], j, 3)); // End point P2
+            allPoints.Add((vertsP1[0], j, 0));
+            allPoints.Add((vertsP2[0], j, 1));
+            allPoints.Add((vertsP1[^1], j, 2));
+            allPoints.Add((vertsP2[^1], j, 3));
         }
 
-        // Step 2: Initialize Union-Find structure
         UnionFind unionFind = new UnionFind(allPoints.Count);
 
-        // Step 3: Map to quickly find indices
         Dictionary<(Vector3 position, int splineIndex, int pointIndex), int> pointToIndex =
             new Dictionary<(Vector3, int, int), int>();
         for (int i = 0; i < allPoints.Count; i++)
@@ -280,7 +263,6 @@ public class SplineRoads : MonoBehaviour
             pointToIndex[allPoints[i]] = i;
         }
 
-        // Step 4: Union connected points
         for (int i = 0; i < allPoints.Count; i++)
         {
             var pointA = allPoints[i];
@@ -294,8 +276,7 @@ public class SplineRoads : MonoBehaviour
             }
         }
 
-        // Step 5: Group points by root parent
-        Dictionary<int, List<(Vector3 position, int splineIndex)>> groups = new Dictionary<int, List<(Vector3, int)>>();
+        Dictionary<int, List<(Vector3, int)>> groups = new Dictionary<int, List<(Vector3, int)>>();
 
         for (int i = 0; i < allPoints.Count; i++)
         {
@@ -309,27 +290,13 @@ public class SplineRoads : MonoBehaviour
             groups[root].Add((position, splineIndex));
         }
 
-        // Step 6: Create vertex groups from the connected components
         foreach (var group in groups.Values)
         {
-            // Only consider groups that have points from more than one spline
-            var uniqueSplines = group.Select(p => p.splineIndex).Distinct().ToList();
+            var uniqueSplines = group.Select(p => p.Item2).Distinct().ToList();
             if (uniqueSplines.Count > 1)
             {
                 vertexGroups.Add(new VertexGroup(group));
             }
-        }
-
-        Debug.Log($"Total number of connected vertex groups: {vertexGroups.Count}");
-        foreach (var group in vertexGroups)
-        {
-            string groupInfo = "Vertex Group: ";
-            foreach (var vertex in group.Vertices)
-            {
-                groupInfo += $"(Position: {vertex.position}, SplineIndex: {vertex.splineIndex}) ";
-            }
-
-            Debug.Log(groupInfo);
         }
     }
     
@@ -349,9 +316,16 @@ public class SplineRoads : MonoBehaviour
             meshObj.transform.parent = transform;
             meshObj.transform.localPosition = Vector3.zero;
             meshObj.transform.localRotation = Quaternion.identity;
-            meshObj.AddComponent<MeshFilter>();
-            meshObj.AddComponent<MeshRenderer>();
-            meshObj.AddComponent<MeshCollider>();
+            
+            // Přidáme ProBuilderMesh
+            ProBuilderMesh pbMesh = meshObj.AddComponent<ProBuilderMesh>();
+
+            // Nastavíme materiál přes MeshRenderer
+            MeshRenderer mr = meshObj.GetComponent<MeshRenderer>();
+            if(mr == null) mr = meshObj.AddComponent<MeshRenderer>();
+            meshObj.AddComponent<Solidify>();
+            mr.sharedMaterial = sharedMaterial;
+
             splineMeshObjects.Add(meshObj);
         }
 
@@ -365,245 +339,185 @@ public class SplineRoads : MonoBehaviour
             GameObject meshObj = splineMeshObjects[j];
             meshObj.SetActive(true);
 
-            MeshFilter meshFilter = meshObj.GetComponent<MeshFilter>();
-            MeshRenderer meshRenderer = meshObj.GetComponent<MeshRenderer>();
-
-            if (meshRenderer.sharedMaterial == null)
-            {
-                meshRenderer.sharedMaterial = sharedMaterial ?? new Material(Shader.Find("Standard"));
-            }
-
-            Mesh mesh = meshFilter.sharedMesh;
-            if (mesh == null)
-            {
-                mesh = new Mesh();
-                meshFilter.sharedMesh = mesh;
-            }
-            else
-            {
-                mesh.Clear();
-            }
-
-            GenerateSplineMeshData(j, mesh);
+            ProBuilderMesh pbMesh = meshObj.GetComponent<ProBuilderMesh>();
+            GenerateSplineMeshData(j, pbMesh);
         }
     }
     
-    private void GenerateSplineMeshData(int splineIndex, Mesh mesh)
+    private void GenerateSplineMeshData(int splineIndex, ProBuilderMesh pbMesh)
+{
+    var vertsP1 = vertsP1List[splineIndex];
+    var vertsP2 = vertsP2List[splineIndex];
+
+    int vertexNumberLine = GetSubdividePointCount();
+    int triCountPerRow = (vertsP1.Count - 1) * 2 * (vertexNumberLine - 1);
+
+    List<Vector3> allVertices = new List<Vector3>(vertexNumberLine * vertsP1.Count);
+    List<Vector2> uvs = new List<Vector2>(vertexNumberLine * vertsP1.Count);
+    List<int> triangles = new List<int>(triCountPerRow * 3);
+
+    // Create the grid of vertices
+    for (int i = 0; i < vertexNumberLine; i++)
     {
-        var vertsP1 = vertsP1List[splineIndex];
-        var vertsP2 = vertsP2List[splineIndex];
-
-        int vertexNumberLine = GetSubdividePointCount();
-        int triangleCount = (vertsP1.Count - 1) * 6 * (int)Math.Pow(2, subdivisions);
-
-        List<Vector3>[] vertices = new List<Vector3>[vertexNumberLine];
-        int[] triangles = new int[triangleCount];
-        Vector2[] uvs = new Vector2[vertexNumberLine * vertsP1.Count];
-        Vector3[] normals = new Vector3[vertexNumberLine * vertsP1.Count];
-
-        for (int i = 0; i < vertexNumberLine; i++)
+        float t = (float)i / (vertexNumberLine - 1);
+        for (int j = 0; j < vertsP1.Count; j++)
         {
-            var lineBetween = new List<Vector3>();
-            if (i == 0) // first line of vertices
-            {
-                for (var j = 0; j < vertsP1.Count; j++)
-                {
-                    lineBetween.Add(transform.InverseTransformPoint(vertsP1[j]));
-                }
-                vertices[i] = lineBetween;
-                continue;
-            } 
-            if (i == vertexNumberLine - 1) // last line of vertices
-            {
-                for (var j = 0; j < vertsP1.Count; j++)
-                {
-                    lineBetween.Add(transform.InverseTransformPoint(vertsP2[j]));
-                }
-                vertices[i] = lineBetween;
-                continue;
-            }
-            
-            // calculate vertices between
-            for (var j = 0; j < vertsP1.Count; j++)
-            {
-                var t = (float)i / (vertexNumberLine - 1);
-                var interpolated = Vector3.Lerp(vertsP1[j], vertsP2[j], t);
+            Vector3 interpolated = Vector3.Lerp(vertsP1[j], vertsP2[j], t);
+            allVertices.Add(transform.InverseTransformPoint(interpolated));
 
-                // Ensure the interpolation is in local space
-                lineBetween.Add(transform.InverseTransformPoint(interpolated));
-            }
-            vertices[i] = lineBetween;
+            Vector2 uv = new Vector2((float)j / (vertsP1.Count - 1), t);
+            uvs.Add(uv);
         }
-        
-        var allVertices = new Vector3 [vertexNumberLine * vertsP1.Count];
-
-        for (int i = 0; i < vertexNumberLine; i++)
-        {
-            for (int j = 0; j < vertsP1.Count; j++)
-            {
-                allVertices[i * vertsP1.Count + j] = vertices[i][j];
-            }
-        }
-
-        // Build triangles
-        var trisIndex = 0;
-        for (var i = 0; i < vertexNumberLine - 1; i++)
-        {
-            for (var j = 0; j < vertsP1.Count - 1; j++)
-            {
-                // First triangle (order dependency)
-                triangles[trisIndex++] = i * vertsP1.Count + j;       // [0,0]
-                triangles[trisIndex++] = i * vertsP1.Count + (j + 1); // [0,1]
-                triangles[trisIndex++] = (i + 1) * vertsP1.Count + j; // [1,0]
-
-                // Second triangle (order dependency)
-                triangles[trisIndex++] = (i + 1) * vertsP1.Count + (j + 1); // [1,1]
-                triangles[trisIndex++] = (i + 1) * vertsP1.Count + j;       // [1,0]
-                triangles[trisIndex++] = i * vertsP1.Count + (j + 1);       // [0,1]
-            }
-        }
-        
-        // Build vertices, uvs, and normals
-        for (int i = 0; i < vertexNumberLine; i++)
-        {
-            for (int j = 0; j < vertsP1.Count; j++)
-            {
-                int index = i * vertsP1.Count + j;
-
-                // Calculate UV coordinates
-                uvs[index] = new Vector2(
-                    (float)j / (vertsP1.Count - 1),  // U coordinate (0 to 1)
-                    (float)i / (vertexNumberLine - 1) // V coordinate (0 to 1)
-                );
-
-                // Assign normals (flat surface pointing up in Y direction)
-                normals[index] = Vector3.up;
-            }
-        }
-
-
-        // Assign mesh data
-        mesh.vertices = allVertices;
-        mesh.triangles = triangles;
-        mesh.uv = uvs;
-        mesh.normals = normals;
-        mesh.RecalculateBounds();
     }
 
+    // Create triangles
+    for (int i = 0; i < vertexNumberLine - 1; i++)
+    {
+        for (int j = 0; j < vertsP1.Count - 1; j++)
+        {
+            int index0 = i * vertsP1.Count + j;
+            int index1 = i * vertsP1.Count + (j + 1);
+            int index2 = (i + 1) * vertsP1.Count + j;
+            int index3 = (i + 1) * vertsP1.Count + (j + 1);
+
+            // First triangle
+            triangles.Add(index0);
+            triangles.Add(index2);
+            triangles.Add(index1);
+
+            // Second triangle
+            triangles.Add(index1);
+            triangles.Add(index2);
+            triangles.Add(index3);
+        }
+    }
+
+    // Vyčistíme existující mesh
+    pbMesh.Clear();
+    
+    // Nastavíme vertices a vytvoříme faces
+    pbMesh.positions = allVertices;
+    
+    // Vytvoříme faces s ProBuilder API
+    List<Face> faceList = new List<Face>();
+    for (int i = 0; i < triangles.Count; i += 3)
+    {
+        var face = new Face(new int[] { triangles[i], triangles[i + 1], triangles[i + 2] });
+        face.smoothingGroup = 1;
+        face.manualUV = true; // Explicitně nastavíme, že používáme manuální UV
+        faceList.Add(face);
+    }
+    
+    pbMesh.faces = faceList;
+    pbMesh.SetUVs(0, uvs.Select(u => new Vector4(u.x, u.y, 0f, 0f)).ToList());
+    
+    // Aplikujeme změny a aktualizujeme mesh
+    pbMesh.Refresh();
+    pbMesh.ToMesh();
+    pbMesh.Optimize(); // Optimalizujeme mesh pro lepší výkon
+    
+    // Vytvoříme nebo aktualizujeme collider
+    MeshCollider collider = pbMesh.GetComponent<MeshCollider>();
+    if (collider == null)
+    {
+        collider = pbMesh.gameObject.AddComponent<MeshCollider>();
+    }
+    MeshFilter meshFilter = pbMesh.GetComponent<MeshFilter>();
+    collider.sharedMesh = meshFilter.sharedMesh;
+    collider.convex = false;
+}
+    
     private void GenerateCrossingsMeshes()
     {
         int crossingCount = vertexGroups.Count;
 
-        // Ensure the list has enough GameObjects
         while (crossingMeshObjects.Count < crossingCount)
         {
-            // Create new mesh object
             GameObject meshObj = new GameObject($"CrossingMesh_{crossingMeshObjects.Count}");
             meshObj.transform.parent = transform;
             meshObj.transform.localPosition = Vector3.zero;
             meshObj.transform.localRotation = Quaternion.identity;
-            meshObj.AddComponent<MeshFilter>();
-            meshObj.AddComponent<MeshRenderer>();
-            meshObj.AddComponent<MeshCollider>();
+
+            ProBuilderMesh pbMesh = meshObj.AddComponent<ProBuilderMesh>();
+            MeshRenderer mr = meshObj.GetComponent<MeshRenderer>();
+            if(mr == null) mr = meshObj.AddComponent<MeshRenderer>();
+            meshObj.AddComponent<Solidify>();
+            mr.sharedMaterial = sharedMaterial;
+
             crossingMeshObjects.Add(meshObj);
         }
 
-        // Hide extra mesh objects
         for (int i = crossingCount; i < crossingMeshObjects.Count; i++)
         {
             crossingMeshObjects[i].SetActive(false);
         }
 
-        // Update or create mesh objects
         for (int i = 0; i < crossingCount; i++)
         {
             GameObject meshObj = crossingMeshObjects[i];
             meshObj.SetActive(true);
 
-            MeshFilter meshFilter = meshObj.GetComponent<MeshFilter>();
-            MeshRenderer meshRenderer = meshObj.GetComponent<MeshRenderer>();
-
-            // Assign material
-            if (meshRenderer.sharedMaterial == null)
-            {
-                meshRenderer.sharedMaterial = sharedMaterial ?? new Material(Shader.Find("Standard"));
-            }
-
-            Mesh mesh = meshFilter.sharedMesh;
-            if (mesh == null)
-            {
-                mesh = new Mesh();
-                meshFilter.sharedMesh = mesh;
-            }
-            else
-            {
-                mesh.Clear();
-            }
-
-            // Generate mesh data
-            GenerateCrossingMeshData(i, mesh);
+            ProBuilderMesh pbMesh = meshObj.GetComponent<ProBuilderMesh>();
+            GenerateCrossingMeshData(i, pbMesh);
         }
     }
 
-    private void GenerateCrossingMeshData(int crossingIndex, Mesh mesh)
+    private void GenerateCrossingMeshData(int crossingIndex, ProBuilderMesh pbMesh)
     {
         VertexGroup group = vertexGroups[crossingIndex];
         List<Vector3> positions = group.Vertices.Select(v => v.position).ToList();
 
         if (positions.Count >= 3)
         {
-            // Calculate center point
             Vector3 center = Vector3.zero;
             foreach (var pos in positions)
-            {
                 center += pos;
-            }
-
             center /= positions.Count;
 
-            // Sort vertices around the center point in reverse order
+            // Sort vertices around the center
             positions = positions.OrderByDescending(v => Mathf.Atan2(v.z - center.z, v.x - center.x)).ToList();
 
-            // Transform positions to local space
             center = transform.InverseTransformPoint(center);
             for (int j = 0; j < positions.Count; j++)
             {
                 positions[j] = transform.InverseTransformPoint(positions[j]);
             }
 
-            // Build vertices
-            Vector3[] vertices = new Vector3[positions.Count + 1]; // +1 for center
-            vertices[0] = center; // Center vertex
+            Vector3[] verts = new Vector3[positions.Count + 1];
+            verts[0] = center;
+            for (int j = 0; j < positions.Count; j++)
+                verts[j + 1] = positions[j];
+
+            // Triangles
+            List<int> triangles = new List<int>(positions.Count * 3);
             for (int j = 0; j < positions.Count; j++)
             {
-                vertices[j + 1] = positions[j];
+                triangles.Add(0);
+                triangles.Add(j + 1);
+                triangles.Add(j + 1 == positions.Count ? 1 : j + 2);
             }
 
-            // Build triangles with correct winding order
-            int[] triangles = new int[positions.Count * 3];
-            for (int j = 0; j < positions.Count; j++)
+            // UVs
+            Vector2[] uvs = new Vector2[verts.Length];
+            for (int j = 0; j < verts.Length; j++)
             {
-                triangles[j * 3] = 0; // Center vertex index
-                triangles[j * 3 + 1] = j + 1;
-                triangles[j * 3 + 2] = j + 1 == positions.Count ? 1 : j + 2;
+                uvs[j] = new Vector2(verts[j].x, verts[j].z);
             }
 
-            // Build UVs and normals
-            Vector2[] uvs = new Vector2[vertices.Length];
-            Vector3[] normals = new Vector3[vertices.Length];
-            for (int j = 0; j < vertices.Length; j++)
+            pbMesh.Clear();
+            pbMesh.positions = verts;
+            List<Face> faceList = new List<Face>(triangles.Count / 3);
+            for (int i = 0; i < triangles.Count; i += 3)
             {
-                // Simple planar mapping; adjust as needed
-                uvs[j] = new Vector2(vertices[j].x, vertices[j].z);
-                normals[j] = Vector3.up;
+                faceList.Add(new Face(new int[] { triangles[i], triangles[i + 1], triangles[i + 2] }));
             }
 
-            // Assign mesh data
-            mesh.vertices = vertices;
-            mesh.triangles = triangles;
-            mesh.uv = uvs;
-            mesh.normals = normals;
-            mesh.RecalculateBounds();
+            List<Vector4> uvs4 = uvs.Select(u => new Vector4(u.x, u.y, 0f, 0f)).ToList();
+            
+            pbMesh.faces = faceList;
+            pbMesh.SetUVs(0, uvs4);
+            pbMesh.ToMesh();
+            pbMesh.Refresh();
         }
     }
 
@@ -618,64 +532,6 @@ public class SplineRoads : MonoBehaviour
             return;
 
         DrawSplineEdges();
-
-        foreach (var group in vertexGroups)
-        {
-            List<(Vector3 position, int splineIndex)> sameSplinePoints = group.Vertices.GroupBy(v => v.splineIndex)
-                .Where(g => g.Count() > 1)
-                .SelectMany(g => g)
-                .ToList();
-            HashSet<(Vector3, Vector3)> drawnLines = new HashSet<(Vector3, Vector3)>();
-
-            foreach (var vertex in sameSplinePoints)
-            {
-                var closestPoints = sameSplinePoints
-                    .Where(v => v.splineIndex == vertex.splineIndex && v.position != vertex.position)
-                    .OrderBy(v => GetDistance(vertex.position, v.position))
-                    .Take(2) // Každý bod max dvě linky
-                    .ToList();
-
-                foreach (var closest in closestPoints)
-                {
-                    if (!drawnLines.Contains((closest.position, vertex.position)) &&
-                        !drawnLines.Contains((vertex.position, closest.position)))
-                    {
-                        Debug.DrawLine(vertex.position, closest.position, Color.green);
-                        drawnLines.Add((vertex.position, closest.position));
-                    }
-                }
-            }
-        }
-
-        HashSet<(Vector3, Vector3)> drawnCrossSplineLines = new HashSet<(Vector3, Vector3)>();
-        List<(Vector3 position, int splineIndex)> unconnectedPoints =
-            new List<(Vector3 position, int splineIndex)>(vertexGroups.SelectMany(group => group.Vertices));
-
-        while (unconnectedPoints.Count > 1)
-        {
-            var possiblePair = unconnectedPoints.SelectMany((point1, index1) =>
-                    unconnectedPoints.Skip(index1 + 1)
-                        .Where(point2 => point1.splineIndex != point2.splineIndex &&
-                                         !drawnCrossSplineLines.Any(line =>
-                                             line.Item1 == point1.position || line.Item2 == point1.position ||
-                                             line.Item1 == point2.position || line.Item2 == point2.position))
-                        .Select(point2 => (point1, point2, distance: GetDistance(point1.position, point2.position))))
-                .OrderBy(pair => pair.distance)
-                .FirstOrDefault();
-
-            if (possiblePair != default)
-            {
-                Debug.DrawLine(possiblePair.point1.position, possiblePair.point2.position, Color.blue);
-                drawnCrossSplineLines.Add((possiblePair.point1.position, possiblePair.point2.position));
-
-                unconnectedPoints.Remove(possiblePair.point1);
-                unconnectedPoints.Remove(possiblePair.point2);
-            }
-            else
-            {
-                break;
-            }
-        }
     }
 
     private void DrawSplineEdges()
@@ -695,7 +551,6 @@ public class SplineRoads : MonoBehaviour
                 Gizmos.DrawSphere(vertsP2[i], gizmoSize * 0.5f);
             }
 
-            // Draw edge points
             Gizmos.color = Color.yellow;
             Gizmos.DrawSphere(vertsP1[0], gizmoSize * 0.5f);
             Gizmos.DrawSphere(vertsP2[0], gizmoSize * 0.5f);
