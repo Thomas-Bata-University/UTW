@@ -1,0 +1,15 @@
+name: Check Unity File Extensions
+
+on: [push, pull_request]
+
+jobs:
+  check-file-extensions:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      
+      - name: Make script executable
+        run: chmod +x .github/scripts/structure-file-check.sh
+      
+      - name: Check Unity file extensions
+        run: .github/scripts/structure-file-check.sh
