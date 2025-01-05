@@ -1,15 +1,15 @@
 ManifestFileVersion: 0
-CRC: 1927716667
+CRC: 2110243721
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: 706090bb2da85650646a35c0bea660b0
+    Hash: f7c012f623f3dd905007984c1f88c2bc
   TypeTreeHash:
     serializedVersion: 2
-    Hash: 289f3ced03d60283fc3e9f59f8ce0bab
+    Hash: 9b57c461fd5ecd94a23f2048ad5ae2a4
   IncrementalBuildHash:
     serializedVersion: 2
-    Hash: 706090bb2da85650646a35c0bea660b0
+    Hash: f7c012f623f3dd905007984c1f88c2bc
 HashAppended: 0
 ClassTypes:
 - Class: 1
@@ -80,6 +80,8 @@ ClassTypes:
   Script: {fileID: 11500000, guid: ab5068dd271bf0e4fabeb840d3f45537, type: 3}
 - Class: 114
   Script: {fileID: 11500000, guid: 402926ef33e0a894d9fec352693988ac, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: 474bcb49853aa07438625e644c072ee6, type: 3}
 - Class: 114
   Script: {fileID: 11500000, guid: df86e564cba4b814a9743c135a6cf0a5, type: 3}
 - Class: 114
@@ -178,5 +180,5 @@ SerializeReferenceClassIdentifiers:
 - AssemblyName: UnityEngine.UI
   ClassName: UnityEngine.UI.MaskableGraphic/CullStateChangedEvent
 Assets:
-- Assets/Prefabs/Tank/TestHull.prefab
+- Assets/_Art/Prefabs/Tank/TestHull.prefab
 Dependencies: []
