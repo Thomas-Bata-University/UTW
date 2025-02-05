@@ -14,6 +14,7 @@ public class RoundSystem : NetworkBehaviour
     
     public GameObject deathScreen;
     public GameObject winningScreen;
+    public GameObject roundContainer;
     
     private Coroutine _gameEnding;
     private Coroutine _playerDisconnecting;
@@ -25,6 +26,10 @@ public class RoundSystem : NetworkBehaviour
 
     public void Awake()
     {
+        deathScreen = GameObject.Find("DeathScreen");
+        winningScreen = GameObject.Find("WinningScreen");
+        roundContainer = GameObject.Find("RoundContainer");
+        
         if (InstanceFinder.IsServer)
         {
             UTW.SceneManager.OnClientJoinLobby += OnClientJoinLobby;
@@ -146,6 +151,7 @@ public class RoundSystem : NetworkBehaviour
 
     private IEnumerator WaitBeforeDisconnectPlayer(NetworkConnection conn)
     {
+        roundContainer.SetActive(true);
         deathScreen.SetActive(true);
         yield return new WaitForSeconds(5);
         UTW.SceneManager.Instance.Disconnect(conn);
@@ -162,6 +168,7 @@ public class RoundSystem : NetworkBehaviour
     }
     private IEnumerator WaitBeforeEndRound()
     {
+        roundContainer.SetActive(false);
         winningScreen.SetActive(true);
         yield return new WaitForSeconds(5);
         UTW.SceneManager.Instance.Disconnect(LocalConnection);

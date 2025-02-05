@@ -1,15 +1,15 @@
 ManifestFileVersion: 0
-CRC: 3544794832
+CRC: 1753970104
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: 5c1321c94445c81757728d572fffa27f
+    Hash: 57c053fc20989095e1d2dc007125cddd
   TypeTreeHash:
     serializedVersion: 2
-    Hash: 9d2c38d264f639db180635fd51269d08
+    Hash: 1a6c5e882223fe886f76fe1324fb86bd
   IncrementalBuildHash:
     serializedVersion: 2
-    Hash: 5c1321c94445c81757728d572fffa27f
+    Hash: 57c053fc20989095e1d2dc007125cddd
 HashAppended: 0
 ClassTypes:
 - Class: 1
@@ -45,6 +45,8 @@ ClassTypes:
 - Class: 83
   Script: {instanceID: 0}
 - Class: 114
+  Script: {fileID: 11500000, guid: a28e7a65eb944f4c8071cba8ab19883f, type: 3}
+- Class: 114
   Script: {fileID: 11500000, guid: 1d9dce7088ddcf84f876aa921ea7f398, type: 3}
 - Class: 114
   Script: {fileID: 11500000, guid: fb3676eff8c6e2e41b107dad6fbd66d0, type: 3}
@@ -63,7 +65,11 @@ ClassTypes:
 - Class: 114
   Script: {fileID: 11500000, guid: 6954b577dd384f84a8a71e9a1e1c0100, type: 3}
 - Class: 114
+  Script: {fileID: 11500000, guid: a79441f348de89743a2939f4d699eac1, type: 3}
+- Class: 114
   Script: {fileID: 11500000, guid: bb5f5426bbd430344b6a7f79c66965f6, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: d55189c3aae29ba4cb887094714843d7, type: 3}
 - Class: 114
   Script: {fileID: 11500000, guid: c4d2bd944c9ca2a4a97d90f43aa36348, type: 3}
 - Class: 114
@@ -105,6 +111,8 @@ SerializeReferenceClassIdentifiers:
   ClassName: FishNet.Object.TransformProperties
 - AssemblyName: FishNet.Runtime
   ClassName: FishNet.Serializing.TransformPackingData
+- AssemblyName: Unity.RenderPipelines.Universal.Runtime
+  ClassName: UnityEngine.Rendering.Universal.TemporalAA/Settings
 Assets:
 - Assets/_Art/Prefabs/Tank/CromwellHull.prefab
 Dependencies: []

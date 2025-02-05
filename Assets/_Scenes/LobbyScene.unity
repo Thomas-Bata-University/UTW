@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.44657898, g: 0.4964133, b: 0.5748178, a: 1}
+  m_IndirectSpecularColor: {r: 0.44657844, g: 0.49641222, b: 0.57481694, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -3818,6 +3818,7 @@ MonoBehaviour:
   _networkObjectCache: {fileID: 1428187809}
   deathScreen: {fileID: 8947876420196960016}
   winningScreen: {fileID: 7509195148040937035}
+  roundContainer: {fileID: 6391934125497590321}
   _waitForEndText: {fileID: 2998532959764771913}
   _waitForWinText: {fileID: 1995138992659619485}
   remainingTime: 5
@@ -4926,9 +4927,9 @@ MonoBehaviour:
   <ChildNetworkObjects>k__BackingField:
   - {fileID: 984413202}
   SerializedTransformProperties:
-    Position: {x: 870, y: 433, z: 0}
+    Position: {x: 480, y: 303, z: 0}
     Rotation: {x: 0, y: 0, z: 0, w: 1}
-    LocalScale: {x: 0.90625, y: 0.90625, z: 0.90625}
+    LocalScale: {x: 0.5, y: 0.5, z: 0.5}
   _isNetworked: 1
   _isGlobal: 0
   _initializeOrder: 0
@@ -5782,7 +5783,7 @@ Canvas:
   m_OverridePixelPerfect: 0
   m_SortingBucketNormalizedSize: 0
   m_VertexColorAlwaysGammaSpace: 0
-  m_AdditionalShaderChannelsFlag: 0
+  m_AdditionalShaderChannelsFlag: 25
   m_UpdateRectTransformForStandalone: 0
   m_SortingLayerID: 0
   m_SortingOrder: 0

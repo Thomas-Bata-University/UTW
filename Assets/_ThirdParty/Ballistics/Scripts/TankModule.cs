@@ -13,9 +13,12 @@ namespace Ballistics.Scripts
         [SerializeField] private Material moduleDamagedMaterial;
         [SerializeField] private Material moduleDestroyedMaterial;
         [SerializeField] private MeshRenderer meshRenderer;
+        private VehicleManager _vehicleManager;
 
         public void Start()
         {
+            
+            _vehicleManager = GetRootGameObject().GetComponent<VehicleManager>();
             hitPoints = maxHitPoints;
         }
 
@@ -35,6 +38,7 @@ namespace Ballistics.Scripts
                         collider.enabled = false;
                     }
                 }
+                _vehicleManager.ShellHitsVehicle();
                 //LogManager.Instance.LogMessage($"{this.gameObject.name} has been struck and took {damage} points of damage and is now destroyed");
             } else if (hitPoints - damage < 0)
             {
@@ -61,6 +65,13 @@ namespace Ballistics.Scripts
                 TankModuleState.Damaged => moduleDestroyedMaterial,
                 _ => meshRenderer.material
             };
+        }
+
+        GameObject GetRootGameObject()
+        {
+            var root = transform;
+            while (root.parent != null) root = root.parent;
+            return root.gameObject;
         }
     }
     
