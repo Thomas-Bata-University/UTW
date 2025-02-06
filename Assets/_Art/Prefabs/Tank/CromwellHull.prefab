@@ -268,10 +268,10 @@ BoxCollider:
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 4096
   m_ExcludeLayers:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 1076863
   m_LayerOverridePriority: 0
   m_IsTrigger: 0
   m_ProvidesContacts: 0
@@ -291,7 +291,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a28e7a65eb944f4c8071cba8ab19883f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 4
+  _componentIndexCache: 7
   _addedNetworkObject: {fileID: 4992245863044754327}
   _networkObjectCache: {fileID: 4992245863044754327}
   ArmorQuality: 2000
@@ -6144,10 +6144,10 @@ BoxCollider:
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 4096
   m_ExcludeLayers:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 1076863
   m_LayerOverridePriority: 0
   m_IsTrigger: 0
   m_ProvidesContacts: 0
@@ -6167,7 +6167,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a28e7a65eb944f4c8071cba8ab19883f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 4
+  _componentIndexCache: 5
   _addedNetworkObject: {fileID: 4992245863044754327}
   _networkObjectCache: {fileID: 4992245863044754327}
   ArmorQuality: 2000
@@ -6270,10 +6270,10 @@ BoxCollider:
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 4096
   m_ExcludeLayers:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 1076863
   m_LayerOverridePriority: 0
   m_IsTrigger: 0
   m_ProvidesContacts: 0
@@ -6293,7 +6293,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a28e7a65eb944f4c8071cba8ab19883f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 3
+  _componentIndexCache: 10
   _addedNetworkObject: {fileID: 4992245863044754327}
   _networkObjectCache: {fileID: 4992245863044754327}
   ArmorQuality: 2000
@@ -7154,10 +7154,10 @@ BoxCollider:
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 4096
   m_ExcludeLayers:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 1076863
   m_LayerOverridePriority: 0
   m_IsTrigger: 0
   m_ProvidesContacts: 0
@@ -7177,7 +7177,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a28e7a65eb944f4c8071cba8ab19883f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 4
+  _componentIndexCache: 6
   _addedNetworkObject: {fileID: 4992245863044754327}
   _networkObjectCache: {fileID: 4992245863044754327}
   ArmorQuality: 2000
@@ -7490,10 +7490,10 @@ BoxCollider:
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 4096
   m_ExcludeLayers:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 1076863
   m_LayerOverridePriority: 0
   m_IsTrigger: 0
   m_ProvidesContacts: 0
@@ -7513,7 +7513,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a28e7a65eb944f4c8071cba8ab19883f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 3
+  _componentIndexCache: 11
   _addedNetworkObject: {fileID: 4992245863044754327}
   _networkObjectCache: {fileID: 4992245863044754327}
   ArmorQuality: 2000
@@ -7551,7 +7551,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0.971, y: 0.65068865, z: -0.631}
-  m_LocalScale: {x: 1.5, y: 0.8, z: 4.5}
+  m_LocalScale: {x: 1.128765, y: 0.60200804, z: 4.4516234}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 5190119476020538240}
@@ -7616,10 +7616,10 @@ BoxCollider:
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 4096
   m_ExcludeLayers:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 1076863
   m_LayerOverridePriority: 0
   m_IsTrigger: 0
   m_ProvidesContacts: 0
@@ -7643,8 +7643,8 @@ MonoBehaviour:
   _addedNetworkObject: {fileID: 4992245863044754327}
   _networkObjectCache: {fileID: 4992245863044754327}
   state: 0
-  maxHitPoints: 500
-  hitPoints: 500
+  maxHitPoints: 10
+  hitPoints: 10
   isSoft: 0
   moduleOkMaterial: {fileID: 2100000, guid: d958e98d0b46e0a43a55e9cbc46710b6, type: 2}
   moduleDamagedMaterial: {fileID: 2100000, guid: 97190bf5fb0f25142af3dfb1f1e16788, type: 2}
@@ -12488,10 +12488,10 @@ BoxCollider:
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 4096
   m_ExcludeLayers:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 1076863
   m_LayerOverridePriority: 0
   m_IsTrigger: 0
   m_ProvidesContacts: 0
@@ -12511,7 +12511,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a28e7a65eb944f4c8071cba8ab19883f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 3
+  _componentIndexCache: 12
   _addedNetworkObject: {fileID: 4992245863044754327}
   _networkObjectCache: {fileID: 4992245863044754327}
   ArmorQuality: 2000
@@ -13166,10 +13166,10 @@ BoxCollider:
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 4096
   m_ExcludeLayers:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 1076863
   m_LayerOverridePriority: 0
   m_IsTrigger: 0
   m_ProvidesContacts: 0
@@ -13292,10 +13292,10 @@ BoxCollider:
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 4096
   m_ExcludeLayers:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 1076863
   m_LayerOverridePriority: 0
   m_IsTrigger: 0
   m_ProvidesContacts: 0
@@ -13315,7 +13315,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a28e7a65eb944f4c8071cba8ab19883f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 3
+  _componentIndexCache: 13
   _addedNetworkObject: {fileID: 4992245863044754327}
   _networkObjectCache: {fileID: 4992245863044754327}
   ArmorQuality: 2000
@@ -14003,10 +14003,10 @@ BoxCollider:
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 4096
   m_ExcludeLayers:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 1076863
   m_LayerOverridePriority: 0
   m_IsTrigger: 0
   m_ProvidesContacts: 0
@@ -14026,7 +14026,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a28e7a65eb944f4c8071cba8ab19883f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 3
+  _componentIndexCache: 9
   _addedNetworkObject: {fileID: 4992245863044754327}
   _networkObjectCache: {fileID: 4992245863044754327}
   ArmorQuality: 2000
@@ -15619,6 +15619,15 @@ MonoBehaviour:
   - {fileID: 2694992892095459700}
   - {fileID: 2444526344591355061}
   - {fileID: 7369206354637917321}
+  - {fileID: 998894964516498349}
+  - {fileID: 3983282522854453207}
+  - {fileID: 8246021672341306237}
+  - {fileID: 7102566203288376304}
+  - {fileID: 7355570396916214232}
+  - {fileID: 1436149007624968744}
+  - {fileID: 4506177705091338326}
+  - {fileID: 3181868380261965124}
+  - {fileID: 785704090476087420}
   <ParentNetworkObject>k__BackingField: {fileID: 0}
   <ChildNetworkObjects>k__BackingField: []
   SerializedTransformProperties:
@@ -18445,10 +18454,10 @@ BoxCollider:
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 4096
   m_ExcludeLayers:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 1076863
   m_LayerOverridePriority: 0
   m_IsTrigger: 0
   m_ProvidesContacts: 0
@@ -18468,7 +18477,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a28e7a65eb944f4c8071cba8ab19883f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 3
+  _componentIndexCache: 8
   _addedNetworkObject: {fileID: 4992245863044754327}
   _networkObjectCache: {fileID: 4992245863044754327}
   ArmorQuality: 2000
@@ -18571,10 +18580,10 @@ BoxCollider:
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 4096
   m_ExcludeLayers:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 1076863
   m_LayerOverridePriority: 0
   m_IsTrigger: 0
   m_ProvidesContacts: 0

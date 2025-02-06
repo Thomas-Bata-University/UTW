@@ -153,7 +153,7 @@ namespace Ballistics.Scripts
             Rigidbody.isKinematic = true;
             Rigidbody.velocity = new Vector3(0, 0, 0);
             Rigidbody.useGravity = false;
-            GetComponent<TrailRenderer>().material = stoppedMaterial;
+            //GetComponent<TrailRenderer>().material = stoppedMaterial;
         }
     }
 }

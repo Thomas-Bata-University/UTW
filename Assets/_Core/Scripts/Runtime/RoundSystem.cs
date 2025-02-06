@@ -14,7 +14,6 @@ public class RoundSystem : NetworkBehaviour
     
     public GameObject deathScreen;
     public GameObject winningScreen;
-    public GameObject roundContainer;
     
     private Coroutine _gameEnding;
     private Coroutine _playerDisconnecting;
@@ -26,10 +25,6 @@ public class RoundSystem : NetworkBehaviour
 
     public void Awake()
     {
-        deathScreen = GameObject.Find("DeathScreen");
-        winningScreen = GameObject.Find("WinningScreen");
-        roundContainer = GameObject.Find("RoundContainer");
-        
         if (InstanceFinder.IsServer)
         {
             UTW.SceneManager.OnClientJoinLobby += OnClientJoinLobby;
@@ -48,8 +43,8 @@ public class RoundSystem : NetworkBehaviour
         }
         int minutes = Mathf.FloorToInt(remainingTime / 60F);
         int seconds = Mathf.FloorToInt(remainingTime - minutes * 60);
-        _waitForWinText.text = "Game will end in:" + string.Format("{0:0}:{1:00}", minutes, seconds);
-        _waitForEndText.text = "You will be returned to Main manu in:" + string.Format("{0:0}:{1:00}", minutes, seconds);
+        //_waitForWinText.text = "Game will end in:" + string.Format("{0:0}:{1:00}", minutes, seconds);
+        //_waitForEndText.text = "You will be returned to Main manu in:" + string.Format("{0:0}:{1:00}", minutes, seconds);
     }
 
     #region Connections
@@ -151,7 +146,7 @@ public class RoundSystem : NetworkBehaviour
 
     private IEnumerator WaitBeforeDisconnectPlayer(NetworkConnection conn)
     {
-        roundContainer.SetActive(true);
+        Debug.Log("You are dead");
         deathScreen.SetActive(true);
         yield return new WaitForSeconds(5);
         UTW.SceneManager.Instance.Disconnect(conn);
@@ -168,7 +163,6 @@ public class RoundSystem : NetworkBehaviour
     }
     private IEnumerator WaitBeforeEndRound()
     {
-        roundContainer.SetActive(false);
         winningScreen.SetActive(true);
         yield return new WaitForSeconds(5);
         UTW.SceneManager.Instance.Disconnect(LocalConnection);
