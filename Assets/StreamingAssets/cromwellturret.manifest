@@ -1,15 +1,15 @@
 ManifestFileVersion: 0
-CRC: 185786650
+CRC: 2389744709
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: 7ac491965947ac016edc623e9e920215
+    Hash: 0919e9ef593f7870525c4998046ddcc3
   TypeTreeHash:
     serializedVersion: 2
-    Hash: 09ad12f20b0e7b3a8d3981979a2b4752
+    Hash: b6a63016def80eb5b9a0edc04c542a9b
   IncrementalBuildHash:
     serializedVersion: 2
-    Hash: 7ac491965947ac016edc623e9e920215
+    Hash: 0919e9ef593f7870525c4998046ddcc3
 HashAppended: 0
 ClassTypes:
 - Class: 1
@@ -34,8 +34,6 @@ ClassTypes:
   Script: {instanceID: 0}
 - Class: 64
   Script: {instanceID: 0}
-- Class: 65
-  Script: {instanceID: 0}
 - Class: 81
   Script: {instanceID: 0}
 - Class: 82
@@ -55,17 +53,17 @@ ClassTypes:
 - Class: 114
   Script: {fileID: 11500000, guid: 402926ef33e0a894d9fec352693988ac, type: 3}
 - Class: 114
-  Script: {fileID: 11500000, guid: df86e564cba4b814a9743c135a6cf0a5, type: 3}
-- Class: 114
   Script: {fileID: 11500000, guid: fca37350f3bae5c4eb5ec8a3e549af5b, type: 3}
 - Class: 114
   Script: {fileID: 11500000, guid: 44b37783e7c4a8e4983a236458a16f95, type: 3}
 - Class: 114
+  Script: {fileID: 11500000, guid: 8a63b42a57ad28e42b97926039f94c57, type: 3}
+- Class: 114
   Script: {fileID: 11500000, guid: 70fb78426a32da94885f862ac87dfdfb, type: 3}
 - Class: 114
-  Script: {fileID: 11500000, guid: a2836e36774ca1c4bbbee976e17b649c, type: 3}
+  Script: {fileID: 11500000, guid: a79441f348de89743a2939f4d699eac1, type: 3}
 - Class: 114
-  Script: {fileID: 11500000, guid: 43449734ade3ccd4292411b04b86a68a, type: 3}
+  Script: {fileID: 11500000, guid: a2836e36774ca1c4bbbee976e17b649c, type: 3}
 - Class: 114
   Script: {fileID: 11500000, guid: 26b716c41e9b56b4baafaf13a523ba2e, type: 3}
 - Class: 115
@@ -95,6 +93,8 @@ SerializeReferenceClassIdentifiers:
   ClassName: FishNet.Object.TransformProperties
 - AssemblyName: FishNet.Runtime
   ClassName: FishNet.Serializing.TransformPackingData
+- AssemblyName: Unity.RenderPipelines.Universal.Runtime
+  ClassName: UnityEngine.Rendering.Universal.TemporalAA/Settings
 - AssemblyName: UnityEngine.CoreModule
   ClassName: UnityEngine.Events.PersistentCallGroup
 - AssemblyName: UnityEngine.UI
