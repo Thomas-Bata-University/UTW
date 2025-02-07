@@ -32,7 +32,7 @@ public class SplineSampler : MonoBehaviour
             Vector3 right = Vector3.Cross((Vector3)tangent, (Vector3)upVector).normalized;
             Vector3 worldPosition = transform.TransformPoint((Vector3)position);
             p1 = worldPosition + (right * m_width);
-            p2 = worldPosition + (-right * m_width);
+            p2 = worldPosition - (right * m_width);
         }
     }
     
@@ -44,7 +44,7 @@ public class SplineSampler : MonoBehaviour
             Vector3 right = Vector3.Cross((Vector3)tangent, (Vector3)upVector).normalized;
             Vector3 worldPosition = transform.TransformPoint((Vector3)position);
             point1 = worldPosition + (right * m_width);
-            point2 = worldPosition + (-right * m_width);
+            point2 = worldPosition - (right * m_width);
         }
         else
         {
@@ -53,7 +53,6 @@ public class SplineSampler : MonoBehaviour
         }
     }
 
-    
     private void OnDrawGizmos()
     {
         if (showGizmos && m_splineContainer != null && m_splineContainer.Splines.Count > m_splineIndex)
