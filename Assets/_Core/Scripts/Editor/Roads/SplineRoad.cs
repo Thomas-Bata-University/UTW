@@ -323,7 +323,7 @@ public class SplineRoads : MonoBehaviour
             // Nastavíme materiál přes MeshRenderer
             MeshRenderer mr = meshObj.GetComponent<MeshRenderer>();
             if(mr == null) mr = meshObj.AddComponent<MeshRenderer>();
-            meshObj.AddComponent<Solidify>();
+            //meshObj.AddComponent<Solidify>();
             mr.sharedMaterial = sharedMaterial;
 
             splineMeshObjects.Add(meshObj);
@@ -441,7 +441,7 @@ public class SplineRoads : MonoBehaviour
             ProBuilderMesh pbMesh = meshObj.AddComponent<ProBuilderMesh>();
             MeshRenderer mr = meshObj.GetComponent<MeshRenderer>();
             if(mr == null) mr = meshObj.AddComponent<MeshRenderer>();
-            meshObj.AddComponent<Solidify>();
+            //meshObj.AddComponent<Solidify>();
             mr.sharedMaterial = sharedMaterial;
 
             crossingMeshObjects.Add(meshObj);

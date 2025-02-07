@@ -833,8 +833,9 @@ PlayerSettings:
   webGLMemoryGeometricGrowthCap: 96
   webGLPowerPreference: 2
   scriptingDefineSymbols:
-    Server: FISHNET;FISHNET_V3
-    Standalone: MAPMAGIC2;MM_NATIVE;FISHNET;FISHNET_V3
+    Server: FISHNET;FISHNET_V3;PROBUILDER_EXPERIMENTAL_FEATURES
+    Standalone: MAPMAGIC2;MM_NATIVE;FISHNET;FISHNET_V3;PROBUILDER_EXPERIMENTAL_FEATURES
+    Windows Store Apps: PROBUILDER_EXPERIMENTAL_FEATURES
   additionalCompilerArguments: {}
   platformArchitecture: {}
   scriptingBackend: {}
