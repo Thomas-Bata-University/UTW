@@ -1,15 +1,15 @@
 ManifestFileVersion: 0
-CRC: 2110243721
+CRC: 2505507213
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: f7c012f623f3dd905007984c1f88c2bc
+    Hash: 9508ae2115b6139399292c7adc351113
   TypeTreeHash:
     serializedVersion: 2
-    Hash: 9b57c461fd5ecd94a23f2048ad5ae2a4
+    Hash: db79d2264a9621f8795b90a75d43718b
   IncrementalBuildHash:
     serializedVersion: 2
-    Hash: f7c012f623f3dd905007984c1f88c2bc
+    Hash: 9508ae2115b6139399292c7adc351113
 HashAppended: 0
 ClassTypes:
 - Class: 1
@@ -83,13 +83,13 @@ ClassTypes:
 - Class: 114
   Script: {fileID: 11500000, guid: 474bcb49853aa07438625e644c072ee6, type: 3}
 - Class: 114
-  Script: {fileID: 11500000, guid: df86e564cba4b814a9743c135a6cf0a5, type: 3}
-- Class: 114
   Script: {fileID: 11500000, guid: 6e79c93d62c86bc4a8de377a3276fe74, type: 3}
 - Class: 114
   Script: {fileID: 11500000, guid: fca37350f3bae5c4eb5ec8a3e549af5b, type: 3}
 - Class: 114
   Script: {fileID: 11500000, guid: 44b37783e7c4a8e4983a236458a16f95, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: 8a63b42a57ad28e42b97926039f94c57, type: 3}
 - Class: 114
   Script: {fileID: 11500000, guid: 40509177ab196944099a3f884d992981, type: 3}
 - Class: 114
@@ -102,6 +102,8 @@ ClassTypes:
   Script: {fileID: 11500000, guid: 6954b577dd384f84a8a71e9a1e1c0100, type: 3}
 - Class: 114
   Script: {fileID: 11500000, guid: 2bf096aa492a60d4294da7eb275793a7, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: a79441f348de89743a2939f4d699eac1, type: 3}
 - Class: 114
   Script: {fileID: 11500000, guid: bb5f5426bbd430344b6a7f79c66965f6, type: 3}
 - Class: 114
@@ -175,6 +177,8 @@ SerializeReferenceClassIdentifiers:
   ClassName: FishNet.Object.TransformProperties
 - AssemblyName: FishNet.Runtime
   ClassName: FishNet.Serializing.TransformPackingData
+- AssemblyName: Unity.RenderPipelines.Universal.Runtime
+  ClassName: UnityEngine.Rendering.Universal.TemporalAA/Settings
 - AssemblyName: UnityEngine.CoreModule
   ClassName: UnityEngine.Events.PersistentCallGroup
 - AssemblyName: UnityEngine.UI

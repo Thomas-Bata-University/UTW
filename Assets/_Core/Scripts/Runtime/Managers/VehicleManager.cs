@@ -328,6 +328,8 @@ public class VehicleManager : NetworkBehaviour
         actualTank.name = mainPart.mainData.partName;
         tankNo.SetParent(networkObject);
         Spawn(tankNo);
+        
+        Transform turretMountingPoint = actualTank.transform.Find("TurretMountingPoint");
 
         _tankCrew.Add(mainPart.mainData.key, new CrewData(mainPart.mainData.tankPosition, tankNo, 0));
 
@@ -337,7 +339,7 @@ public class VehicleManager : NetworkBehaviour
         {
             TankData data = part.partData;
             Debug.Log($"Spawning part {data.partName}");
-            GameObject tankPart = Instantiate(SelectPrefab(data), data.partPosition + transform.position, Quaternion.identity, actualTank.transform);
+            GameObject tankPart = Instantiate(SelectPrefab(data), data.partPosition + transform.position, Quaternion.identity, turretMountingPoint);
             tankPart.name = data.partName;
             NetworkObject partNo = tankPart.GetComponent<NetworkObject>();
             partNo.SetParent(tankNo);
@@ -404,7 +406,7 @@ public class VehicleManager : NetworkBehaviour
         Debug.Log($"Index {data.childIndex}");
 
         if (!data.tankPosition.Equals(TankPositions.DRIVER))
-            tankPart = tankPart.GetChild(data.childIndex);
+            tankPart = tankPart.GetChild(data.childIndex + 2);
 
         EnableController(tankPart, active);
     }

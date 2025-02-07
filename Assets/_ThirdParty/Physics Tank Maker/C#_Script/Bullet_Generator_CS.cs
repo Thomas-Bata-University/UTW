@@ -135,7 +135,7 @@ namespace ChobiAssets.PTM
                 default:
                     break;
             }
-            Destroy(bulletObject, Life_Time);
+            //Destroy(bulletObject, Life_Time);
             
             new WaitForFixedUpdate();
             Rigidbody rigidbody = bulletObject.GetComponent<Rigidbody>();
