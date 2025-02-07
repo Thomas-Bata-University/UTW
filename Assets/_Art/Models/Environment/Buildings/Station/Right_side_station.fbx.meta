@@ -3,7 +3,22 @@ guid: 87ce9a6938041854884309e11c344dcf
 ModelImporter:
   serializedVersion: 22200
   internalIDToNameTable: []
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: concrete_in_wall_mat
+    second: {fileID: 2100000, guid: 0b0608624fd6d934d94bdb82618ca4d6, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: concrete_out_wall_mat
+    second: {fileID: 2100000, guid: 25ee4610b53cbc440a92a1fc348df7c9, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: flat_roof_mat
+    second: {fileID: 2100000, guid: 6e8a6ab773a688f42b1fb0104a4a7bfc, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0
